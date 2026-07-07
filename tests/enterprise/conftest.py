@@ -2,7 +2,7 @@
 Enterprise Test Suite, Shared Configuration & Fixtures
 
 Mock-based fixtures for integration tests. Live LLM API tests were removed
-in the oss-launch hardening pass, unit tests cover adapter behavior with mock.
+before the public release; unit tests cover adapter behavior with mock.
 """
 
 import asyncio

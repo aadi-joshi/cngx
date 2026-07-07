@@ -37,12 +37,12 @@ def step(num: int, desc: str):
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# PHASE 1: Capture & Fingerprint
+# Capture & Fingerprint
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
 def demo_capture():
-    header("Phase 1: Capture & Fingerprint", "Trace an LLM call and extract behavioral metrics")
+    header("Capture & Fingerprint", "Trace an LLM call and extract behavioral metrics")
 
     from cogscope import CogscopeTracer
 
@@ -73,12 +73,12 @@ def demo_capture():
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# PHASE 2: Behavior Contracts
+# Behavior Contracts
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
 def demo_contracts(trace, fp):
-    header("Phase 2: Behavior Contracts", "Define and validate behavioral requirements")
+    header("Behavior Contracts", "Define and validate behavioral requirements")
 
     from cogscope.contracts import BehaviorContract, ContractValidator
     from cogscope.contracts.schema import DepthConstraint, StepsConstraint, Severity
@@ -109,12 +109,12 @@ def demo_contracts(trace, fp):
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# PHASE 3: Behavioral Drift Detection
+# Behavioral Drift Detection
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
 def demo_drift():
-    header("Phase 3: Drift Detection", "Detect when LLM behavior changes")
+    header("Drift Detection", "Detect when LLM behavior changes")
 
     from cogscope import CogscopeTracer, DiffEngine
 
@@ -165,11 +165,11 @@ def demo_drift():
     console.print(f"    Significance: {diff.significance.value}")
 
 
-# PHASE 4: Enforcement Gate (correctness/robustness/governance deferred to phase 2)
+# Enforcement Gate
 
 
 def demo_enforcement():
-    header("Phase 6: CI/CD Enforcement Gate", "Block deployments that violate contracts")
+    header("CI/CD Enforcement Gate", "Block deployments that violate contracts")
 
     from cogscope.enforcement import EnforcementGate, EnforcementConfig
 
@@ -194,11 +194,11 @@ def demo_enforcement():
         console.print(f"      [{color}]{icon}[/] {check.check_name}: {check.message}")
 
 
-# PHASE 5: GitHub Action Generation
+# GitHub Action Generation
 
 
 def demo_github_actions():
-    header("Phase 8: GitHub Action Generator", "Auto-generate CI/CD pipeline YAML")
+    header("GitHub Action Generator", "Auto-generate CI/CD pipeline YAML")
 
     from cogscope.enforcement import GitHubActionGenerator
 
@@ -237,7 +237,7 @@ def main():
     )
 
     start = time.time()
-    phases = [
+    sections = [
         ("Capture & Fingerprint", demo_capture),
         ("Behavior Contracts", None),
         ("Drift Detection", demo_drift),
@@ -245,14 +245,10 @@ def main():
         ("GitHub Action Generator", demo_github_actions),
     ]
 
-    # Phase 1: Capture
     trace, fp = demo_capture()
-
-    # Phase 2: Contracts (needs trace & fp)
     demo_contracts(trace, fp)
 
-    # Phases 3-5
-    for name, func in phases[2:]:
+    for name, func in sections[2:]:
         try:
             func()
         except Exception as e:
@@ -263,7 +259,7 @@ def main():
     console.print()
     console.print(
         Panel(
-            f"[bold green]✓ All {len(phases)} phases completed in {elapsed:.2f}s[/]\n\n"
+            f"[bold green]✓ All {len(sections)} sections completed in {elapsed:.2f}s[/]\n\n"
             "[dim]What you just saw:[/]\n"
             "  1. Traced an LLM call and extracted behavioral metrics\n"
             "  2. Validated behavior against a YAML contract\n"

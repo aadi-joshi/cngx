@@ -19,7 +19,7 @@ This is the full OSS tool, not a stripped-down demo of a larger platform.
 
 ## Deferred, not abandoned
 
-Phase 2 capabilities (correctness validators, consensus, benchmarks, audit logging, and similar) are **not** included in this repository. They may return based on community demand. See the root [ROADMAP.md](https://github.com/aadi-joshi/cogscope/blob/main/ROADMAP.md) for the full list.
+Correctness validators, consensus checks, benchmark harnesses, audit logging, and similar capabilities are **not** included in this repository. They may return based on community demand. See the root [ROADMAP.md](https://github.com/aadi-joshi/cogscope/blob/main/ROADMAP.md) for the full list.
 
 ## Hosted platform
 

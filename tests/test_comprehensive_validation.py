@@ -1,4 +1,4 @@
-"""Phase 2, Comprehensive validation tests.
+"""Comprehensive validation tests.
 
 Covers all missing test categories identified during audit:
 1. Regression scenarios (model version, temperature, prompt, reasoning removal, CoT depth)
