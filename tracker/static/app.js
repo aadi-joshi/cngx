@@ -1,21 +1,29 @@
 /**
- * Cogscope Drift Tracker, client-side charts (Chart.js).
- * Expects window.TRACKER_DATA and window.TRACKER_META from data.js.
+ * Cogscope drift tracker charts.
+ * Community data is default. Sample data is opt-in via toggle only.
  */
 (function () {
-  const ACCENT = "#4ade80";
-  const ACCENT_DIM = "rgba(74, 222, 128, 0.35)";
-  const GRID = "rgba(42, 53, 64, 0.8)";
-  const TICK = "#9aa8b5";
-  const SAMPLE_COLOR = "#fbbf24";
+  const FG = "#ffffff";
+  const MUTED = "#666666";
+  const LINE = "#333333";
+  const GRID = "#1a1a1a";
 
-  const data = window.TRACKER_DATA || {};
+  const communityData = window.TRACKER_DATA || {};
+  const sampleData = window.TRACKER_SAMPLE_DATA || {};
   const meta = window.TRACKER_META || {};
-  const models = meta.models || Object.keys(data);
-  const annotations = meta.annotations || [];
 
-  let active = models[0] || null;
+  let showingSample = false;
+  let active = null;
   const charts = [];
+
+  function currentData() {
+    return showingSample ? sampleData : communityData;
+  }
+
+  function currentModels() {
+    const data = currentData();
+    return Object.keys(data);
+  }
 
   const chartDefaults = {
     responsive: true,
@@ -23,10 +31,10 @@
     plugins: {
       legend: { display: false },
       tooltip: {
-        backgroundColor: "#1a2229",
-        titleColor: "#e8edf2",
-        bodyColor: "#9aa8b5",
-        borderColor: "#2a3540",
+        backgroundColor: "#000000",
+        titleColor: FG,
+        bodyColor: MUTED,
+        borderColor: LINE,
         borderWidth: 1,
         titleFont: { family: "ui-monospace, monospace", size: 11 },
         bodyFont: { family: "ui-monospace, monospace", size: 11 },
@@ -37,7 +45,7 @@
         type: "time",
         time: { unit: "day", tooltipFormat: "yyyy-MM-dd" },
         grid: { color: GRID },
-        ticks: { color: TICK, font: { family: "ui-monospace, monospace", size: 10 } },
+        ticks: { color: MUTED, font: { family: "ui-monospace, monospace", size: 10 } },
       },
     },
   };
@@ -50,13 +58,11 @@
   }
 
   function makeChart(canvasId, label, field, yOpts) {
-    const recs = data[active] || [];
+    const recs = (currentData()[active] || []);
     const ctx = document.getElementById(canvasId);
     if (!ctx || !recs.length) return null;
 
     const points = recs.map((r) => ({ x: r.timestamp, y: r[field] }));
-    const isSample = recs.some((r) => r.sample);
-
     const chart = new Chart(ctx, {
       type: "line",
       data: {
@@ -64,29 +70,26 @@
           {
             label,
             data: points,
-            borderColor: ACCENT,
-            backgroundColor: ACCENT_DIM,
-            pointBackgroundColor: isSample ? SAMPLE_COLOR : ACCENT,
-            pointBorderColor: isSample ? SAMPLE_COLOR : ACCENT,
-            pointRadius: 5,
-            pointHoverRadius: 7,
-            borderWidth: 2,
-            tension: 0.15,
+            borderColor: FG,
+            backgroundColor: "transparent",
+            pointBackgroundColor: FG,
+            pointBorderColor: FG,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+            borderWidth: 1,
+            tension: 0,
             fill: false,
           },
         ],
       },
       options: {
         ...chartDefaults,
-        plugins: {
-          ...chartDefaults.plugins,
-        },
         scales: {
           ...chartDefaults.scales,
           y: {
             ...yOpts,
             grid: { color: GRID },
-            ticks: { color: TICK, font: { family: "ui-monospace, monospace", size: 10 } },
+            ticks: { color: MUTED, font: { family: "ui-monospace, monospace", size: 10 } },
           },
         },
       },
@@ -95,44 +98,72 @@
     return chart;
   }
 
+  function setVisible(id, visible) {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle("hidden", !visible);
+  }
+
+  function updateEmptyState() {
+    const hasCommunity = (meta.community_record_count || 0) > 0;
+    const hasSample = (meta.sample_record_count || 0) > 0;
+    const showCharts = showingSample ? hasSample : hasCommunity;
+
+    setVisible("empty-state", !showCharts);
+    setVisible("chart-section", showCharts);
+    setVisible("sample-banner", showingSample && hasSample);
+
+    const toggle = document.getElementById("sample-toggle");
+    if (toggle) {
+      toggle.classList.toggle("hidden", !hasSample);
+      toggle.setAttribute("aria-pressed", showingSample ? "true" : "false");
+      toggle.textContent = showingSample
+        ? "hide illustrative sample"
+        : "show illustrative sample";
+    }
+  }
+
   function renderCharts() {
     destroyCharts();
-    const recs = data[active] || [];
-    const badge = document.getElementById("model-badge");
-    const title = document.getElementById("active-model-label");
+    const models = currentModels();
+    if (!active || !models.includes(active)) {
+      active = models[0] || null;
+    }
 
-    if (title) title.textContent = active || "n/a";
-    if (badge) {
-      const hasSample = recs.some((r) => r.sample);
-      badge.textContent = hasSample ? "sample data" : "community data";
-      badge.className = "badge " + (hasSample ? "badge--sample" : "badge--live");
+    const title = document.getElementById("active-model-label");
+    const mode = document.getElementById("data-mode-label");
+    const recs = active ? currentData()[active] || [] : [];
+
+    if (title) title.textContent = active || "none";
+    if (mode) {
+      mode.textContent = showingSample ? "illustrative sample" : "community submissions";
     }
 
     if (!recs.length) return;
 
     makeChart("chart-depth", "Depth", "depth", {
       min: 0,
-      title: { display: true, text: "steps", color: TICK, font: { size: 10 } },
+      title: { display: true, text: "steps", color: MUTED, font: { size: 10 } },
     });
     makeChart("chart-verification", "Verification", "verification_steps", {
       min: 0,
-      title: { display: true, text: "count", color: TICK, font: { size: 10 } },
+      title: { display: true, text: "count", color: MUTED, font: { size: 10 } },
     });
     makeChart("chart-hedging", "Hedging ratio", "hedging_ratio", {
       min: 0,
       max: 1,
-      title: { display: true, text: "0 to 1", color: TICK, font: { size: 10 } },
+      title: { display: true, text: "0 to 1", color: MUTED, font: { size: 10 } },
     });
     makeChart("chart-drift", "Drift score", "drift_score", {
       min: 0,
       max: 1,
-      title: { display: true, text: "0 to 1", color: TICK, font: { size: 10 } },
+      title: { display: true, text: "0 to 1", color: MUTED, font: { size: 10 } },
     });
   }
 
   function renderTabs() {
     const tabs = document.getElementById("model-tabs");
     if (!tabs) return;
+    const models = currentModels();
     tabs.innerHTML = models
       .map(
         (m) =>
@@ -151,6 +182,7 @@
   function initAnnotations() {
     const section = document.getElementById("annotations-section");
     const list = document.getElementById("annotation-list");
+    const annotations = meta.annotations || [];
     if (!section || !list) return;
 
     if (!annotations.length) {
@@ -162,16 +194,34 @@
     list.innerHTML = annotations
       .map(
         (a) =>
-          `<li><strong>${a.date}</strong>, ${a.label}` +
+          `<li><strong>${a.date}</strong>: ${a.label}` +
           (a.source_url ? ` <a href="${a.source_url}" rel="noopener">source</a>` : "") +
           "</li>"
       )
       .join("");
   }
 
-  renderTabs();
-  renderCharts();
-  initAnnotations();
+  function bindSampleToggle() {
+    const toggle = document.getElementById("sample-toggle");
+    if (!toggle) return;
+    toggle.addEventListener("click", () => {
+      showingSample = !showingSample;
+      active = null;
+      updateEmptyState();
+      renderTabs();
+      renderCharts();
+    });
+  }
+
+  function init() {
+    updateEmptyState();
+    bindSampleToggle();
+    renderTabs();
+    renderCharts();
+    initAnnotations();
+  }
+
+  init();
 
   window.addEventListener("resize", () => {
     charts.forEach((c) => c.resize());
