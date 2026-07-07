@@ -106,9 +106,9 @@ output:
                 "mock-model",
             ],
         )
-        assert result.exit_code == 0, (
-            f"Gate check should pass with lenient contract: {result.output}"
-        )
+        assert (
+            result.exit_code == 0
+        ), f"Gate check should pass with lenient contract: {result.output}"
 
     def test_gate_check_json_output(self, tmp_path):
         """Gate check with --json should output valid JSON."""
@@ -175,9 +175,9 @@ depth:
             ],
         )
         # With depth min=100, mock should fail
-        assert result.exit_code == 1, (
-            f"Impossible depth should be blocked. Exit: {result.exit_code}, Output: {result.output}"
-        )
+        assert (
+            result.exit_code == 1
+        ), f"Impossible depth should be blocked. Exit: {result.exit_code}, Output: {result.output}"
 
     def test_gate_check_invalid_contract(self, tmp_path):
         """Gate check with invalid contract file should fail gracefully."""

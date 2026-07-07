@@ -173,9 +173,9 @@ class TestRegressionScenarios:
         diff = self.diff_engine.diff(fp_low, fp_high)
 
         assert diff.drift_score > 0.0, "Temperature change should produce drift"
-        assert fp_high.output_length > fp_low.output_length, (
-            "High temperature should produce longer output"
-        )
+        assert (
+            fp_high.output_length > fp_low.output_length
+        ), "High temperature should produce longer output"
 
     # ── 1c. Prompt change ──
 
@@ -231,12 +231,12 @@ class TestRegressionScenarios:
         diff = self.diff_engine.diff(fp_with, fp_without)
 
         assert diff.drift_score > 0.0, "Removing reasoning instructions should produce drift"
-        assert fp_with.verification_steps >= fp_without.verification_steps, (
-            "Reasoning instructions should produce more verification"
-        )
-        assert fp_with.output_length > fp_without.output_length, (
-            "Reasoning instructions should produce longer output"
-        )
+        assert (
+            fp_with.verification_steps >= fp_without.verification_steps
+        ), "Reasoning instructions should produce more verification"
+        assert (
+            fp_with.output_length > fp_without.output_length
+        ), "Reasoning instructions should produce longer output"
 
     # ── 1e. Reduced chain-of-thought depth ──
 
@@ -319,9 +319,9 @@ class TestFalsePositives:
         diff = self.diff_engine.diff(fp_numbered, fp_bullets)
 
         # Formatting-only changes should not produce significant drift
-        assert diff.drift_score < 2.0, (
-            f"Formatting change produced drift={diff.drift_score}, expected <2.0"
-        )
+        assert (
+            diff.drift_score < 2.0
+        ), f"Formatting change produced drift={diff.drift_score}, expected <2.0"
 
     def test_whitespace_variation_low_drift(self):
         """Extra whitespace and newlines should not cause meaningful drift."""
@@ -335,9 +335,9 @@ class TestFalsePositives:
         fp_spaced = self.extractor.extract(trace_spaced)
         diff = self.diff_engine.diff(fp_compact, fp_spaced)
 
-        assert diff.drift_score < 2.0, (
-            f"Whitespace variation produced drift={diff.drift_score}, expected <2.0"
-        )
+        assert (
+            diff.drift_score < 2.0
+        ), f"Whitespace variation produced drift={diff.drift_score}, expected <2.0"
 
     def test_capitalization_change_low_drift(self):
         """Capitalization differences should produce negligible drift."""
@@ -351,9 +351,9 @@ class TestFalsePositives:
         fp_upper = self.extractor.extract(trace_upper)
         diff = self.diff_engine.diff(fp_lower, fp_upper)
 
-        assert diff.drift_score < 2.0, (
-            f"Capitalization change produced drift={diff.drift_score}, expected <2.0"
-        )
+        assert (
+            diff.drift_score < 2.0
+        ), f"Capitalization change produced drift={diff.drift_score}, expected <2.0"
 
     # ── 2b. Minor output rephrasing should not break contracts ──
 
@@ -450,9 +450,9 @@ class TestToolConstraints:
 
         tool_violations = [v for v in result.violations if "required" in v.constraint]
         assert len(tool_violations) >= 1, "Should have at least one tool.required violation"
-        assert any("search" in v.message for v in tool_violations), (
-            "Violation should mention the missing 'search' tool"
-        )
+        assert any(
+            "search" in v.message for v in tool_violations
+        ), "Violation should mention the missing 'search' tool"
 
     def test_forbidden_tool_used_violation(self):
         """Using a forbidden tool should produce a violation."""
@@ -791,24 +791,24 @@ class TestFingerprintStability:
 
         for i in range(1, 10):
             assert fingerprints[i].depth == fingerprints[0].depth, f"Run {i}: depth differs"
-            assert fingerprints[i].total_steps == fingerprints[0].total_steps, (
-                f"Run {i}: total_steps differs"
-            )
-            assert fingerprints[i].output_length == fingerprints[0].output_length, (
-                f"Run {i}: output_length differs"
-            )
-            assert fingerprints[i].verification_steps == fingerprints[0].verification_steps, (
-                f"Run {i}: verification_steps differs"
-            )
-            assert fingerprints[i].correction_count == fingerprints[0].correction_count, (
-                f"Run {i}: correction_count differs"
-            )
-            assert fingerprints[i].hedging_ratio == fingerprints[0].hedging_ratio, (
-                f"Run {i}: hedging_ratio differs"
-            )
-            assert fingerprints[i].uncertainty_markers == fingerprints[0].uncertainty_markers, (
-                f"Run {i}: uncertainty_markers differs"
-            )
-            assert fingerprints[i].confidence_markers == fingerprints[0].confidence_markers, (
-                f"Run {i}: confidence_markers differs"
-            )
+            assert (
+                fingerprints[i].total_steps == fingerprints[0].total_steps
+            ), f"Run {i}: total_steps differs"
+            assert (
+                fingerprints[i].output_length == fingerprints[0].output_length
+            ), f"Run {i}: output_length differs"
+            assert (
+                fingerprints[i].verification_steps == fingerprints[0].verification_steps
+            ), f"Run {i}: verification_steps differs"
+            assert (
+                fingerprints[i].correction_count == fingerprints[0].correction_count
+            ), f"Run {i}: correction_count differs"
+            assert (
+                fingerprints[i].hedging_ratio == fingerprints[0].hedging_ratio
+            ), f"Run {i}: hedging_ratio differs"
+            assert (
+                fingerprints[i].uncertainty_markers == fingerprints[0].uncertainty_markers
+            ), f"Run {i}: uncertainty_markers differs"
+            assert (
+                fingerprints[i].confidence_markers == fingerprints[0].confidence_markers
+            ), f"Run {i}: confidence_markers differs"

@@ -79,9 +79,9 @@ class TestDiffEngine:
         fp2 = extractor.extract(trace)
         diff = diff_engine.diff(fp1, fp2)
         assert diff is not None
-        assert diff.drift_score < 0.1, (
-            f"Identical fingerprints should have drift_score < 0.1, got {diff.drift_score}"
-        )
+        assert (
+            diff.drift_score < 0.1
+        ), f"Identical fingerprints should have drift_score < 0.1, got {diff.drift_score}"
 
     def test_diff_different_fingerprints(self, extractor):
         """Diffing deep vs shallow should show significant drift."""
@@ -90,9 +90,9 @@ class TestDiffEngine:
         fp_shallow = extractor.extract(make_trace(SHALLOW_MATH))
         diff = diff_engine.diff(fp_deep, fp_shallow)
         assert diff is not None
-        assert diff.drift_score > 0.1, (
-            f"Deep vs shallow should have significant drift, got {diff.drift_score}"
-        )
+        assert (
+            diff.drift_score > 0.1
+        ), f"Deep vs shallow should have significant drift, got {diff.drift_score}"
         assert len(diff.changes) > 0, "Should detect at least one behavioral change"
 
     def test_diff_has_recommendations(self, extractor):

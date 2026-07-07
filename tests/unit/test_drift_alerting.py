@@ -75,9 +75,9 @@ class TestStatisticalDriftAlerting:
             current, baseline, history, baseline_name="math_v1"
         )
 
-        assert result.should_alert is False, (
-            f"False positive: {result.summary} outliers={result.outliers}"
-        )
+        assert (
+            result.should_alert is False
+        ), f"False positive: {result.summary} outliers={result.outliers}"
 
     def test_quality_regression_does_alert(self):
         """Dropping verification AND depth together should alert after streaming accumulates."""

@@ -43,9 +43,9 @@ class TestDepthDetection:
         """4-step math reasoning MUST score higher depth than 1-line answer."""
         deep = self.extractor.extract(make_trace(GOOD_MATH_REASONING))
         shallow = self.extractor.extract(make_trace(SHALLOW_MATH))
-        assert deep.depth > shallow.depth, (
-            f"Deep reasoning ({deep.depth}) must have higher depth than shallow ({shallow.depth})"
-        )
+        assert (
+            deep.depth > shallow.depth
+        ), f"Deep reasoning ({deep.depth}) must have higher depth than shallow ({shallow.depth})"
 
     def test_deep_reasoning_depth_at_least_3(self):
         """Good math reasoning has 4 clearly labeled steps, must detect >= 3."""
@@ -70,9 +70,9 @@ class TestDepthDetection:
     def test_verbose_depth_reflects_steps(self):
         """Verbose response clearly has numbered steps."""
         fp = self.extractor.extract(make_trace(VERBOSE_RESPONSE))
-        assert fp.depth >= 3, (
-            f"Verbose labeled-step response should have depth >= 3, got {fp.depth}"
-        )
+        assert (
+            fp.depth >= 3
+        ), f"Verbose labeled-step response should have depth >= 3, got {fp.depth}"
 
     def test_terse_response_depth(self):
         """Terse 'x = -2, -3' should have depth 1."""
@@ -98,30 +98,30 @@ class TestVerificationDetection:
     def test_verified_math_detected(self):
         """Good math reasoning explicitly verifies, must detect > 0 verification steps."""
         fp = self.extractor.extract(make_trace(GOOD_MATH_REASONING))
-        assert fp.verification_steps > 0, (
-            f"Math with 'Let me verify' should have verification_steps > 0, got {fp.verification_steps}"
-        )
+        assert (
+            fp.verification_steps > 0
+        ), f"Math with 'Let me verify' should have verification_steps > 0, got {fp.verification_steps}"
 
     def test_no_verification_in_shallow(self):
         """Shallow one-liner has no verification."""
         fp = self.extractor.extract(make_trace(SHALLOW_MATH))
-        assert fp.verification_steps == 0, (
-            f"One-liner should have 0 verification steps, got {fp.verification_steps}"
-        )
+        assert (
+            fp.verification_steps == 0
+        ), f"One-liner should have 0 verification steps, got {fp.verification_steps}"
 
     def test_code_review_has_verification(self):
         """Code review with 'double-check' should detect verification."""
         fp = self.extractor.extract(make_trace(GOOD_CODE_REVIEW))
-        assert fp.verification_steps > 0, (
-            f"Code review with verification language should detect it, got {fp.verification_steps}"
-        )
+        assert (
+            fp.verification_steps > 0
+        ), f"Code review with verification language should detect it, got {fp.verification_steps}"
 
     def test_self_correcting_has_verification(self):
         """Self-correcting response with 'double-check' should show verification."""
         fp = self.extractor.extract(make_trace(SELF_CORRECTING))
-        assert fp.verification_steps > 0, (
-            f"Self-correcting response should show verification, got {fp.verification_steps}"
-        )
+        assert (
+            fp.verification_steps > 0
+        ), f"Self-correcting response should show verification, got {fp.verification_steps}"
 
 
 class TestHedgingDetection:
@@ -133,23 +133,23 @@ class TestHedgingDetection:
     def test_hedging_response_has_high_hedging_ratio(self):
         """Response loaded with 'maybe', 'might', 'possibly' should score high hedging."""
         fp = self.extractor.extract(make_trace(HEDGING_RESPONSE))
-        assert fp.hedging_ratio > 0.3, (
-            f"Hedging-heavy response should have hedging_ratio > 0.3, got {fp.hedging_ratio:.3f}"
-        )
+        assert (
+            fp.hedging_ratio > 0.3
+        ), f"Hedging-heavy response should have hedging_ratio > 0.3, got {fp.hedging_ratio:.3f}"
 
     def test_confident_response_has_low_hedging(self):
         """Good math reasoning is assertive, low hedging."""
         fp = self.extractor.extract(make_trace(GOOD_MATH_REASONING))
-        assert fp.hedging_ratio < 0.3, (
-            f"Confident math reasoning should have hedging_ratio < 0.3, got {fp.hedging_ratio:.3f}"
-        )
+        assert (
+            fp.hedging_ratio < 0.3
+        ), f"Confident math reasoning should have hedging_ratio < 0.3, got {fp.hedging_ratio:.3f}"
 
     def test_overconfident_has_low_hedging(self):
         """Overconfident response has zero uncertainty markers."""
         fp = self.extractor.extract(make_trace(OVERCONFIDENT_WRONG))
-        assert fp.hedging_ratio < 0.2, (
-            f"Overconfident response should have very low hedging, got {fp.hedging_ratio:.3f}"
-        )
+        assert (
+            fp.hedging_ratio < 0.2
+        ), f"Overconfident response should have very low hedging, got {fp.hedging_ratio:.3f}"
 
     def test_hedging_response_has_more_uncertainty_than_confident(self):
         """Hedging response must have more uncertainty markers than confident one."""
@@ -163,9 +163,9 @@ class TestHedgingDetection:
     def test_overconfident_has_confidence_markers(self):
         """Response with 'definitely', 'certainly', etc. must show confidence markers."""
         fp = self.extractor.extract(make_trace(OVERCONFIDENT_WRONG))
-        assert fp.confidence_markers > 0, (
-            f"Overconfident response should have confidence_markers > 0, got {fp.confidence_markers}"
-        )
+        assert (
+            fp.confidence_markers > 0
+        ), f"Overconfident response should have confidence_markers > 0, got {fp.confidence_markers}"
 
 
 class TestSelfCorrectionDetection:
@@ -177,9 +177,9 @@ class TestSelfCorrectionDetection:
     def test_self_correcting_has_corrections(self):
         """Response with 'wait', 'actually', 'my mistake' should detect corrections."""
         fp = self.extractor.extract(make_trace(SELF_CORRECTING))
-        assert fp.correction_count > 0, (
-            f"Self-correcting response should have corrections > 0, got {fp.correction_count}"
-        )
+        assert (
+            fp.correction_count > 0
+        ), f"Self-correcting response should have corrections > 0, got {fp.correction_count}"
 
     def test_clean_response_no_corrections(self):
         """Clean good reasoning has no corrections."""
@@ -195,9 +195,9 @@ class TestSelfCorrectionDetection:
     def test_shallow_no_corrections(self):
         """One-liner has no self-correction language."""
         fp = self.extractor.extract(make_trace(SHALLOW_MATH))
-        assert fp.correction_count == 0, (
-            f"One-liner should have 0 corrections, got {fp.correction_count}"
-        )
+        assert (
+            fp.correction_count == 0
+        ), f"One-liner should have 0 corrections, got {fp.correction_count}"
 
 
 class TestStructuredOutputDetection:
@@ -227,16 +227,16 @@ class TestVerbosityMetrics:
         """Verbose response should have much more output length than terse."""
         verbose = self.extractor.extract(make_trace(VERBOSE_RESPONSE))
         terse = self.extractor.extract(make_trace(TERSE_RESPONSE))
-        assert verbose.output_length > terse.output_length * 10, (
-            f"Verbose ({verbose.output_length}) should be >10x terse ({terse.output_length})"
-        )
+        assert (
+            verbose.output_length > terse.output_length * 10
+        ), f"Verbose ({verbose.output_length}) should be >10x terse ({terse.output_length})"
 
     def test_compression_ratio_sensible(self):
         """Compression ratio should be between 0 and 1 for normal text."""
         fp = self.extractor.extract(make_trace(GOOD_MATH_REASONING))
-        assert 0 <= fp.compression_ratio <= 2.0, (
-            f"Compression ratio should be reasonable, got {fp.compression_ratio}"
-        )
+        assert (
+            0 <= fp.compression_ratio <= 2.0
+        ), f"Compression ratio should be reasonable, got {fp.compression_ratio}"
 
 
 class TestFingerprintDifferentiation:
@@ -279,9 +279,9 @@ class TestFingerprintDifferentiation:
             fp = self.extractor.extract(make_trace(output))
             hashes.add(fp.signature_hash)
         # At least 3 out of 5 should be unique (hashing is lossy, but major differences must survive)
-        assert len(hashes) >= 3, (
-            f"5 very different outputs produced only {len(hashes)} unique signature hashes"
-        )
+        assert (
+            len(hashes) >= 3
+        ), f"5 very different outputs produced only {len(hashes)} unique signature hashes"
 
     def test_similar_inputs_similar_fingerprints(self):
         """Same output run twice should produce very similar fingerprints."""
@@ -351,13 +351,13 @@ class TestEdgeCases:
             assert fp.branching_factor >= 0, f"branching_factor negative: {fp.branching_factor}"
             assert fp.output_length >= 0, f"output_length negative: {fp.output_length}"
             assert fp.hedging_ratio >= 0, f"hedging_ratio negative: {fp.hedging_ratio}"
-            assert fp.verification_steps >= 0, (
-                f"verification_steps negative: {fp.verification_steps}"
-            )
+            assert (
+                fp.verification_steps >= 0
+            ), f"verification_steps negative: {fp.verification_steps}"
             assert fp.correction_count >= 0, f"correction_count negative: {fp.correction_count}"
-            assert fp.uncertainty_markers >= 0, (
-                f"uncertainty_markers negative: {fp.uncertainty_markers}"
-            )
-            assert fp.confidence_markers >= 0, (
-                f"confidence_markers negative: {fp.confidence_markers}"
-            )
+            assert (
+                fp.uncertainty_markers >= 0
+            ), f"uncertainty_markers negative: {fp.uncertainty_markers}"
+            assert (
+                fp.confidence_markers >= 0
+            ), f"confidence_markers negative: {fp.confidence_markers}"

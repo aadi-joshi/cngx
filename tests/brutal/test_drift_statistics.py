@@ -65,9 +65,9 @@ class TestDriftScorerStatistics:
         result = self.scorer.trend_detection(
             values=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0],
         )
-        assert result["slope"] > 0, (
-            f"Increasing values should have positive slope, got {result['slope']}"
-        )
+        assert (
+            result["slope"] > 0
+        ), f"Increasing values should have positive slope, got {result['slope']}"
         assert result["direction"] == "increasing"
 
     def test_trend_detection_flat(self):
@@ -75,9 +75,9 @@ class TestDriftScorerStatistics:
         result = self.scorer.trend_detection(
             values=[5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0],
         )
-        assert abs(result["slope"]) < 0.01, (
-            f"Flat values should have slope ≈ 0, got {result['slope']}"
-        )
+        assert (
+            abs(result["slope"]) < 0.01
+        ), f"Flat values should have slope ≈ 0, got {result['slope']}"
         assert result["direction"] == "stable"
 
     def test_trend_detection_noisy_but_flat(self):
@@ -85,9 +85,9 @@ class TestDriftScorerStatistics:
         np.random.seed(42)
         values = list(np.random.normal(5.0, 0.1, 20))
         result = self.scorer.trend_detection(values=values)
-        assert abs(result["slope"]) < 0.5, (
-            f"Noisy-but-flat values should have small slope, got {result['slope']}"
-        )
+        assert (
+            abs(result["slope"]) < 0.5
+        ), f"Noisy-but-flat values should have small slope, got {result['slope']}"
 
     def test_trend_detection_decreasing(self):
         """Decreasing values should detect downward trend."""
@@ -155,9 +155,9 @@ class TestDriftDetectorWithRealData:
             baseline_name="consistent_bl",
         )
         assert report is not None
-        assert report.drift_score < 0.3, (
-            f"Consistent behavior drift should be < 0.3, got {report.drift_score}"
-        )
+        assert (
+            report.drift_score < 0.3
+        ), f"Consistent behavior drift should be < 0.3, got {report.drift_score}"
 
     def test_drift_detected_on_behavior_change(self, fresh_db):
         """If behavior changes mid-stream, drift should be detected."""
@@ -187,6 +187,6 @@ class TestDriftDetectorWithRealData:
         detector = DriftDetector(fresh_db)
         report = detector.detect_drift(task_id="changing")
         assert report is not None
-        assert report.drift_score > 0.0, (
-            f"Behavior change should produce some drift, got {report.drift_score}"
-        )
+        assert (
+            report.drift_score > 0.0
+        ), f"Behavior change should produce some drift, got {report.drift_score}"

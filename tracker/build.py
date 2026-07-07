@@ -82,9 +82,7 @@ def render_html(
 ) -> str:
     """Generate index.html."""
     models = list(by_model.keys())
-    sample_count = count_samples(
-        [r for recs in by_model.values() for r in recs]
-    )
+    sample_count = count_samples([r for recs in by_model.values() for r in recs])
     all_sample = sample_count == record_count and record_count > 0
     sample_badge = (
         '<span class="badge badge--sample">demonstration data only</span>' if all_sample else ""
