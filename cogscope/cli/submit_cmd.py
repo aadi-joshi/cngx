@@ -92,9 +92,11 @@ def build_submit_payload(
     return {
         "schema_version": SCHEMA_VERSION,
         "record_id": record_id or str(uuid.uuid4()),
-        "timestamp": fp.timestamp.isoformat() + "Z"
-        if fp.timestamp.tzinfo is None
-        else fp.timestamp.isoformat(),
+        "timestamp": (
+            fp.timestamp.isoformat() + "Z"
+            if fp.timestamp.tzinfo is None
+            else fp.timestamp.isoformat()
+        ),
         "model": fp.model,
         "baseline_label": baseline_label,
         "drift_score": round(float(drift_score), 4),

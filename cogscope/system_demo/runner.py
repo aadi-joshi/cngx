@@ -323,7 +323,9 @@ def run_comparison(scenario: Scenario) -> DemoComparison:
         without_result.downstream_would_execute and without_result.reasoning_assumptions_violated
     )
 
-    downstream_protected = with_result.cogscope_blocked and without_result.reasoning_assumptions_violated
+    downstream_protected = (
+        with_result.cogscope_blocked and without_result.reasoning_assumptions_violated
+    )
 
     return DemoComparison(
         scenario_name=scenario.name,

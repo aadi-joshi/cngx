@@ -200,7 +200,8 @@ class PostgresBackend(StorageBackend):
             import psycopg2.extras
         except ImportError:
             raise ImportError(
-                "PostgreSQL backend requires psycopg2. " "Install with: pip install cogscope[postgres]"
+                "PostgreSQL backend requires psycopg2. "
+                "Install with: pip install cogscope[postgres]"
             )
 
         if not config.postgres_dsn:

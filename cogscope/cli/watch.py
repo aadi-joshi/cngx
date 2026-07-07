@@ -35,7 +35,7 @@ def run_watch(
             f"  OpenAI-compatible base URL:\n"
             f"  [bold cyan]{base}/v1[/]\n\n"
             f"  Example (Python OpenAI SDK):\n"
-            f"  [dim]client = OpenAI(base_url=\"{base}/v1\", api_key=os.environ[\"OPENAI_API_KEY\"])[/]\n\n"
+            f'  [dim]client = OpenAI(base_url="{base}/v1", api_key=os.environ["OPENAI_API_KEY"])[/]\n\n'
             f"  Cogscope fingerprints traffic locally. API keys stay in memory only.",
             title="[bold]Cogscope watch[/]",
             border_style="bright_blue",

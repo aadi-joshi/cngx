@@ -59,7 +59,9 @@ def _build_trace_from_openai(
         task_id=task_id,
         model=model,
         adapter_type="openai",
-        system_message=next((m.get("content") for m in messages if m.get("role") == "system"), None),
+        system_message=next(
+            (m.get("content") for m in messages if m.get("role") == "system"), None
+        ),
         prompt=prompt,
         messages=messages,
         output=output,

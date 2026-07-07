@@ -31,7 +31,9 @@ def report(
     cutoff = datetime.utcnow() - timedelta(hours=hours)
 
     if task_id:
-        fingerprints = [fp for fp in db.get_fingerprints_by_task(task_id, limit=200) if fp.timestamp >= cutoff]
+        fingerprints = [
+            fp for fp in db.get_fingerprints_by_task(task_id, limit=200) if fp.timestamp >= cutoff
+        ]
     else:
         fingerprints = []
         for t in db.get_recent_traces(limit=100):

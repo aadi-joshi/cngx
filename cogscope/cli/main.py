@@ -54,7 +54,12 @@ def init(
     default_model = "mock-model"
     interactive = not yes and sys.stdin.isatty()
     if interactive:
-        console.print(Panel("[bold]Cogscope setup[/]\nQuick questions — or pass [cyan]--yes[/] to skip.", border_style="cyan"))
+        console.print(
+            Panel(
+                "[bold]Cogscope setup[/]\nQuick questions — or pass [cyan]--yes[/] to skip.",
+                border_style="cyan",
+            )
+        )
         adapter_choice = typer.prompt(
             "Default provider for local capture (mock/openai/gemini/claude)",
             default="mock",
@@ -131,7 +136,9 @@ def pin(
     if trace_id is None:
         traces = db.get_recent_traces(limit=1)
         if not traces:
-            console.print("[red]No traces yet. Run [cyan]cogscope watch[/] or [cyan]cogscope capture[/] first.[/]")
+            console.print(
+                "[red]No traces yet. Run [cyan]cogscope watch[/] or [cyan]cogscope capture[/] first.[/]"
+            )
             raise typer.Exit(1)
         trace_id = traces[0].id
 

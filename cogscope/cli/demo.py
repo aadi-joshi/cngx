@@ -29,7 +29,10 @@ def demo_run(
         "math", "--scenario", "-s", help="Scenario to run: math, code, research, or all"
     ),
     mode: str = typer.Option(
-        "compare", "--mode", "-m", help="Mode: compare (both), without (no Cogscope), with (Cogscope only)"
+        "compare",
+        "--mode",
+        "-m",
+        help="Mode: compare (both), without (no Cogscope), with (Cogscope only)",
     ),
     output: str = typer.Option("rich", "--output", "-o", help="Output format: rich, json, ci"),
     quiet: bool = typer.Option(False, "--quiet", "-q", help="Minimal output"),

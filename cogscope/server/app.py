@@ -83,9 +83,9 @@ app = FastAPI(
 # Middleware
 # ---------------------------------------------------------------------------
 
-_cors_origins = os.getenv("COGSCOPE_CORS_ORIGINS", "http://localhost:3000,http://localhost:8642").split(
-    ","
-)
+_cors_origins = os.getenv(
+    "COGSCOPE_CORS_ORIGINS", "http://localhost:3000,http://localhost:8642"
+).split(",")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[o.strip() for o in _cors_origins],
