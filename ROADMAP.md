@@ -2,7 +2,7 @@
 
 Cogscope v0.1.0 is a **deliberately narrow** open-source tool. The scope is intentional: local fingerprinting, baseline-relative drift, and policy checks, not a full AI platform.
 
-This document explains what ships today, what was archived for Phase 2, and what that means for the future.
+This document explains what ships today, what is deferred for later consideration, and what that means for the future.
 
 ---
 
@@ -29,9 +29,9 @@ This document explains what ships today, what was archived for Phase 2, and what
 
 ---
 
-## Phase 2 candidates, deferred, not in this repository
+## Deferred capabilities, not in this repository
 
-The following capabilities were explored during early development and are **intentionally deferred** pending real community demand. They are **not** part of v0.1.0 and **not** included in this repository.
+The following were explored during early development and are **intentionally deferred** pending real community demand. They are **not** part of v0.1.0 and **not** included in this repository.
 
 | Capability | What it would add |
 |------------|-------------------|
@@ -46,11 +46,11 @@ The following capabilities were explored during early development and are **inte
 
 Associated tests for these areas are likewise out of scope for v0.1.0.
 
-### When might Phase 2 return?
+### When might these return?
 
 When there is clear, sustained demand from OSS users, e.g. issues asking for math correctness validation, cross-model consensus, or benchmark harnesses, with contributors willing to maintain them outside the core local tool.
 
-The core tool must stay simple. Phase 2 features will not be merged back without a strong case that they serve the local-first use case.
+The core tool must stay simple. Deferred features will not be merged back without a strong case that they serve the local-first use case.
 
 ---
 
@@ -62,9 +62,9 @@ A previous product direction included a multi-service hosted stack (dashboard, t
 
 ## Near-term OSS priorities (informal)
 
-Not committed dates, direction based on the oss-launch sequence:
+Not committed dates, current direction:
 
-1. **Docs and launch polish**, mkdocs, README, demo GIF
+1. **Docs and polish**, mkdocs, README, demo assets
 2. **Tracker community growth**, opt-in submissions, cited model-update annotations
 3. **Adapter coverage**, broader provider API shapes through the proxy
 4. **Policy examples**, domain-specific templates contributed by users
@@ -82,4 +82,4 @@ Not committed dates, direction based on the oss-launch sequence:
 
 ## How to influence the roadmap
 
-Open a [feature request](https://github.com/aadi-joshi/cogscope/issues/new?template=feature_request.md) with your use case. Phase 2 restorations will be driven by evidence of demand, not by restoring everything from archive.
+Open a [feature request](https://github.com/aadi-joshi/cogscope/issues/new?template=feature_request.md) with your use case. Restoring deferred capabilities will be driven by evidence of demand, not by restoring everything from archive.

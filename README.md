@@ -1,85 +1,83 @@
 # Cogscope
 
-**Long autonomous agent runs can look fine turn by turn while reasoning quietly collapses mid-session.**
-
-**Cogscope is a local proxy that fingerprints how your coding agent reasons across an entire session, flags when verification behavior flattens out, and compares each turn to a baseline you pinned. No account. No cloud.**
-
 [![CI](https://github.com/aadi-joshi/cogscope/actions/workflows/ci.yml/badge.svg)](https://github.com/aadi-joshi/cogscope/actions)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](pyproject.toml)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
----
+![Cogscope terminal quickstart: mock adapter policy check](docs/assets/quickstart.svg)
 
-## The problem
-
-You leave Aider, Cline, Claude Code, or another agent on a long unattended run. Every individual response still reads fine. Latency looks normal. The diff gets longer. But somewhere around turn 80 the agent stops actually checking its own work: verification steps flatten to a fixed, shallow pattern while output stays verbose.
-
-Single-response evals and production dashboards miss this. They score outputs or fleet aggregates, not whether *your* agent's reasoning trajectory stayed healthy across hundreds of turns. Cogscope sits on your machine as a local proxy, fingerprints each turn (depth, verification steps, hedging, corrections), tracks session-level trajectories, and alerts when behavior drifts from what you pinned, including session stability warnings when verification variance collapses.
-
-Per-turn structural drift detection is a supporting capability. The headline scenario is **silent mid-session reasoning collapse on long autonomous runs**.
-
-### How this compares
-
-| | Output-quality eval tools | Enterprise observability (Langfuse, LangSmith, Arize, …) | Local agent firewalls (cost/security) | Cogscope |
-|---|---------------------------|----------------------------------------------------------|---------------------------------------|----------|
-| **Persona** | Benchmark authors, QA | ML platform teams, cloud dashboards | Developers running autonomous agents | Developers running long unattended agent sessions |
-| **What they measure** | Final answers on fixed prompts | Latency, tokens, traces, costs, post-hoc analysis | Spend limits, secrets, policy blocks | Reasoning-shape metrics and session trajectories on *your* traffic |
-| **Baseline** | Global benchmarks | Fleet aggregates | Static rules | *Your* pinned fingerprint |
-| **Typical gap** | Shallow reasoning when answers still read well | Not aimed at local agent session health | Does not watch reasoning drift | Semantic ground truth; cheat-proof attestation |
-
-These approaches are complementary. Cogscope targets the gap where each turn looks fine but verification quietly stopped varying across the session.
-
----
-
-## Demo
-
-Terminal recording of `cogscope quickstart` (mock adapter, no API keys, generated with [VHS](https://github.com/charmbracelet/vhs)):
-
-![Cogscope quickstart: shallow reasoning ships without Cogscope, policy check BLOCKED with Cogscope](docs/assets/quickstart.gif)
-
-```bash
-pip install -e .
-cogscope quickstart
-```
-
-Regenerate after UI changes: `vhs scripts/demo/quickstart.tape` (see `scripts/demo/README.md`).
-
----
-
-## Public drift tracker
-
-The [Cogscope Drift Tracker](https://aadi-joshi.github.io/cogscope/) is a static site of opt-in, anonymous fingerprint trends (depth, verification, hedging, drift vs each submitter's baseline). No prompts or outputs are published.
-
-![Cogscope drift tracker: model tabs, charts, and hover interaction](docs/assets/tracker-demo.gif)
-
-[Full demo (MP4)](docs/assets/tracker-demo.mp4) · [Static screenshot](docs/assets/tracker-demo.png) · [Contribute data](docs/guides/public-drift-log.md)
-
-Regenerate the recording: `python scripts/demo/record_tracker.py` (see `scripts/demo/README.md`).
-
----
-
-## Install and try it
-
-**Recommended** (isolated CLI on your PATH, no virtualenv to manage):
+**Cogscope is a local reverse proxy that fingerprints reasoning shape on every LLM call, stores a per-session trajectory, and flags statistically corroborated drift from a baseline you pin.** Live alerts combine KSWIN and MDDM streaming tests on heuristic metrics; batch checks use Mann-Whitney U with Benjamini-Hochberg FDR and a Cauchy Combination Test (CCT) omnibus; CI regression suites use McNemar's exact test or paired permutation tests.
 
 ```bash
 pipx install cogscope
 cogscope quickstart
 ```
 
-Requires [pipx](https://pipx.pypa.io/). Python 3.10+ must be installed on your system, but you do not need to create or activate a virtual environment.
+`quickstart` runs a mock scenario with no API keys. Under 30 seconds.
+
+---
+
+## The problem
+
+On long autonomous agent runs, per-turn output can stay fluent while **verification-step variance collapses**: the count and pattern of self-check language stops varying across turns even though answers remain long. That is measurable (rolling variance of `verification_steps` and related fingerprint metrics) and distinct from a single bad response.
+
+Single-response evals score fixed prompts. Production observability aggregates latency, tokens, and traces. Neither tracks whether *your* agent's reasoning trajectory stayed healthy across hundreds of proxied turns on your machine. Cogscope sits in the request path, fingerprints each completed response without delaying the stream, and compares new fingerprints to a baseline you pinned, including session stability warnings when verification variance flattens.
+
+---
+
+## Measured, not asserted
+
+Synthetic benchmarks from the drift engine (250 trials at alpha=0.05 unless noted):
+
+| Scenario | Method | False positive rate |
+|----------|--------|-------------------|
+| Correlated stationary series, no drift | Legacy Fisher omnibus | 0.024 (6/250) |
+| Correlated stationary series, no drift | CCT batch (current) | 0.024 (6/250) |
+| Independent stationary series, no drift | Legacy (>=2 metrics) | 0.016 (4/250) |
+| Independent stationary series, no drift | CCT batch (current) | 0.032 (8/250) |
+| Streaming stable series (150 steps) | KSWIN / MDDM (current) | 0.000 (0/150) |
+| Streaming stable series (150 steps) | Legacy ADWIN / Page-Hinkley | 0.000 (0/150) |
+
+Shift detection on synthetic streaming data: injected shift at step 80, first KSWIN/MDDM alert at step 87. Paired shift tests on benchmark suites: McNemar exact p≈0.000002; paired permutation p=0.0002.
+
+Session collapse rule (synthetic): healthy 30-turn session, no warning; collapsing verification variance triggers warning at turn 22 (9-turn delay after collapse onset).
+
+These numbers justify the specific tests in use. They do not certify behavior on your production traffic; pin a baseline and treat alerts as signals to investigate.
+
+---
+
+## How this compares
+
+| | Output-quality eval tools | Enterprise observability (Langfuse, LangSmith, Arize, …) | Local agent firewalls (cost/security) | Cogscope |
+|---|---------------------------|----------------------------------------------------------|---------------------------------------|----------|
+| **Persona** | Benchmark authors, QA | ML platform teams, cloud dashboards | Developers running autonomous agents | Developers running long unattended agent sessions |
+| **What they measure** | Final answers on fixed prompts | Latency, tokens, traces, costs, post-hoc analysis | Spend limits, secrets, policy blocks | Reasoning-shape metrics and session trajectories on *your* traffic |
+| **Baseline** | Global benchmarks | Fleet aggregates | Static rules | *Your* pinned fingerprint |
+| **Typical blind spot** | Shallow reasoning when answers still read well | Local per-session reasoning health | Reasoning-shape drift over a run | Semantic correctness and cheat-proof attestation |
+
+These approaches are complementary. Cogscope targets unattended runs where each turn looks fine but verification behavior stops varying across the session.
+
+---
+
+## Install
+
+**Recommended** (isolated CLI on your PATH):
+
+```bash
+pipx install cogscope
+cogscope quickstart
+```
+
+Requires [pipx](https://pipx.pypa.io/) and Python 3.10+.
 
 **Alternatives:**
 
 ```bash
-# Inside a project virtualenv
 pip install cogscope
 
-# No Python install: download a standalone binary from GitHub Releases
+# Standalone binary (no Python install): GitHub Releases
 # https://github.com/aadi-joshi/cogscope/releases
 ```
-
-`quickstart` runs a mock scenario with no API keys or configuration. Under 30 seconds.
 
 Initialize a project directory (creates `.cogscope/` and a local DuckDB store):
 
@@ -87,42 +85,39 @@ Initialize a project directory (creates `.cogscope/` and a local DuckDB store):
 cogscope init --yes
 ```
 
-No Docker required for normal use. Docker is optional only if you want to containerize the proxy on a server (see [Installation](docs/getting-started/installation.md)).
+No Docker required for normal use. See [Installation](docs/getting-started/installation.md) for optional container deployment.
 
 ---
 
 ## Recommended: wrap your agent (zero code changes)
 
-Point traffic through Cogscope without editing the agent's config:
-
 ```bash
-# Starts the proxy if needed, injects SDK base URLs, runs your command
 cogscope wrap -- aider
 cogscope wrap -- claude
 cogscope wrap -- python my_agent.py
 ```
 
-`wrap` sets `OPENAI_BASE_URL`, `OPENAI_API_BASE`, and `ANTHROPIC_BASE_URL` in the child process so OpenAI- and Anthropic-compatible SDKs route through `http://127.0.0.1:8642` automatically. Set your provider API keys in the environment as usual.
+`wrap` starts the proxy if needed, injects `OPENAI_BASE_URL`, `OPENAI_API_BASE`, and `ANTHROPIC_BASE_URL` so OpenAI- and Anthropic-compatible SDKs route through `http://127.0.0.1:8642`. Set provider API keys in the environment as usual.
 
-For a live dashboard while the agent runs, use a second terminal:
+Live dashboard in a second terminal:
 
 ```bash
 cogscope watch
 ```
 
-Or combine session tracking:
+Session-scoped tracking:
 
 ```bash
 cogscope wrap --session-id my-long-run -- aider
 ```
 
-See [Proxy and Privacy](docs/guides/proxy-and-privacy.md) for manual base-URL setup (fallback for tools that ignore env overrides) and [Session trajectories](docs/concepts/sessions.md) for collapse detection.
+See [Proxy and Privacy](docs/guides/proxy-and-privacy.md) and [Session trajectories](docs/concepts/sessions.md).
 
 ---
 
 ## How it works
 
-Cogscope forwards provider traffic unchanged, fingerprints each completed response on the side (without delaying the stream), and compares new fingerprints to a baseline you pin.
+Cogscope forwards provider traffic unchanged, fingerprints each completed response on the side, and compares new fingerprints to a baseline you pin.
 
 ```
   Your agent         Cogscope proxy          Provider API
@@ -148,40 +143,53 @@ Cogscope forwards provider traffic unchanged, fingerprints each completed respon
 | **Pin** | `cogscope pin --label baseline` saves "normal" for a task/model pair. |
 | **Diff** | Live traffic is compared to that baseline. Alerts require corroborated statistical outliers, not a single short answer. |
 
-**Detection methods (by path):**
+### Detection methods by path
 
-- **Live proxy (`watch` / `wrap`)**: KSWIN and MDDM streaming tests per metric (via [frouros](https://github.com/IFCA/frouros)). At least two metric streams must flag structural drift. Length-only shifts do not alert alone.
-- **Session trajectories**: rolling verification variance collapse rule after 20+ turns (distinct **session stability warning**).
-- **Batch diff (`diff`, `check` populations)**: Mann-Whitney U per metric, Benjamini-Hochberg FDR correction, then the Cauchy Combination Test (CCT) for an omnibus call that handles correlated metrics.
-- **CI regression (`regression`)**: McNemar's exact test (binary) or paired permutation test (continuous) on fixed benchmark suites with an oracle.
-- **Optional (`watch --semantic`)**: local sentence-transformer embeddings and Jensen-Shannon distance for **semantic drift** (`pip install cogscope[semantic]`).
-- **Optional (`watch --otel`)**: OTel GenAI spans with fingerprint attributes to OTLP (`pip install cogscope[otel]`).
+| Path / command | When to use | Statistical method | Alert rule (summary) |
+|----------------|-------------|--------------------|----------------------|
+| Live proxy (`watch`, `wrap`) | Streaming traffic during a session | KSWIN + MDDM per metric ([frouros](https://github.com/IFCA/frouros)) | >=2 metric streams flag structural drift; length-only shifts do not alert alone |
+| Session trajectories | Long runs with `--session-id` | Rolling verification variance collapse | Distinct session stability warning after 20+ turns |
+| Batch diff (`diff`, population `check`) | Comparing capture sets vs baseline | Mann-Whitney U per metric, Benjamini-Hochberg FDR, Cauchy Combination Test | Omnibus structural drift call on correlated metrics |
+| CI regression (`regression`) | Fixed benchmark suite with oracle | McNemar exact (binary) or paired permutation (continuous) | Pass/fail on suite shift vs pinned baseline |
+| Optional `watch --semantic` | Embedding-based shape change | Jensen-Shannon on local sentence-transformer embeddings | Semantic drift (`pip install cogscope[semantic]`) |
+| Optional `watch --otel` | Export to your observability stack | OTel GenAI spans + `cogscope.fingerprint.*` attrs | OTLP export (`pip install cogscope[otel]`) |
 
-**Structural vs semantic drift:** Heuristic fingerprint shifts are *structural drift* (something changed in reasoning shape, often provider tuning). Embedding shifts are *semantic drift*. Neither alone proves the model got worse.
+**Structural vs semantic drift:** Heuristic fingerprint shifts are *structural drift* (reasoning shape changed, often provider tuning). Embedding shifts are *semantic drift*. Neither alone proves the model got worse.
 
 ### Day-to-day commands
 
 ```bash
-# Zero-code instrumentation for an existing agent CLI
 cogscope wrap -- aider
-
-# Local proxy + live terminal dashboard (default http://127.0.0.1:8642)
 cogscope watch
-
-# Pin the latest capture as your baseline
 cogscope pin --label baseline
-
-# Session trajectory report
 cogscope report --session my-long-run
-
-# One-shot diff of recent traffic vs baseline
 cogscope diff --baseline baseline
-
-# Policy check for CI (exit 0 pass, 1 blocked, 2 failed)
 cogscope check -c examples/contracts/basic_reasoning.yaml "Your prompt here"
 ```
 
-Set `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, or `GOOGLE_API_KEY` in your environment before `wrap` or `watch`. Keys stay in memory for forwarding only and are never written to the local database.
+Set `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, or `GOOGLE_API_KEY` before `wrap` or `watch`. Keys stay in memory for forwarding only and are never written to the local database.
+
+---
+
+## Public drift tracker
+
+The [Cogscope Drift Tracker](https://aadi-joshi.github.io/cogscope/) is a static site of opt-in, anonymous fingerprint trends (depth, verification, hedging, drift vs each submitter's baseline). No prompts or outputs are published.
+
+![Cogscope drift tracker](docs/assets/tracker-demo.png)
+
+[Animated demo (GIF)](docs/assets/tracker-demo.gif) · [Full demo (MP4)](docs/assets/tracker-demo.mp4) · [Contribute data](docs/guides/public-drift-log.md)
+
+Regenerate recordings: `python scripts/demo/record_tracker.py` (see `scripts/demo/README.md`).
+
+---
+
+## Terminal quickstart recording (optional)
+
+Animated terminal capture of `cogscope quickstart` ([VHS](https://github.com/charmbracelet/vhs)):
+
+[View quickstart.gif](docs/assets/quickstart.gif)
+
+Regenerate: `vhs scripts/demo/quickstart.tape` (see `scripts/demo/README.md`).
 
 ---
 
