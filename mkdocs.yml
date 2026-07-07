@@ -59,6 +59,8 @@ nav:
   - Guides:
     - The Proxy and Your Privacy: guides/proxy-and-privacy.md
     - The Public Drift Log: guides/public-drift-log.md
+    - GitHub Action: guides/github-action.md
+    - README Badge: guides/badge.md
   - FAQ: faq.md
   - Contributing: contributing.md
   - Roadmap: roadmap.md

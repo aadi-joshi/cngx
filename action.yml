@@ -1,0 +1,114 @@
+name: Cogscope Policy Check
+description: Run cogscope check against a YAML behavior policy in CI
+branding:
+  icon: check-circle
+  color: green
+
+inputs:
+  policy:
+    description: Path to the behavior policy YAML file (relative to repository root)
+    required: true
+  prompt:
+    description: Prompt text to evaluate. Omit if using prompt-file.
+    required: false
+    default: ""
+  prompt-file:
+    description: Path to a file containing the prompt text
+    required: false
+    default: ""
+  python-version:
+    description: Python version for setup-python
+    required: false
+    default: "3.11"
+  cogscope-version:
+    description: Pin a cogscope PyPI release (for example 0.1.0). Leave empty for latest.
+    required: false
+    default: ""
+  install-mode:
+    description: "pypi (default) or editable (pip install -e . from checkout, for dogfooding)"
+    required: false
+    default: pypi
+  model:
+    description: Model name passed to cogscope check
+    required: false
+    default: mock-model
+  adapter:
+    description: Adapter (mock, openai, gemini, claude)
+    required: false
+    default: mock
+  task-id:
+    description: Task ID for the capture
+    required: false
+    default: policy_check
+  json-output:
+    description: Emit JSON results to stdout
+    required: false
+    default: "false"
+  init:
+    description: Run cogscope init --yes before check
+    required: false
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install Cogscope
+      shell: bash
+      run: |
+        set -euo pipefail
+        python -m pip install --upgrade pip
+        if [ "${{ inputs.install-mode }}" = "editable" ]; then
+          pip install -e .
+        elif [ -n "${{ inputs.cogscope-version }}" ]; then
+          pip install "cogscope==${{ inputs.cogscope-version }}"
+        else
+          pip install cogscope
+        fi
+        cogscope version
+
+    - name: Initialize Cogscope
+      if: inputs.init == 'true'
+      shell: bash
+      run: cogscope init --yes
+
+    - name: Run cogscope check
+      shell: bash
+      run: |
+        set -euo pipefail
+        POLICY="${{ inputs.policy }}"
+        if [ ! -f "$POLICY" ]; then
+          echo "Policy file not found: $POLICY" >&2
+          exit 2
+        fi
+
+        if [ -n "${{ inputs.prompt-file }}" ]; then
+          if [ ! -f "${{ inputs.prompt-file }}" ]; then
+            echo "prompt-file not found: ${{ inputs.prompt-file }}" >&2
+            exit 2
+          fi
+          PROMPT="$(cat "${{ inputs.prompt-file }}")"
+        elif [ -n "${{ inputs.prompt }}" ]; then
+          PROMPT="${{ inputs.prompt }}"
+        else
+          echo "Either prompt or prompt-file is required" >&2
+          exit 2
+        fi
+
+        ARGS=(
+          check
+          -c "$POLICY"
+          --model "${{ inputs.model }}"
+          --adapter "${{ inputs.adapter }}"
+          --task "${{ inputs.task-id }}"
+        )
+        if [ "${{ inputs.json-output }}" = "true" ]; then
+          ARGS+=(--json)
+        fi
+        ARGS+=("$PROMPT")
+
+        cogscope "${ARGS[@]}"

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="186" height="20" role="img" aria-label="Monitored by Cogscope">
+  <title>Monitored by Cogscope</title>
+  <rect width="82" height="20" fill="#4b5563"/>
+  <rect x="82" width="104" height="20" fill="#22c55e"/>
+  <g fill="#fff" font-family="ui-monospace,Consolas,monospace" font-size="11" font-weight="600">
+    <text x="41" y="14" text-anchor="middle">monitored by</text>
+    <text x="134" y="14" text-anchor="middle">Cogscope</text>
+  </g>
+</svg>

@@ -61,6 +61,27 @@ jobs:
       - name: Quickstart smoke
         run: cogscope quickstart
 
+  action-smoke:
+    name: Reusable Action Smoke
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run root action (editable)
+        uses: ./
+        with:
+          install-mode: editable
+          policy: examples/contracts/basic_reasoning.yaml
+          prompt: "What is 15 * 7? Show your reasoning step by step."
+
+      - name: Run root action (prompt-file)
+        uses: ./
+        with:
+          install-mode: editable
+          policy: examples/contracts/basic_reasoning.yaml
+          prompt-file: tests/fixtures/action_prompt.txt
+          task-id: action_prompt_file
+
       - name: Summary
         if: always()
         run: |

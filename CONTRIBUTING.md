@@ -117,6 +117,24 @@ Maintainers review for correctness, test coverage, user-facing clarity (plain la
 - **Bugs:** use the [bug report template](.github/ISSUE_TEMPLATE/bug_report.md).
 - **Features:** use the [feature request template](.github/ISSUE_TEMPLATE/feature_request.md).
 
+## CI integration and README badge
+
+**GitHub Action:** add `uses: aadi-joshi/cogscope@v0.1.0` to your workflow. See [docs/guides/github-action.md](docs/guides/github-action.md).
+
+**README badge** (shields.io):
+
+```markdown
+[![Monitored by Cogscope](https://img.shields.io/badge/Monitored%20by-Cogscope-22c55e?style=flat-square)](https://github.com/aadi-joshi/cogscope)
+```
+
+More options: [docs/guides/badge.md](docs/guides/badge.md).
+
+Local smoke test for the action logic:
+
+```bash
+python scripts/test_github_action_local.py
+```
+
 ## Code of conduct
 
 This project follows the [Contributor Covenant](CODE_OF_CONDUCT.md). Be respectful and constructive.
