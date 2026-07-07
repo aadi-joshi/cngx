@@ -1,5 +1,5 @@
 site_name: Cogscope
-site_description: "Local LLM reasoning fingerprinting, drift detection, and policy checks."
+site_description: "Local proxy for long autonomous agent sessions: reasoning fingerprints, session collapse detection, and policy checks."
 site_url: https://aadi-joshi.github.io/cogscope
 repo_url: https://github.com/aadi-joshi/cogscope
 repo_name: aadi-joshi/cogscope
@@ -52,12 +52,14 @@ nav:
     - Installation: getting-started/installation.md
     - Quickstart: getting-started/quickstart.md
   - Concepts:
+    - Positioning: concepts/positioning.md
     - How Fingerprinting Works: concepts/fingerprinting.md
     - Writing a Policy: concepts/policies.md
     - Drift Detection: concepts/drift.md
     - Session Trajectories: concepts/sessions.md
   - CLI Reference: cli/reference.md
   - Guides:
+    - Wrap Your Agent: guides/wrap-agent.md
     - The Proxy and Your Privacy: guides/proxy-and-privacy.md
     - The Public Drift Log: guides/public-drift-log.md
     - GitHub Action: guides/github-action.md

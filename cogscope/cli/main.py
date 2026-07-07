@@ -18,7 +18,7 @@ console = Console()
 
 app = typer.Typer(
     name="cogscope",
-    help="Cogscope, observe LLM reasoning, detect drift, check policies",
+    help="Cogscope, local proxy for autonomous agent reasoning drift",
     add_completion=False,
     pretty_exceptions_enable=True,
     pretty_exceptions_short=True,
@@ -97,7 +97,8 @@ def init(
             f"[green]OK[/] Ready at {cogscope_path.resolve()}\n\n"
             "[bold]Try next:[/]\n"
             "  [cyan]cogscope quickstart[/]  30-second demo, no API keys\n"
-            "  [cyan]cogscope watch[/]       local proxy + live dashboard\n"
+            "  [cyan]cogscope wrap -- aider[/]  zero-code agent instrumentation\n"
+            "  [cyan]cogscope watch[/]       live dashboard\n"
             "  [cyan]cogscope pin --label baseline[/]  pin recent behavior",
             title="[bold]Cogscope[/]",
         )
@@ -110,6 +111,36 @@ def quickstart() -> None:
     from cogscope.cli.quickstart_cmd import run_quickstart
 
     run_quickstart()
+
+
+@app.command(
+    context_settings={"allow_extra_args": True, "ignore_unknown_options": True},
+)
+def wrap(
+    ctx: typer.Context,
+    port: int = typer.Option(8642, "--port", "-p", help="Local proxy port"),
+    host: str = typer.Option("127.0.0.1", "--host", help="Local proxy host"),
+    session_id: Optional[str] = typer.Option(
+        None,
+        "--session-id",
+        help="Explicit session id for multi-turn trajectory tracking",
+    ),
+    no_start_proxy: bool = typer.Option(
+        False,
+        "--no-start-proxy",
+        help="Fail if the proxy is not already running",
+    ),
+) -> None:
+    """Run an agent command through the local proxy (zero-code instrumentation)."""
+    from cogscope.cli.wrap import run_wrap_cli
+
+    run_wrap_cli(
+        ctx,
+        port=port,
+        host=host,
+        session_id=session_id,
+        no_start_proxy=no_start_proxy,
+    )
 
 
 @app.command()

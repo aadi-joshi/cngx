@@ -1,16 +1,18 @@
 # Cogscope
 
-**Output metrics can stay flat while reasoning gets shallower.**
+**Long autonomous agent runs can look fine turn by turn while reasoning quietly collapses mid-session.**
 
-**Cogscope fingerprints how a model reasons, compares it to a pinned baseline, and flags drift on your machine. No account. No cloud.**
+**Cogscope is a local proxy that fingerprints how your coding agent reasons across an entire session, flags when verification behavior flattens out, and compares each turn to a baseline you pinned. No account. No cloud.**
 
 ## What it does
 
-1. **Capture** intercept LLM traffic through a local proxy (or direct adapter calls).
-2. **Fingerprint** extract numeric behavioral metrics from each response (depth, verification steps, hedging, and more).
-3. **Pin** save a baseline fingerprint for a task/model pair.
-4. **Diff** compare new traffic against that baseline; alert only on corroborated statistical outliers.
-5. **Check** validate a single prompt against a YAML policy in CI.
+1. **Wrap** run any agent CLI through the local proxy with zero code changes (`cogscope wrap -- aider`).
+2. **Capture** intercept LLM traffic through that proxy (or direct adapter calls).
+3. **Fingerprint** extract numeric behavioral metrics from each response (depth, verification steps, hedging, and more).
+4. **Track sessions** tag each turn with session id and turn number; detect verification variance collapse over long runs.
+5. **Pin** save a baseline fingerprint for a task/model pair.
+6. **Diff** compare new traffic against that baseline; alert only on corroborated statistical outliers.
+7. **Check** validate a single prompt against a YAML policy in CI.
 
 Nothing requires a cloud account. Data stays on your machine unless you explicitly run `cogscope submit`.
 
@@ -25,15 +27,30 @@ cogscope quickstart
 
 ![Cogscope quickstart demo](assets/quickstart.gif)
 
+## Recommended usage with an agent
+
+```bash
+cogscope init --yes
+cogscope wrap -- aider          # or claude, python my_agent.py, etc.
+```
+
+In another terminal, optional live dashboard:
+
+```bash
+cogscope watch
+```
+
+See [Wrap your agent](guides/wrap-agent.md) for env vars, fallbacks, and limitations.
+
 ## How it differs from other tooling
 
-| | Output-quality eval tools | Telemetry / observability tools | Cogscope |
-|---|---------------------------|----------------------------------|----------|
-| **Measures** | Final answers and rubric scores on fixed prompts | Latency, tokens, traces, costs in production | Reasoning-shape metrics on your traffic |
-| **Baseline** | Global benchmarks | Fleet aggregates | *Your* pinned fingerprint |
-| **Misses** | Shallow reasoning when answers still read well | Drift from behavior you previously accepted | Semantic ground truth about reasoning |
+| | Output-quality eval tools | Enterprise observability | Local agent firewalls | Cogscope |
+|---|---------------------------|--------------------------|----------------------|----------|
+| **Persona** | Benchmark / QA teams | ML platform, cloud dashboards | Developers running agents | Developers on long unattended agent runs |
+| **Measures** | Final answers on fixed prompts | Latency, tokens, traces, costs | Spend, secrets, policy blocks | Reasoning shape + session trajectories |
+| **Misses** | Mid-session collapse when each turn looks fine | Local session health for coding agents | Reasoning drift | Universal intelligence scoring |
 
-See the [FAQ](faq.md) for skeptical questions answered honestly.
+See [Positioning and comparisons](concepts/positioning.md) for Guardian Runtime and observability platforms, and the [FAQ](faq.md) for skeptical questions answered honestly.
 
 ## Documentation map
 
@@ -41,6 +58,9 @@ See the [FAQ](faq.md) for skeptical questions answered honestly.
 |---------|-------------------|
 | [Installation](getting-started/installation.md) | Install from PyPI or source |
 | [Quickstart](getting-started/quickstart.md) | First run with zero configuration |
+| [Wrap your agent](guides/wrap-agent.md) | Zero-code proxy instrumentation (recommended) |
+| [Session trajectories](concepts/sessions.md) | Multi-turn collapse detection |
+| [Positioning](concepts/positioning.md) | Guardian Runtime, observability tools, and Cogscope's niche |
 | [Fingerprinting](concepts/fingerprinting.md) | What metrics mean (and what they don't) |
 | [Writing a Policy](concepts/policies.md) | YAML policy schema and severity levels |
 | [Drift Detection](concepts/drift.md) | When alerts fire, and when they don't |

@@ -2,6 +2,18 @@
 
 Cogscope is **local-first**. This page states exactly what is stored, what is transmitted, and what never leaves your machine.
 
+## Recommended: `cogscope wrap`
+
+For autonomous agent CLIs, prefer:
+
+```bash
+cogscope wrap -- aider
+```
+
+This starts the proxy if needed and sets `OPENAI_BASE_URL` / `ANTHROPIC_BASE_URL` in the child process. See [Wrap your agent](wrap-agent.md).
+
+Manual base URL configuration remains for tools that ignore env overrides.
+
 ## The local proxy
 
 `cogscope watch` starts an ASGI reverse proxy (default `http://127.0.0.1:8642`) that:

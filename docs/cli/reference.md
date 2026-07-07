@@ -28,6 +28,19 @@ cogscope quickstart
 
 Completes in ~0.5 to 1s. Shows BLOCKED policy result.
 
+## wrap
+
+Zero-code instrumentation for an existing agent CLI. Starts the proxy if needed and injects provider base URL env vars into the child process.
+
+```bash
+cogscope wrap -- aider
+cogscope wrap -- python my_agent.py
+cogscope wrap --port 8642 --session-id long-run -- claude
+cogscope wrap --no-start-proxy -- aider   # fail if proxy not already up
+```
+
+Sets `OPENAI_BASE_URL`, `OPENAI_API_BASE`, and `ANTHROPIC_BASE_URL` to the local proxy. See [Wrap your agent](../guides/wrap-agent.md).
+
 ## watch
 
 Start local proxy + live terminal dashboard.
@@ -37,7 +50,7 @@ cogscope watch
 cogscope watch --port 8642 --host 127.0.0.1
 ```
 
-Prints proxy URL (default `http://127.0.0.1:8642`). Point your app's OpenAI-compatible client at this URL. Set `OPENAI_API_KEY` or `ANTHROPIC_API_KEY` in the environment.
+Prints proxy URL (default `http://127.0.0.1:8642`). Use when you want the TUI alongside `wrap`, or when configuring a client manually. Set `OPENAI_API_KEY` or `ANTHROPIC_API_KEY` in the environment.
 
 ## pin
 

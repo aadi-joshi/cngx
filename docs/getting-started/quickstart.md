@@ -69,9 +69,11 @@ Shows trace/fingerprint counts in your local `.cogscope/cogscope.db`.
 
 | Goal | Command |
 |------|---------|
-| Fingerprint live traffic | `cogscope watch` → point your app at `http://127.0.0.1:8642` |
+| Run an agent through Cogscope (recommended) | `cogscope wrap -- aider` |
+| Live dashboard while capturing | `cogscope watch` |
 | Pin normal behavior | `cogscope pin --label baseline` |
+| Session trajectory report | `cogscope report --session SESSION_ID` |
 | Compare recent calls | `cogscope diff --baseline baseline` |
 | Share anonymous metrics (opt-in) | `cogscope submit --baseline baseline --dry-run` |
 
-See the [CLI Reference](../cli/reference.md) for every option.
+See [Wrap your agent](../guides/wrap-agent.md) and the [CLI Reference](../cli/reference.md).

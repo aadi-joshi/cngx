@@ -60,15 +60,17 @@ Provider system-prompt tweaks toward conciseness often trigger structural drift 
 
 See [Drift detection](concepts/drift.md) for per-turn methods and [Session trajectories](concepts/sessions.md) for multi-turn collapse detection.
 
-## How is this different from output benchmarks?
+## How is this different from output benchmarks or observability tools?
 
-| | Output-quality eval tools | Telemetry / observability tools | Cogscope |
-|---|---------------------------|----------------------------------|----------|
-| **Measures** | Final text, rubric scores, pass rates on fixed prompts | Latency, tokens, traces, spans, costs | Reasoning shape: depth, verification, hedging |
-| **Baseline** | Global or hand-written test sets | Fleet dashboards | *Your* pinned fingerprint |
-| **Misses** | Silent shallow reasoning when answers still look fine | Whether reasoning drifted from what you accepted | Universal intelligence scoring |
+| | Output-quality eval tools | Enterprise observability | Local agent firewalls | Cogscope |
+|---|---------------------------|--------------------------|----------------------|----------|
+| **Measures** | Final text, rubric scores, pass rates on fixed prompts | Latency, tokens, traces, spans, costs | Spend, secrets, policy blocks | Reasoning shape + session trajectories |
+| **Baseline** | Global or hand-written test sets | Fleet dashboards | Static rules | *Your* pinned fingerprint |
+| **Misses** | Mid-session collapse when each turn looks fine | Local long-run agent health | Reasoning drift | Universal intelligence scoring |
 
-They are complementary. Cogscope catches the case where answers still look fine but reasoning got shallower.
+They are complementary. Cogscope catches the case where a long autonomous run still produces plausible output but verification quietly flattened across the session.
+
+See [Positioning](concepts/positioning.md) for how this relates to Guardian Runtime (cost/security local proxy) and platforms like Langfuse or LangSmith.
 
 ## Does anything leave my machine?
 

@@ -37,9 +37,10 @@ def _upstream_for_path(path: str) -> tuple[str, str, dict[str, str]] | None:
         key = os.getenv("ANTHROPIC_API_KEY")
         if not key:
             return None
+        base = os.getenv("ANTHROPIC_BASE_URL", "https://api.anthropic.com")
         return (
             "anthropic",
-            "https://api.anthropic.com/v1/messages",
+            f"{base.rstrip('/')}/v1/messages",
             {
                 "x-api-key": key,
                 "anthropic-version": "2023-06-01",

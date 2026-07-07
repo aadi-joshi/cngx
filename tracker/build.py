@@ -93,7 +93,7 @@ def render_html(
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Public, opt-in behavioral drift tracker for LLM providers, community-submitted fingerprints over time.">
+  <meta name="description" content="Public, opt-in behavioral drift tracker for long autonomous agent sessions, community-submitted reasoning fingerprints over time.">
   <meta name="color-scheme" content="dark">
   <title>Cogscope Drift Tracker</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -107,7 +107,7 @@ def render_html(
   <div class="shell">
     <header class="site-header">
       <h1><span>&gt;</span> Cogscope Drift Tracker</h1>
-      <p class="tagline">Public, checkable evidence of how LLM reasoning behavior changes over time, from opt-in community fingerprints, not one company's marketing.</p>
+      <p class="tagline">Community evidence of how agent reasoning behavior shifts over time, from opt-in session fingerprints, not vendor dashboards or one-off chatbot scores.</p>
       <div class="meta-row">
         <span>{record_count} record{"s" if record_count != 1 else ""} · {len(models)} model{"s" if len(models) != 1 else ""}</span>
         {sample_badge}
@@ -116,7 +116,7 @@ def render_html(
 
     <section class="explainer" aria-labelledby="what-heading">
       <h2 id="what-heading">What is this?</h2>
-      <p><strong>Cogscope</strong> fingerprints how a model <em>reasons</em>, depth, verification steps, hedging, not just the final answer text. Providers ship silent behavioral regressions after updates. This page collects <strong>anonymous, numeric drift metrics</strong> submitted by users who pinned their own baselines.</p>
+      <p><strong>Cogscope</strong> fingerprints how an autonomous agent <em>reasons</em> across long runs: depth, verification steps, hedging, not just final answer text. The tool watches for silent mid-session collapse (for example when verification stops varying) while each individual turn still looks fine. This page collects <strong>anonymous, numeric drift metrics</strong> submitted by users who pinned their own baselines.</p>
       <p>It is community evidence you can verify: no prompts, no outputs, only aggregated metrics from <code>cogscope submit</code>. A spike in drift score or a drop in verification steps is a signal worth investigating, not proof by itself.</p>
     </section>
 
@@ -167,12 +167,12 @@ def render_html(
     <section class="two-col" aria-labelledby="contribute-heading">
       <div>
         <h2 id="contribute-heading">Contribute your data</h2>
-        <p style="color: var(--text-muted); font-size: 0.875rem;">Run Cogscope locally, pin a baseline, capture traffic, then submit anonymized metrics:</p>
+        <p style="color: var(--text-muted); font-size: 0.875rem;">Run Cogscope locally, pin a baseline, capture a long agent session, then submit anonymized metrics:</p>
         <div class="command-block">
           <span class="label">submit drift metrics</span>
           <pre>pip install cogscope
 cogscope init --yes
-cogscope watch          # capture via local proxy
+cogscope wrap -- aider     # or cogscope watch
 cogscope pin --label my-baseline
 cogscope submit --baseline my-baseline --dry-run
 cogscope submit --baseline my-baseline</pre>
