@@ -379,6 +379,9 @@ def task4_otel(scratch: Path, port: int = 8644) -> dict[str, Any]:
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
 
+    scratch.mkdir(parents=True, exist_ok=True)
+    if not (scratch / ".cogscope").exists():
+        subprocess.run(["cogscope", "init", "--yes"], check=True, cwd=scratch)
     os.chdir(scratch)
     _start_proxy(otel=True, otel_endpoint="http://127.0.0.1:4318", port=port)
     time.sleep(0.5)
