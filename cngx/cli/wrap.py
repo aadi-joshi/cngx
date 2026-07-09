@@ -115,9 +115,7 @@ def run_wrap(
         raise typer.Exit(1)
 
     if not command:
-        console.print(
-            "[red]Missing command.[/] Example: [cyan]cngx wrap -- python my_agent.py[/]"
-        )
+        console.print("[red]Missing command.[/] Example: [cyan]cngx wrap -- python my_agent.py[/]")
         raise typer.Exit(2)
 
     if no_start_proxy and not is_proxy_healthy(host, port):
