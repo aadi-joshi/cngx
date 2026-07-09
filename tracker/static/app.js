@@ -1,7 +1,6 @@
 /**
  * cngx drift tracker charts.
- * Community data loads from the public S3 index (live) with a short cache.
- * Illustrative samples stay bundled in data.js behind an explicit toggle.
+ * Community data loads from the live S3 index on page load (short cache).
  */
 (function () {
   const FG = "#ffffff";
@@ -11,22 +10,17 @@
   const LIVE_CACHE_MS = 2 * 60 * 1000;
 
   const embeddedCommunity = window.TRACKER_DATA || {};
-  const sampleData = window.TRACKER_SAMPLE_DATA || {};
   const meta = window.TRACKER_META || {};
   const liveUrl = window.TRACKER_LIVE_URL || "";
 
   let communityData = { ...embeddedCommunity };
-  let showingSample = false;
   let active = null;
   const charts = [];
   let liveFetchedAt = 0;
-
-  function currentData() {
-    return showingSample ? sampleData : communityData;
-  }
+  let liveFetchDone = !liveUrl;
 
   function currentModels() {
-    return Object.keys(currentData());
+    return Object.keys(communityData);
   }
 
   function liveRecordCount() {
@@ -66,7 +60,7 @@
   }
 
   function makeChart(canvasId, label, field, yOpts) {
-    const recs = currentData()[active] || [];
+    const recs = communityData[active] || [];
     const ctx = document.getElementById(canvasId);
     if (!ctx || !recs.length) return null;
 
@@ -111,27 +105,30 @@
     if (el) el.classList.toggle("hidden", !visible);
   }
 
-  function updateEmptyState() {
-    const hasCommunity = liveRecordCount() > 0;
-    const hasSample = (meta.sample_record_count || 0) > 0;
-    const showCharts = showingSample ? hasSample : hasCommunity;
+  function updateView() {
+    const loading = liveUrl && !liveFetchDone;
+    const hasData = liveRecordCount() > 0;
 
-    setVisible("empty-state", !showCharts);
-    setVisible("chart-section", showCharts);
-    setVisible("sample-banner", showingSample && hasSample);
-
-    const toggle = document.getElementById("sample-toggle");
-    if (toggle) {
-      toggle.classList.toggle("hidden", !hasSample);
-      toggle.setAttribute("aria-pressed", showingSample ? "true" : "false");
-      toggle.textContent = showingSample
-        ? "hide illustrative sample"
-        : "show illustrative sample";
-    }
+    setVisible("loading-state", loading);
+    setVisible("empty-state", !loading && !hasData);
+    setVisible("chart-section", !loading && hasData);
 
     const status = document.getElementById("community-status");
     if (status) {
-      status.textContent = String(liveRecordCount());
+      if (loading) {
+        status.textContent = "...";
+      } else {
+        status.textContent = String(liveRecordCount());
+      }
+    }
+
+    const updatedWrap = document.getElementById("index-updated-wrap");
+    if (updatedWrap) {
+      if (!loading && meta.index_updated_at) {
+        updatedWrap.textContent = ` · index updated ${meta.index_updated_at}`;
+      } else {
+        updatedWrap.textContent = "";
+      }
     }
   }
 
@@ -143,13 +140,9 @@
     }
 
     const title = document.getElementById("active-model-label");
-    const mode = document.getElementById("data-mode-label");
-    const recs = active ? currentData()[active] || [] : [];
+    const recs = active ? communityData[active] || [] : [];
 
     if (title) title.textContent = active || "none";
-    if (mode) {
-      mode.textContent = showingSample ? "illustrative sample" : "community submissions";
-    }
 
     if (!recs.length) return;
 
@@ -214,18 +207,6 @@
       .join("");
   }
 
-  function bindSampleToggle() {
-    const toggle = document.getElementById("sample-toggle");
-    if (!toggle) return;
-    toggle.addEventListener("click", () => {
-      showingSample = !showingSample;
-      active = null;
-      updateEmptyState();
-      renderTabs();
-      renderCharts();
-    });
-  }
-
   async function refreshLiveData(force) {
     if (!liveUrl) return;
     const now = Date.now();
@@ -239,23 +220,28 @@
       if (payload && payload.by_model && typeof payload.by_model === "object") {
         communityData = payload.by_model;
         liveFetchedAt = now;
+        if (payload.updated_at) {
+          meta.index_updated_at = payload.updated_at;
+        }
         active = null;
-        updateEmptyState();
+        updateView();
         renderTabs();
         renderCharts();
       }
     } catch (_err) {
       // keep embedded fallback silently
+    } finally {
+      liveFetchDone = true;
+      updateView();
     }
   }
 
-  function init() {
-    updateEmptyState();
-    bindSampleToggle();
+  async function init() {
+    updateView();
+    await refreshLiveData(true);
     renderTabs();
     renderCharts();
     initAnnotations();
-    refreshLiveData(false);
     if (liveUrl) {
       setInterval(() => refreshLiveData(false), LIVE_CACHE_MS);
     }

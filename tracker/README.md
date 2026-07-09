@@ -1,44 +1,40 @@
 # cngx Drift Tracker
 
-Static public site for opt-in community drift metrics. Built with plain Python (`tracker/build.py`), no framework, deployed to GitHub Pages.
+Static site for opt-in community drift metrics. Built with plain Python (`tracker/build.py`), no framework, deployed to GitHub Pages.
 
-## Sample data policy
+## Live data
 
-**Default view: empty community charts until live data loads.** The browser fetches aggregated community metrics from a public S3 index every few minutes. Sample records in `data/samples/` are bundled for pipeline testing and illustration only. They are exposed behind an explicit **"show illustrative sample"** toggle, not on first load.
+On page load the browser fetches `community/index.json` from S3 (URL in `public_endpoints.json`). Embedded `data.js` is a stale fallback only if the fetch fails. Charts refresh every two minutes.
 
-Community submissions arrive via `cngx submit` (HTTPS POST). No GitHub pull requests. No personal identity is collected or stored.
+Sample records in `data/samples/` exist for build pipeline tests only. They are not shown in the UI.
 
-## Directory layout
+## Layout
 
 ```
 tracker/
-├── README.md
-├── build.py            # Builds site/ (index + docs/)
+├── build.py            # Generates site/
 ├── static/
-│   ├── site.css        # Shared minimal styles
-│   ├── app.js          # Tracker charts + live S3 fetch + sample toggle
-│   └── docs.js         # Docs sidebar + copy buttons
-├── scripts/
-│   └── capture_screenshots.py  # Playwright visual + dash verification
+│   ├── app.js          # Charts + live S3 fetch
+│   ├── site.css
+│   └── docs.js
 ├── data/
-│   ├── samples/        # Demo data (opt-in in UI only)
-│   └── community/      # Real submissions
-└── site/               # Generated output (deployed)
-    ├── index.html
-    ├── docs/index.html
-    ├── data.js
-    ├── site.css
-    ├── app.js
-    └── docs.js
+│   ├── community/      # Git-tracked records (embedded fallback)
+│   └── samples/        # Demo data for unit tests only
+├── public_endpoints.json
+└── site/               # Build output (GitHub Pages root)
 ```
 
-## Build locally
+## Build
 
 ```bash
 python tracker/build.py
-python tracker/scripts/capture_screenshots.py  # requires playwright + chromium
+# open tracker/site/index.html (live fetch needs network)
 ```
 
-## Deployment
+## Screenshots
 
-`.github/workflows/tracker-deploy.yml` builds and deploys `tracker/site/` to GitHub Pages on push to `main` (tracker paths only).
+```bash
+python tracker/scripts/capture_screenshots.py
+```
+
+Requires Playwright (`pip install playwright && playwright install chromium`).

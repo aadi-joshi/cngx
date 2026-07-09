@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Build the cngx public drift tracker static site.
+"""Build the cngx drift tracker static site.
 
 Outputs tracker/site/ with index.html, docs/index.html, data.js, and static assets.
-Community submissions are shown by default. Sample data is opt-in in the browser only.
+Charts load live community metrics from the S3 index in the browser.
 """
 
 from __future__ import annotations
@@ -41,10 +41,8 @@ def _tracker_live_index_url() -> str:
     return ""
 
 
-# Option (b): default to empty community view; samples behind explicit toggle.
-# Reason: the project has no real community submissions yet. Showing unlabeled or
-# prominent demo charts reads as fake traction to cold visitors (HN/Reddit).
-SAMPLE_DATA_POLICY = "opt_in_toggle"
+# Browser loads community metrics from the live S3 index; embedded data.js is a stale fallback only.
+LIVE_DATA_POLICY = "s3_index_on_load"
 
 
 def load_json_records(folder: Path) -> list[dict]:
@@ -137,28 +135,49 @@ def _topbar(*, docs: bool = False) -> str:
 </header>"""
 
 
-def render_index(community_count: int, sample_count: int) -> str:
+def render_index(community_count: int) -> str:
     return (
         _head(
             "cngx Drift Tracker",
-            "Opt-in community drift metrics for long autonomous agent sessions.",
+            "cngx checks whether a coding agent ran the verification your policy requires. "
+            "Live opt-in drift metrics from cngx submit.",
         )
         + f"""
 <body>
 {_topbar()}
   <main class="page">
-    <p class="lede">Public, anonymous reasoning fingerprints from opt-in <code>cngx submit</code> runs. No prompts. No outputs. No vendor dashboards.</p>
+    <h1 class="page-title">cngx</h1>
+    <p class="tagline">cngx checks whether a coding agent actually ran the verification your policy requires before you trust its output.</p>
 
-    <p class="status-line">community records: <strong id="community-status">{community_count}</strong> · illustrative samples available: <strong>{sample_count}</strong></p>
+    <div class="cmd-block">
+      <span class="cmd-label">install</span>
+      <pre>pipx install cngx
+cngx quickstart</pre>
+    </div>
+
+    <p class="intro">This tracker plots opt-in drift metrics from <code>cngx submit</code>. Each point is numeric fingerprint data (depth, verification steps, hedging, drift vs the submitter's own baseline). No prompts, no outputs, no personal identity collected or stored by the submit API.</p>
 
     <section class="section" aria-labelledby="charts-heading">
-      <h2 id="charts-heading">drift metrics</h2>
+      <h2 id="charts-heading">community drift metrics</h2>
 
-      <div id="empty-state" class="empty-panel">
-        <p><strong>No community data yet.</strong> This tracker only shows metrics that real users explicitly submit. That is intentional: we would rather show an honest empty state than demo data dressed up as live measurements.</p>
-        <p>Be the first contributor, or preview what charts look like with the sample toggle below.</p>
+      <div class="chart-intro">
+        <p><strong>What you are looking at:</strong> how agents behave over time on real workloads, as reported by people who chose to share metrics.</p>
+        <ul>
+          <li><strong>verification steps</strong> drops can mean the agent stopped checking its work (the failure mode <code>cngx check</code> catches on a single response).</li>
+          <li><strong>drift score</strong> rises when fingerprint shape diverges from that submitter's pinned baseline.</li>
+          <li>A spike is a signal to investigate, not proof of regression.</li>
+        </ul>
+        <p class="status-line">live submissions: <strong id="community-status">...</strong><span id="index-updated-wrap" class="status-muted"></span></p>
+      </div>
+
+      <div id="loading-state" class="loading-panel" role="status">
+        <p>Loading live index from S3...</p>
+      </div>
+
+      <div id="empty-state" class="empty-panel hidden">
+        <p><strong>No submissions yet.</strong> Charts appear here after someone runs <code>cngx submit</code> and confirms the preview. We show this empty state rather than synthetic demo data.</p>
         <div class="cmd-block">
-          <span class="cmd-label">first submission</span>
+          <span class="cmd-label">be first</span>
           <pre>pipx install cngx
 cngx init --yes
 cngx wrap -- aider
@@ -169,18 +188,10 @@ cngx submit --baseline my-baseline</pre>
         <p><a class="btn" href="docs/#submit">how submit works</a></p>
       </div>
 
-      <div class="chart-controls">
-        <button type="button" id="sample-toggle" class="btn btn-ghost hidden" aria-pressed="false">show illustrative sample</button>
-      </div>
-
-      <div id="sample-banner" class="sample-banner hidden" role="status">
-        <strong>Illustrative sample only.</strong> These points are synthetic demo records bundled with the repo. They are not live API measurements or community submissions.
-      </div>
-
       <div id="chart-section" class="chart-panel hidden">
         <div class="chart-meta">
           <span>model: <strong id="active-model-label">none</strong></span>
-          <span>source: <strong id="data-mode-label">community submissions</strong></span>
+          <span>source: <strong>live S3 index</strong></span>
         </div>
         <div id="model-tabs" class="chart-controls" role="tablist" aria-label="Model filter"></div>
         <div class="chart-grid">
@@ -201,9 +212,6 @@ cngx submit --baseline my-baseline</pre>
             <div class="chart-wrap"><canvas id="chart-drift" role="img" aria-label="Drift score over time"></canvas></div>
           </div>
         </div>
-        <div class="reading-note">
-          Metrics are heuristic fingerprint counts relative to each submitter's own baseline. A spike is a signal to investigate, not proof of regression.
-        </div>
       </div>
     </section>
 
@@ -212,19 +220,14 @@ cngx submit --baseline my-baseline</pre>
       <ul id="annotation-list"></ul>
     </section>
 
-    <section class="section" aria-labelledby="start-heading">
-      <h2 id="start-heading">run it locally</h2>
-      <div class="cmd-block">
-        <span class="cmd-label">install + quickstart</span>
-        <pre>pipx install cngx
-cngx quickstart</pre>
-      </div>
-      <p style="color: var(--muted); font-size: 0.85rem;">Full docs on this site: <a href="docs/">installation, wrap, drift detection, submit</a>.</p>
+    <section class="section" aria-labelledby="privacy-heading">
+      <h2 id="privacy-heading">privacy</h2>
+      <p class="privacy-note">Submissions are opt-in. The API accepts only allowlisted numeric fields after you preview and confirm. Lambda does not log your IP or request headers; stored objects contain payload fields only. The aggregated index at <code>community/index.json</code> is world-readable so this page can load it without a rebuild.</p>
     </section>
 
     <footer class="site-footer">
       <p>metrics only. never prompts or model outputs.</p>
-      <p><a href="{GITHUB_REPO}">source</a></p>
+      <p><a href="{GITHUB_REPO}">source</a> · <a href="docs/">docs</a></p>
     </footer>
   </main>
   <script src="data.js"></script>
@@ -286,7 +289,7 @@ def render_docs() -> str:
 
       <h2 id="overview">overview</h2>
       <p>cngx watches for silent mid-session reasoning collapse: an agent that still looks fine turn by turn but stops varying how it verifies work over a long unattended run. Per-turn structural drift is a supporting signal.</p>
-      <p>Install with pipx, run agents through <code>cngx wrap</code>, pin a baseline, optionally submit anonymized metrics to this public tracker.</p>
+      <p>Install with pipx, run agents through <code>cngx wrap</code>, pin a baseline, optionally submit opt-in metrics to this tracker.</p>
 
       <h2 id="install">install</h2>
       <p><strong>Recommended:</strong> pipx puts <code>cngx</code> on your PATH in an isolated environment. No virtualenv to manage.</p>
@@ -334,13 +337,13 @@ def render_docs() -> str:
           <tr><td><code>cngx diff --baseline NAME</code></td><td>Compare recent traffic to baseline</td></tr>
           <tr><td><code>cngx check -c POLICY.yaml "prompt"</code></td><td>CI policy check (exit 0/1/2)</td></tr>
           <tr><td><code>cngx report --session ID</code></td><td>Session trajectory summary</td></tr>
-          <tr><td><code>cngx submit --baseline NAME</code></td><td>Opt-in public tracker submission</td></tr>
+          <tr><td><code>cngx submit --baseline NAME</code></td><td>Opt-in tracker submission (numeric metrics only)</td></tr>
         </tbody>
       </table>
 
       <h2 id="submit">submit and privacy</h2>
       <p>By default nothing leaves your machine. <code>cngx submit</code> is opt-in, shows the exact JSON before sending, and posts only after you confirm.</p>
-      <p>Submitted payloads contain only: model name, timestamp, numeric metrics, drift score, and your baseline label. No prompts, outputs, trace IDs, or task names. No personal identity is collected or stored anywhere in the pipeline.</p>
+      <p>Submitted payloads contain only: model name, timestamp, numeric metrics, drift score, and your baseline label. No prompts, outputs, trace IDs, or task names. The submit API does not log your IP or request headers; stored objects contain payload fields only.</p>
       <p>No GitHub account or pull request is required.</p>
       {blocks["submit"]}
 
@@ -373,21 +376,17 @@ def render_docs() -> str:
     )
 
 
-def write_data_js(community_by_model: dict, sample_by_model: dict, annotations: list[dict]) -> None:
+def write_data_js(community_by_model: dict, annotations: list[dict]) -> None:
     path = SITE_DIR / "data.js"
     meta = {
         "community_record_count": sum(len(v) for v in community_by_model.values()),
         "community_models": list(community_by_model.keys()),
-        "sample_record_count": sum(len(v) for v in sample_by_model.values()),
-        "sample_models": list(sample_by_model.keys()),
         "annotations": annotations,
-        "sample_data_policy": SAMPLE_DATA_POLICY,
+        "live_data_policy": LIVE_DATA_POLICY,
     }
     with open(path, "w", encoding="utf-8") as f:
         f.write("window.TRACKER_DATA = ")
         json.dump(community_by_model, f, indent=2)
-        f.write(";\nwindow.TRACKER_SAMPLE_DATA = ")
-        json.dump(sample_by_model, f, indent=2)
         f.write(";\nwindow.TRACKER_META = ")
         json.dump(meta, f, indent=2)
         f.write(";\n")
@@ -421,14 +420,13 @@ def main() -> None:
     annotations = load_annotations()
 
     community_by_model = aggregate_by_model(community)
-    sample_by_model = aggregate_by_model(samples)
 
     copy_static_assets()
-    write_data_js(community_by_model, sample_by_model, annotations)
+    write_data_js(community_by_model, annotations)
 
     index = SITE_DIR / "index.html"
     with open(index, "w", encoding="utf-8") as f:
-        f.write(render_index(len(community), len(samples)))
+        f.write(render_index(len(community)))
 
     docs_index = SITE_DIR / "docs" / "index.html"
     with open(docs_index, "w", encoding="utf-8") as f:
@@ -437,10 +435,11 @@ def main() -> None:
     print(f"Built tracker site: {index}")
     print(f"  Docs: {docs_index}")
     print(
-        f"  Community records: {len(community)} ({', '.join(community_by_model.keys()) or 'none'})"
+        f"  Embedded community records (fallback): {len(community)} "
+        f"({', '.join(community_by_model.keys()) or 'none'})"
     )
-    print(f"  Sample records: {len(samples)} ({', '.join(sample_by_model.keys()) or 'none'})")
-    print(f"  Sample policy: {SAMPLE_DATA_POLICY}")
+    print(f"  Sample records (build tests only): {len(samples)}")
+    print(f"  Live data policy: {LIVE_DATA_POLICY}")
 
 
 if __name__ == "__main__":

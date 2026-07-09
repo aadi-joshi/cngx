@@ -3,7 +3,7 @@
 from pathlib import Path
 
 from tracker.build import (
-    SAMPLE_DATA_POLICY,
+    LIVE_DATA_POLICY,
     aggregate_by_model,
     load_community_records,
     load_sample_records,
@@ -11,8 +11,8 @@ from tracker.build import (
 )
 
 
-def test_sample_policy_is_opt_in():
-    assert SAMPLE_DATA_POLICY == "opt_in_toggle"
+def test_live_data_policy():
+    assert LIVE_DATA_POLICY == "s3_index_on_load"
 
 
 def test_community_and_sample_data_are_separate():
@@ -23,7 +23,7 @@ def test_community_and_sample_data_are_separate():
     assert all(r.get("sample") for r in samples)
 
 
-def test_build_writes_docs_and_split_data_js(tmp_path, monkeypatch):
+def test_build_writes_docs_and_live_data_js(tmp_path, monkeypatch):
     import tracker.build as build_mod
 
     monkeypatch.setattr(build_mod, "SITE_DIR", tmp_path / "site")
@@ -38,8 +38,12 @@ def test_build_writes_docs_and_split_data_js(tmp_path, monkeypatch):
     assert data_js.exists()
 
     html = index.read_text(encoding="utf-8")
-    assert "empty-panel" in html
-    assert "show illustrative sample" in html
+    assert "chart-intro" in html
+    assert "sample-toggle" not in html
+    assert "illustrative sample" not in html
+    assert "anonymous" not in html
+    assert "pipx install cngx" in html
+    assert "verification your policy requires" in html
     assert "\u2014" not in html
 
     docs_html = docs.read_text(encoding="utf-8")
@@ -47,9 +51,10 @@ def test_build_writes_docs_and_split_data_js(tmp_path, monkeypatch):
     assert "cngx wrap" in docs_html
 
     payload = data_js.read_text(encoding="utf-8")
-    assert "TRACKER_SAMPLE_DATA" in payload
+    assert "TRACKER_SAMPLE_DATA" not in payload
     assert "TRACKER_DATA" in payload
     assert "TRACKER_LIVE_URL" in payload
+    assert '"live_data_policy": "s3_index_on_load"' in payload
 
     community = load_community_records()
     community_by_model = aggregate_by_model(community)

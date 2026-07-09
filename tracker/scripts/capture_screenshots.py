@@ -31,6 +31,20 @@ def _assert_no_dashes(page, label: str) -> None:
     assert not matches, f"{label}: found unicode dash characters in rendered text: {matches!r}"
 
 
+def _wait_for_live_data(page, timeout_ms: int = 20000) -> None:
+    page.wait_for_function(
+        """() => {
+          const loading = document.getElementById('loading-state');
+          if (loading && !loading.classList.contains('hidden')) return false;
+          const status = document.getElementById('community-status');
+          if (!status) return false;
+          const text = status.textContent || '';
+          return text !== '...' && text !== '';
+        }""",
+        timeout=timeout_ms,
+    )
+
+
 def main() -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     port = _free_port()
@@ -50,35 +64,35 @@ def main() -> None:
     base = f"http://127.0.0.1:{port}"
 
     pages = (
-        ("tracker-home", f"{base}/index.html", False),
-        ("tracker-home-sample", f"{base}/index.html", True),
-        ("tracker-docs", f"{base}/docs/index.html", False),
+        ("tracker-home", f"{base}/index.html"),
+        ("tracker-docs", f"{base}/docs/index.html"),
     )
 
     with sync_playwright() as p:
         browser = p.chromium.launch()
-        for name, url, click_sample in pages:
+        for name, url in pages:
             for viewport_name, width, height in (
                 ("desktop", 1280, 900),
                 ("mobile", 390, 844),
             ):
                 page = browser.new_page(viewport={"width": width, "height": height})
                 page.goto(url, wait_until="networkidle")
-                if click_sample:
-                    toggle = page.locator("#sample-toggle")
-                    if toggle.count() and toggle.is_visible():
-                        toggle.click()
-                        page.wait_for_timeout(600)
-                page.wait_for_timeout(400)
+                live_count = "n/a"
+                if name == "tracker-home":
+                    _wait_for_live_data(page)
+                    live_count = page.locator("#community-status").inner_text()
+                    assert live_count.isdigit(), f"expected numeric live count, got {live_count!r}"
+                    if int(live_count) > 0:
+                        assert page.locator("#chart-section").is_visible()
+                    page.wait_for_timeout(400)
                 _assert_no_dashes(page, f"{name}-{viewport_name}")
                 model_label = page.locator("#active-model-label")
                 if model_label.count():
                     label_text = model_label.inner_text()
                     assert "\u2014" not in label_text, f"em dash in model label: {label_text!r}"
-                    assert label_text != "\u2014", "model label is em dash"
                 out = OUT_DIR / f"{name}-{viewport_name}.png"
                 page.screenshot(path=str(out), full_page=True)
-                print(f"Wrote {out}")
+                print(f"Wrote {out} (live submissions: {live_count})")
                 page.close()
         browser.close()
 
