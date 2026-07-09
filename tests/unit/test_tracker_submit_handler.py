@@ -1,19 +1,33 @@
 """Tests for the tracker submit Lambda handler (mirrors cngx submit schema)."""
 
 import importlib.util
-import json
 import sys
+import types
 import uuid
 from pathlib import Path
 
 import pytest
 
 HANDLER_PATH = (
-    Path(__file__).resolve().parents[2] / "infra" / "tracker_submit" / "lambda_handler" / "handler.py"
+    Path(__file__).resolve().parents[2]
+    / "infra"
+    / "tracker_submit"
+    / "lambda_handler"
+    / "handler.py"
 )
 
 
-def _load_handler():
+def _load_handler(monkeypatch):
+    fake_boto3 = types.ModuleType("boto3")
+
+    class _FakeExceptions:
+        class NoSuchKey(Exception):
+            pass
+
+    fake_boto3.client = lambda *_args, **_kwargs: None
+    fake_boto3.exceptions = _FakeExceptions()
+    monkeypatch.setitem(sys.modules, "boto3", fake_boto3)
+
     spec = importlib.util.spec_from_file_location("tracker_submit_handler", HANDLER_PATH)
     module = importlib.util.module_from_spec(spec)
     sys.modules["tracker_submit_handler"] = module
@@ -45,7 +59,7 @@ def _valid_payload() -> dict:
 def handler_module(monkeypatch):
     monkeypatch.setenv("BUCKET_NAME", "test-bucket")
     monkeypatch.setenv("OBJECT_PREFIX", "community")
-    return _load_handler()
+    return _load_handler(monkeypatch)
 
 
 class TestTrackerSubmitHandler:

@@ -254,7 +254,6 @@ def run_submit(
             submitted += 1
 
     console.print(
-        f"[bold]Done.[/] {submitted} record(s) sent. "
-        "Live tracker updates within a few minutes."
+        f"[bold]Done.[/] {submitted} record(s) sent. " "Live tracker updates within a few minutes."
     )
     return 0

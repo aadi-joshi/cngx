@@ -40,6 +40,7 @@ def _tracker_live_index_url() -> str:
         pass
     return ""
 
+
 # Option (b): default to empty community view; samples behind explicit toggle.
 # Reason: the project has no real community submissions yet. Showing unlabeled or
 # prominent demo charts reads as fake traction to cold visitors (HN/Reddit).
