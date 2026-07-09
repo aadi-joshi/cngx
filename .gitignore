@@ -23,6 +23,7 @@ htmlcov/
 
 # Secrets and local runtime data
 .env
+.cngx/
 .cogscope/
 
 # Generated documentation and tracker site

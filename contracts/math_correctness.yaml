@@ -32,7 +32,7 @@ description: |
 
 domain: math
 intent: "Ensure AI demonstrates step-by-step reasoning and self-verification for mathematical problems"
-author: "Cogscope Canonical Contracts"
+author: "cngx Canonical Contracts"
 
 # Reasoning depth
 # Mathematical problems require structured thinking

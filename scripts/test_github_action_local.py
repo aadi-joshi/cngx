@@ -22,13 +22,13 @@ def install_editable() -> None:
     run([sys.executable, "-m", "pip", "install", "-e", ".", "-q"])
 
 
-def init_cogscope() -> None:
-    run(["cogscope", "init", "--yes"])
+def init_cngx() -> None:
+    run(["cngx", "init", "--yes"])
 
 
 def check_prompt(prompt: str, *, json_output: bool = False) -> int:
     cmd = [
-        "cogscope",
+        "cngx",
         "check",
         "-c",
         str(POLICY),
@@ -58,7 +58,7 @@ def main() -> int:
 
     print("=== action.yml local smoke (editable install) ===")
     install_editable()
-    init_cogscope()
+    init_cngx()
 
     code = check_prompt("What is 15 * 7? Show your reasoning step by step.")
     if code != 0:

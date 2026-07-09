@@ -1,8 +1,8 @@
-site_name: Cogscope
+site_name: cngx
 site_description: "Local proxy for long autonomous agent sessions: reasoning fingerprints, session collapse detection, and policy checks."
-site_url: https://aadi-joshi.github.io/cogscope
-repo_url: https://github.com/aadi-joshi/cogscope
-repo_name: aadi-joshi/cogscope
+site_url: https://aadi-joshi.github.io/cngx
+repo_url: https://github.com/aadi-joshi/cngx
+repo_name: aadi-joshi/cngx
 
 theme:
   name: material
@@ -73,4 +73,4 @@ nav:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/aadi-joshi/cogscope
+      link: https://github.com/aadi-joshi/cngx

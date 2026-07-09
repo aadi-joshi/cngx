@@ -1,6 +1,6 @@
-# Cogscope Roadmap
+# cngx Roadmap
 
-Cogscope v0.1.0 is a **deliberately narrow** open-source tool. The scope is intentional: local fingerprinting, baseline-relative drift, and policy checks, not a full AI platform.
+cngx v0.1.0 is a **deliberately narrow** open-source tool. The scope is intentional: local fingerprinting, baseline-relative drift, and policy checks, not a full AI platform.
 
 This document explains what ships today, what is deferred for later consideration, and what that means for the future.
 
@@ -10,15 +10,15 @@ This document explains what ships today, what is deferred for later consideratio
 
 | Capability | Status |
 |------------|--------|
-| Local ASGI proxy (`cogscope watch`) | Shipped |
+| Local ASGI proxy (`cngx watch`) | Shipped |
 | Behavioral fingerprinting (regex/heuristic metrics) | Shipped |
-| DuckDB local storage (`.cogscope/`) | Shipped |
-| Baseline pinning (`cogscope pin`) | Shipped |
+| DuckDB local storage (`.cngx/`) | Shipped |
+| Baseline pinning (`cngx pin`) | Shipped |
 | Multi-metric statistical drift alerts | Shipped |
-| YAML policies + `cogscope check` (CI exit codes) | Shipped |
+| YAML policies + `cngx check` (CI exit codes) | Shipped |
 | Live terminal dashboard (Rich TUI) | Shipped |
-| Opt-in public drift tracker (`cogscope submit`) | Shipped |
-| Zero-key `cogscope quickstart` | Shipped |
+| Opt-in public drift tracker (`cngx submit`) | Shipped |
+| Zero-key `cngx quickstart` | Shipped |
 
 **Design principles baked in:**
 
@@ -82,4 +82,4 @@ Not committed dates, current direction:
 
 ## How to influence the roadmap
 
-Open a [feature request](https://github.com/aadi-joshi/cogscope/issues/new?template=feature_request.md) with your use case. Restoring deferred capabilities will be driven by evidence of demand, not by restoring everything from archive.
+Open a [feature request](https://github.com/aadi-joshi/cngx/issues/new?template=feature_request.md) with your use case. Restoring deferred capabilities will be driven by evidence of demand, not by restoring everything from archive.

@@ -1,4 +1,4 @@
-# Cogscope Drift Tracker
+# cngx Drift Tracker
 
 Static public site for opt-in community drift metrics. Built with plain Python (`tracker/build.py`), no framework, deployed to GitHub Pages.
 

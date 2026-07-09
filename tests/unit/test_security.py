@@ -8,7 +8,7 @@ import re
 
 import pytest
 
-from cogscope.security.regex_sandbox import (
+from cngx.security.regex_sandbox import (
     MAX_INPUT_LENGTH,
     MAX_PATTERN_LENGTH,
     RegexComplexityError,
@@ -58,7 +58,7 @@ class TestSafeCompile:
         assert pat.search("Hello world") is not None
 
     def test_compile_invalid_syntax(self):
-        from cogscope.core.exceptions import ContractError
+        from cngx.core.exceptions import ContractError
 
         with pytest.raises(ContractError, match="Invalid regex"):
             safe_regex_compile(r"(unclosed")

@@ -1,7 +1,7 @@
-"""Example: Basic Cogscope usage demonstrating the full workflow."""
+"""Example: Basic cngx usage demonstrating the full workflow."""
 
-from cogscope import (
-    CogscopeTracer,
+from cngx import (
+    CngxTracer,
     FingerprintExtractor,
     DiffEngine,
     BaselineManager,
@@ -9,14 +9,14 @@ from cogscope import (
 
 
 def main():
-    """Demonstrate basic Cogscope workflow."""
+    """Demonstrate basic cngx workflow."""
     print("=" * 60)
-    print("Cogscope, Behavioral Contract Enforcement Demo")
+    print("cngx, Behavioral Contract Enforcement Demo")
     print("=" * 60)
 
     # 1. Create tracer with mock adapter (no actual LLM calls)
     print("\n1. Creating tracer with mock adapter...")
-    tracer = CogscopeTracer(adapter="mock", model="mock-model")
+    tracer = CngxTracer(adapter="mock", model="mock-model")
 
     # 2. Capture a reasoning trace
     print("\n2. Capturing a reasoning trace...")
@@ -98,7 +98,7 @@ def main():
     print(f"   Breaking changes: {comparison['breaking_changes']}")
 
     print("\n" + "=" * 60)
-    print("Demo complete! Use 'cogscope' CLI for interactive usage.")
+    print("Demo complete! Use 'cngx' CLI for interactive usage.")
     print("=" * 60)
 
 

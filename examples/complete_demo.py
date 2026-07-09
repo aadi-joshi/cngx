@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Cogscope Complete Product Demo, Zero API Keys Required
+cngx Complete Product Demo, Zero API Keys Required
 
-This script demonstrates every major Cogscope capability using the mock adapter.
+This script demonstrates every major cngx capability using the mock adapter.
 Run it to see the full product in action:
 
     python3 examples/complete_demo.py
 
-No API keys, no network access, no external dependencies beyond Cogscope core.
+No API keys, no network access, no external dependencies beyond cngx core.
 """
 
 import sys
@@ -44,9 +44,9 @@ def step(num: int, desc: str):
 def demo_capture():
     header("Capture & Fingerprint", "Trace an LLM call and extract behavioral metrics")
 
-    from cogscope import CogscopeTracer
+    from cngx import CngxTracer
 
-    tracer = CogscopeTracer(adapter="mock", model="mock-model")
+    tracer = CngxTracer(adapter="mock", model="mock-model")
 
     step(1, "Capture a reasoning trace")
     trace = tracer.capture(prompt="Solve 2x + 5 = 13", task_id="math_demo")
@@ -80,8 +80,8 @@ def demo_capture():
 def demo_contracts(trace, fp):
     header("Behavior Contracts", "Define and validate behavioral requirements")
 
-    from cogscope.contracts import BehaviorContract, ContractValidator
-    from cogscope.contracts.schema import DepthConstraint, StepsConstraint, Severity
+    from cngx.contracts import BehaviorContract, ContractValidator
+    from cngx.contracts.schema import DepthConstraint, StepsConstraint, Severity
 
     step(3, "Define a behavior contract")
     contract = BehaviorContract(
@@ -116,16 +116,16 @@ def demo_contracts(trace, fp):
 def demo_drift():
     header("Drift Detection", "Detect when LLM behavior changes")
 
-    from cogscope import CogscopeTracer, DiffEngine
+    from cngx import CngxTracer, DiffEngine
 
-    tracer = CogscopeTracer(adapter="mock", model="mock-model")
+    tracer = CngxTracer(adapter="mock", model="mock-model")
 
     step(5, "Capture baseline behavior (default preset)")
     trace_v1 = tracer.capture(prompt="Explain quantum entanglement", task_id="physics")
     fp_v1 = tracer.get_fingerprint(trace_v1.id)
 
     step(6, "Simulate model update (switch to terse preset)")
-    tracer_v2 = CogscopeTracer(adapter="mock", model="mock-model-v2", preset="terse")
+    tracer_v2 = CngxTracer(adapter="mock", model="mock-model-v2", preset="terse")
     trace_v2 = tracer_v2.capture(prompt="Explain quantum entanglement", task_id="physics")
     fp_v2 = tracer_v2.get_fingerprint(trace_v2.id)
 
@@ -171,7 +171,7 @@ def demo_drift():
 def demo_enforcement():
     header("CI/CD Enforcement Gate", "Block deployments that violate contracts")
 
-    from cogscope.enforcement import EnforcementGate, EnforcementConfig
+    from cngx.enforcement import EnforcementGate, EnforcementConfig
 
     step(8, "Run enforcement gate (PASS scenario)")
     gate = EnforcementGate(
@@ -200,7 +200,7 @@ def demo_enforcement():
 def demo_github_actions():
     header("GitHub Action Generator", "Auto-generate CI/CD pipeline YAML")
 
-    from cogscope.enforcement import GitHubActionGenerator
+    from cngx.enforcement import GitHubActionGenerator
 
     step(10, "Generate GitHub Actions workflow")
     yaml_content = GitHubActionGenerator.generate(
@@ -213,7 +213,7 @@ def demo_github_actions():
     console.print(
         Panel(
             "\n".join(lines) + "\n...",
-            title="Generated .github/workflows/cogscope-gate.yml",
+            title="Generated .github/workflows/cngx-gate.yml",
             border_style="green",
         )
     )
@@ -227,7 +227,7 @@ def demo_github_actions():
 def main():
     console.print(
         Panel(
-            "[bold white]Cogscope, Behavioral Contract Enforcement[/]\n"
+            "[bold white]cngx, Behavioral Contract Enforcement[/]\n"
             "[dim]Complete Product Demo • Zero API Keys Required[/]\n\n"
             "[cyan]This demo exercises core product capabilities[/]\n"
             "[cyan]using the built-in mock adapter (no network access).[/]",
@@ -269,7 +269,7 @@ def main():
             "[bold cyan]Next steps:[/]\n"
             "  • Set GOOGLE_API_KEY and re-run with --adapter gemini\n"
             "  • Write your own contracts in contracts/\n"
-            "  • Add 'cogscope gate ci' to your CI/CD pipeline\n",
+            "  • Add 'cngx gate ci' to your CI/CD pipeline\n",
             title="Demo Complete",
             border_style="bold green",
             padding=(1, 3),

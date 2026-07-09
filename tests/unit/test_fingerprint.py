@@ -4,15 +4,15 @@ from datetime import datetime
 
 import pytest
 
-from cogscope.core.models import (
+from cngx.core.models import (
     BehavioralFingerprint,
     ModelConfig,
     ReasoningTrace,
     TokenUsage,
     ToolCall,
 )
-from cogscope.fingerprint.extractor import FingerprintExtractor
-from cogscope.fingerprint.metrics import MetricsCalculator
+from cngx.fingerprint.extractor import FingerprintExtractor
+from cngx.fingerprint.metrics import MetricsCalculator
 
 
 @pytest.fixture

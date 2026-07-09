@@ -4,7 +4,7 @@ Drift detection answers: **"Is this response unusually different from behavior I
 
 It does **not** answer: "Is this model worse than last month industry-wide?" or "Is GPT better than Claude?"
 
-Cogscope distinguishes two kinds of drift:
+cngx distinguishes two kinds of drift:
 
 | Type | What it measures | What it means |
 |------|------------------|---------------|
@@ -13,24 +13,24 @@ Cogscope distinguishes two kinds of drift:
 
 **Treat any structural drift alert as "something changed, go look," not "the model got worse."**
 
-Cogscope uses **different statistical methods for different situations**. They are not blended into one mechanism.
+cngx uses **different statistical methods for different situations**. They are not blended into one mechanism.
 
 ## Pin a baseline first
 
 ```bash
-cogscope watch          # capture traffic via proxy
-cogscope pin --label my-baseline
+cngx watch          # capture traffic via proxy
+cngx pin --label my-baseline
 ```
 
-A baseline stores a reference fingerprint for a task/model pair in `.cogscope/cogscope.db`.
+A baseline stores a reference fingerprint for a task/model pair in `.cngx/cngx.db`.
 
 ## Compare live traffic
 
 ```bash
-cogscope diff --baseline my-baseline
+cngx diff --baseline my-baseline
 ```
 
-Or watch the live TUI during `cogscope watch`, drift scores appear when a baseline is pinned.
+Or watch the live TUI during `cngx watch`, drift scores appear when a baseline is pinned.
 
 ## Live proxy path (streaming, no ground truth)
 
@@ -41,18 +41,18 @@ Or watch the live TUI during `cogscope watch`, drift scores appear when a baseli
 - A per-metric flag comes from KSWIN (empirical CDF comparison in a sliding window) or MDDM (weighted-window McDiarmid bound), not mean-only cumulative sums.
 - **Structural drift alerts** still require corroboration: at least two metric streams must flag, including at least one non-length metric. Length-only shifts never alert alone.
 
-Implementation: `cogscope/drift/streaming.py`, wired from `cogscope/proxy/analysis.py`.
+Implementation: `cngx/drift/streaming.py`, wired from `cngx/proxy/analysis.py`.
 
 ## One-shot diff / check path (batch comparison)
 
-**Procedure** (`cogscope/drift/batch.py`):
+**Procedure** (`cngx/drift/batch.py`):
 
 1. Per-metric **Mann-Whitney U** test (non-parametric two-sample comparison).
 2. **Benjamini-Hochberg** false discovery rate correction across simultaneous tests (Benjamini & Hochberg, 1995).
 3. **Cauchy Combination Test** (Liu & Xie, 2020) combining BH-rejected raw p-values into one omnibus statistic. CCT remains valid under arbitrary unknown dependency between correlated heuristic metrics (unlike Fisher's method).
 4. Per-metric p-values and Cohen's d effect sizes are reported alongside the global CCT p-value for interpretability.
 
-Used by `cogscope diff`, `cogscope drift detect`, and population comparisons in `DriftDetector`.
+Used by `cngx diff`, `cngx drift detect`, and population comparisons in `DriftDetector`.
 
 ## CI regression path (paired benchmarks with oracle)
 
@@ -61,19 +61,19 @@ Used by `cogscope diff`, `cogscope drift detect`, and population comparisons in 
 **Continuous / graded scores:** Paired permutation (sign-flip) test via `holdout.paired_permutation_test`, following the generalization recommended in [Amazon Science LLM-Accuracy-Stats](https://github.com/amazon-science/LLM-Accuracy-Stats).
 
 ```bash
-cogscope regression --suite benchmarks/math.yaml --policy policies/strict.yaml \
+cngx regression --suite benchmarks/math.yaml --policy policies/strict.yaml \
   --baseline-outcomes baseline_scores.json
 ```
 
 Only applies when the same fixed benchmark items are run under baseline and current conditions with a correctness oracle.
 
-## Optional semantic drift (`cogscope watch --semantic`)
+## Optional semantic drift (`cngx watch --semantic`)
 
-Requires `pip install cogscope[semantic]`. Compares local sentence embeddings (all-MiniLM-L6-v2) between baseline text and current output using Jensen-Shannon distance. This is **semantic drift**, separate from structural fingerprint drift.
+Requires `pip install cngx[semantic]`. Compares local sentence embeddings (all-MiniLM-L6-v2) between baseline text and current output using Jensen-Shannon distance. This is **semantic drift**, separate from structural fingerprint drift.
 
-## Optional OpenTelemetry export (`cogscope watch --otel`)
+## Optional OpenTelemetry export (`cngx watch --otel`)
 
-Requires `pip install cogscope[otel]`. Emits GenAI semantic convention spans with `cogscope.fingerprint.*` attributes to an OTLP HTTP endpoint (default `http://localhost:4318`). Off by default; DuckDB remains the primary store.
+Requires `pip install cngx[otel]`. Emits GenAI semantic convention spans with `cngx.fingerprint.*` attributes to an OTLP HTTP endpoint (default `http://localhost:4318`). Off by default; DuckDB remains the primary store.
 
 ## When alerts fire (summary)
 

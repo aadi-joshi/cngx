@@ -3,14 +3,14 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "cogscope"
+name = "cngx"
 version = "0.1.0"
-description = "Cogscope, local LLM reasoning fingerprinting, drift detection, and policy checks."
+description = "cngx, local LLM reasoning fingerprinting, drift detection, and policy checks."
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
 authors = [
-    { name = "Cogscope Contributors" }
+    { name = "cngx Contributors" }
 ]
 keywords = [
     "llm",
@@ -89,7 +89,7 @@ postgres = [
     "sqlalchemy>=2.0.20",
 ]
 platform = [
-    "cogscope[postgres]",
+    "cngx[postgres]",
     "sqlalchemy>=2.0.20",
     "psycopg2-binary>=2.9.9",
     "redis>=5.0.0",
@@ -112,21 +112,21 @@ otel = [
     "opentelemetry-exporter-otlp-proto-http>=1.20.0",
 ]
 all = [
-    "cogscope[gemini,claude,cloud,semantic,otel]",
+    "cngx[gemini,claude,cloud,semantic,otel]",
 ]
 
 [project.scripts]
-cogscope = "cogscope.cli.main:app"
+cngx = "cngx.cli.main:app"
 
 [project.urls]
-Homepage = "https://github.com/aadi-joshi/cogscope"
-Repository = "https://github.com/aadi-joshi/cogscope"
-Documentation = "https://github.com/aadi-joshi/cogscope#readme"
-"Bug Tracker" = "https://github.com/aadi-joshi/cogscope/issues"
-Changelog = "https://github.com/aadi-joshi/cogscope/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/aadi-joshi/cngx"
+Repository = "https://github.com/aadi-joshi/cngx"
+Documentation = "https://github.com/aadi-joshi/cngx#readme"
+"Bug Tracker" = "https://github.com/aadi-joshi/cngx/issues"
+Changelog = "https://github.com/aadi-joshi/cngx/blob/main/CHANGELOG.md"
 
 [tool.hatch.build.targets.wheel]
-packages = ["cogscope"]
+packages = ["cngx"]
 
 [tool.hatch.build.targets.sdist]
 exclude = [
@@ -165,10 +165,10 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401", "F811"]
 "tests/*" = ["F811"]
-"cogscope/server/app.py" = ["E402"]
+"cngx/server/app.py" = ["E402"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["cogscope"]
+known-first-party = ["cngx"]
 
 [tool.mypy]
 python_version = "3.11"

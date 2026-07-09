@@ -1,6 +1,6 @@
 """Tests for session id resolution."""
 
-from cogscope.drift.session import resolve_session_id
+from cngx.drift.session import resolve_session_id
 
 
 def test_explicit_session_id_wins():

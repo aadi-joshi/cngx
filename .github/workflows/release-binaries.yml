@@ -17,13 +17,13 @@ jobs:
         include:
           - os: ubuntu-latest
             label: linux-x86_64
-            asset_name: cogscope-linux-x86_64
+            asset_name: cngx-linux-x86_64
           - os: macos-latest
             label: macos-arm64
-            asset_name: cogscope-macos-arm64
+            asset_name: cngx-macos-arm64
           - os: windows-latest
             label: windows-x86_64
-            asset_name: cogscope-windows-x86_64.exe
+            asset_name: cngx-windows-x86_64.exe
 
     steps:
       - uses: actions/checkout@v4
@@ -44,15 +44,15 @@ jobs:
           python -m pip install "pyinstaller>=6.0.0"
 
       - name: Build standalone executable
-        run: pyinstaller packaging/pyinstaller/cogscope.spec --noconfirm
+        run: pyinstaller packaging/pyinstaller/cngx.spec --noconfirm
 
       - name: Smoke test executable
         shell: bash
         run: |
           if [ "${{ runner.os }}" = "Windows" ]; then
-            BIN="dist/cogscope.exe"
+            BIN="dist/cngx.exe"
           else
-            BIN="dist/cogscope"
+            BIN="dist/cngx"
           fi
           "$BIN" --help
           "$BIN" version
@@ -63,9 +63,9 @@ jobs:
         run: |
           mkdir -p release-assets
           if [ "${{ runner.os }}" = "Windows" ]; then
-            cp dist/cogscope.exe "release-assets/${{ matrix.asset_name }}"
+            cp dist/cngx.exe "release-assets/${{ matrix.asset_name }}"
           else
-            cp dist/cogscope "release-assets/${{ matrix.asset_name }}"
+            cp dist/cngx "release-assets/${{ matrix.asset_name }}"
             chmod +x "release-assets/${{ matrix.asset_name }}"
           fi
 

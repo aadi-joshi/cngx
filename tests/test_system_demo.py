@@ -1,17 +1,17 @@
-"""Adversarial tests for Cogscope system-level demo.
+"""Adversarial tests for cngx system-level demo.
 
 These tests verify that:
-1. Silent failures are detected WITHOUT Cogscope
-2. Cogscope correctly blocks bad deployments
+1. Silent failures are detected WITHOUT cngx
+2. cngx correctly blocks bad deployments
 3. Edge cases are handled properly
-4. The contrast between WITH and WITHOUT Cogscope is undeniable
+4. The contrast between WITH and WITHOUT cngx is undeniable
 """
 
 from datetime import datetime
 
 import pytest
 
-from cogscope.contracts import (
+from cngx.contracts import (
     BehaviorContract,
     DeploymentGate,
     DepthConstraint,
@@ -22,8 +22,8 @@ from cogscope.contracts import (
     StepsConstraint,
     VerificationConstraint,
 )
-from cogscope.core.models import BehavioralFingerprint, ReasoningTrace
-from cogscope.system_demo.pipeline import (
+from cngx.core.models import BehavioralFingerprint, ReasoningTrace
+from cngx.system_demo.pipeline import (
     AIDecisionPipeline,
     DownstreamConsumer,
     PipelineConfig,
@@ -34,7 +34,7 @@ from cogscope.system_demo.pipeline import (
 
 
 class TestSilentFailureDetection:
-    """Tests verifying that without Cogscope, failures are silent."""
+    """Tests verifying that without cngx, failures are silent."""
 
     def test_degraded_reasoning_still_produces_output(self):
         """A model with degraded reasoning still produces output."""
@@ -50,7 +50,7 @@ class TestSilentFailureDetection:
             hedging_ratio=0.8,  # High uncertainty
         )
 
-        # Without Cogscope, this would just be a fingerprint
+        # Without cngx, this would just be a fingerprint
         # The system would proceed because output exists
         assert fp.depth == 1
         assert fp.verification_steps == 0
@@ -110,12 +110,12 @@ class TestSilentFailureDetection:
             output_length=2,  # Just the answer
         )
 
-        # Without Cogscope, this looks like success
-        # With Cogscope, this would be blocked for missing verification
+        # Without cngx, this looks like success
+        # With cngx, this would be blocked for missing verification
 
 
 class TestRVCBlockingBehavior:
-    """Tests verifying that Cogscope correctly blocks bad deployments."""
+    """Tests verifying that cngx correctly blocks bad deployments."""
 
     def test_missing_verification_blocks_deployment(self):
         """Missing verification triggers BLOCK."""
@@ -223,10 +223,10 @@ class TestRVCBlockingBehavior:
 
 
 class TestContrastBetweenModes:
-    """Tests that the contrast between WITH and WITHOUT Cogscope is clear."""
+    """Tests that the contrast between WITH and WITHOUT cngx is clear."""
 
     def test_same_fingerprint_different_outcomes(self):
-        """Same bad fingerprint, different outcomes with/without Cogscope."""
+        """Same bad fingerprint, different outcomes with/without cngx."""
         # Create a degraded fingerprint
         fp = BehavioralFingerprint(
             trace_id="degraded_001",
@@ -243,7 +243,7 @@ class TestContrastBetweenModes:
             verification=VerificationConstraint(required=True, severity=Severity.BLOCK),
         )
 
-        # WITHOUT Cogscope: downstream would execute
+        # WITHOUT cngx: downstream would execute
         consumer = DownstreamConsumer(
             name="test",
             assumes_verified=True,
@@ -260,7 +260,7 @@ class TestContrastBetweenModes:
         assert not assumptions_met  # Assumptions violated
         # But downstream would still execute (silent failure)
 
-        # WITH Cogscope: deployment blocked
+        # WITH cngx: deployment blocked
         gate = DeploymentGate()
         result = gate.check(fp, contract)
 

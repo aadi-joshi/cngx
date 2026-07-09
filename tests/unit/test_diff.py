@@ -2,15 +2,15 @@
 
 import pytest
 
-from cogscope.core.models import (
+from cngx.core.models import (
     BehavioralFingerprint,
     BehaviorChange,
     BehaviorDiff,
     ChangeType,
     SignificanceLevel,
 )
-from cogscope.diff.engine import DiffEngine
-from cogscope.diff.formatter import DiffFormatter
+from cngx.diff.engine import DiffEngine
+from cngx.diff.formatter import DiffFormatter
 
 
 class TestDiffEngine:

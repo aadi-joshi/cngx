@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Real-world validation runner for Cogscope pre-launch checks.
+"""Real-world validation runner for cngx pre-launch checks.
 
 Requires OPENAI_API_KEY in the environment. Never logs or writes key material.
 Optional: ANTHROPIC_API_KEY, GOOGLE_API_KEY for multi-provider smoke tests.
 
-Usage (from scratch directory after cogscope init --yes):
+Usage (from scratch directory after cngx init --yes):
     python path/to/run_all.py --scratch /path/to/scratch --results /path/to/results.json
 """
 
@@ -125,9 +125,9 @@ def _start_proxy(
     otel_endpoint: str = "http://127.0.0.1:4318",
     port: int = 8642,
 ) -> threading.Thread:
-    from cogscope.cli.wrap import ensure_proxy_running
-    from cogscope.observability.otel import configure_otel
-    from cogscope.proxy.analysis import set_semantic_analysis_enabled
+    from cngx.cli.wrap import ensure_proxy_running
+    from cngx.observability.otel import configure_otel
+    from cngx.proxy.analysis import set_semantic_analysis_enabled
 
     set_semantic_analysis_enabled(semantic)
     if otel:
@@ -193,7 +193,7 @@ def task1_smoke(scratch: Path, port: int = 8642) -> dict[str, Any]:
         results.append(meta)
         time.sleep(0.3)
 
-    from cogscope.storage.database import get_database
+    from cngx.storage.database import get_database
 
     db = get_database()
     fps = _fingerprints_summary(db)
@@ -211,9 +211,9 @@ def task1_smoke(scratch: Path, port: int = 8642) -> dict[str, Any]:
 
 
 def task1_direct_adapter(adapter: str, model: str) -> dict[str, Any]:
-    from cogscope.capture.tracer import CogscopeTracer
+    from cngx.capture.tracer import CngxTracer
 
-    tracer = CogscopeTracer(adapter=adapter, model=model)
+    tracer = CngxTracer(adapter=adapter, model=model)
     results = []
     for item in TASK1_PROMPTS[:3]:
         trace = tracer.capture(prompt=item["prompt"], task_id=f"direct_{adapter}_{item['id']}", save=True)
@@ -265,7 +265,7 @@ def task2_session(scratch: Path, port: int = 8642) -> dict[str, Any]:
         turns.append({"turn": i, "chars": len(content)})
         time.sleep(0.25)
 
-    from cogscope.storage.database import get_database
+    from cngx.storage.database import get_database
 
     db = get_database()
     fps = db.get_fingerprints_by_session(session_id)
@@ -285,7 +285,7 @@ def task3_regression(scratch: Path, repo: Path) -> dict[str, Any]:
     policy = repo / "examples" / "contracts" / "basic_reasoning.yaml"
     baseline_out = scratch / ".baseline_outcomes.json"
 
-    from cogscope.cli.regression_cmd import run_regression_suite
+    from cngx.cli.regression_cmd import run_regression_suite
 
     # Run 1: seed baseline
     run_regression_suite(
@@ -298,16 +298,16 @@ def task3_regression(scratch: Path, repo: Path) -> dict[str, Any]:
     )
 
     # Capture baseline outcomes manually via tracer (run_regression_suite seeds on first run without comparison)
-    from cogscope.capture.tracer import CogscopeTracer
-    from cogscope.cli.check_cmd import _load_policy
-    from cogscope.contracts import DeploymentGate
-    from cogscope.drift.paired import evaluate_item_correctness, mcnemar_test
+    from cngx.capture.tracer import CngxTracer
+    from cngx.cli.check_cmd import _load_policy
+    from cngx.contracts import DeploymentGate
+    from cngx.drift.paired import evaluate_item_correctness, mcnemar_test
     import yaml
 
     with open(suite, encoding="utf-8") as f:
         items = yaml.safe_load(f)["items"]
     behavior_policy = _load_policy(policy)
-    tracer = CogscopeTracer(adapter="openai", model="gpt-4o-mini")
+    tracer = CngxTracer(adapter="openai", model="gpt-4o-mini")
     gate = DeploymentGate()
 
     def run_once() -> list[bool]:
@@ -380,8 +380,8 @@ def task4_otel(scratch: Path, port: int = 8644) -> dict[str, Any]:
     thread.start()
 
     scratch.mkdir(parents=True, exist_ok=True)
-    if not (scratch / ".cogscope").exists():
-        subprocess.run(["cogscope", "init", "--yes"], check=True, cwd=scratch)
+    if not (scratch / ".cngx").exists():
+        subprocess.run(["cngx", "init", "--yes"], check=True, cwd=scratch)
     os.chdir(scratch)
     _start_proxy(otel=True, otel_endpoint="http://127.0.0.1:4318", port=port)
     time.sleep(0.5)
@@ -394,13 +394,13 @@ def task4_otel(scratch: Path, port: int = 8644) -> dict[str, Any]:
 def task5_cross_model(scratch: Path) -> dict[str, Any]:
     _require_openai()
     os.chdir(scratch)
-    from cogscope.capture.tracer import CogscopeTracer
-    from cogscope.diff.engine import DiffEngine
-    from cogscope.storage.database import get_database
-    from cogscope.versioning.pinning import PinningManager
+    from cngx.capture.tracer import CngxTracer
+    from cngx.diff.engine import DiffEngine
+    from cngx.storage.database import get_database
+    from cngx.versioning.pinning import PinningManager
 
-    strong = CogscopeTracer(adapter="openai", model="gpt-4o")
-    weak = CogscopeTracer(adapter="openai", model="gpt-4o-mini")
+    strong = CngxTracer(adapter="openai", model="gpt-4o")
+    weak = CngxTracer(adapter="openai", model="gpt-4o-mini")
     engine = DiffEngine()
     diffs = []
     last_strong_trace = None
@@ -421,14 +421,14 @@ def task5_cross_model(scratch: Path) -> dict[str, Any]:
             )
         time.sleep(0.3)
 
-    from cogscope.versioning.baseline import BaselineManager
+    from cngx.versioning.baseline import BaselineManager
 
     db = get_database()
     pm = PinningManager(db)
     bm = BaselineManager(db)
     baseline = pm.pin(trace_id=last_strong_trace.id, name="cross_model_strong_baseline")
 
-    from cogscope.drift.detector import DriftDetector
+    from cngx.drift.detector import DriftDetector
 
     detector = DriftDetector(db=db)
     baseline_fp = bm.get_fingerprint(baseline.name)
@@ -474,8 +474,8 @@ def main() -> int:
 
     args.scratch.mkdir(parents=True, exist_ok=True)
     os.chdir(args.scratch)
-    if not (args.scratch / ".cogscope").exists():
-        subprocess.run(["cogscope", "init", "--yes"], check=True, cwd=args.scratch)
+    if not (args.scratch / ".cngx").exists():
+        subprocess.run(["cngx", "init", "--yes"], check=True, cwd=args.scratch)
 
     report: dict[str, Any] = {
         "timestamp": datetime.utcnow().isoformat() + "Z",

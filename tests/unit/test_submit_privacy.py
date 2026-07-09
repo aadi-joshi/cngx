@@ -1,17 +1,17 @@
-"""Privacy guarantees for cogscope submit payloads."""
+"""Privacy guarantees for cngx submit payloads."""
 
 import json
 from datetime import datetime
 
 import pytest
 
-from cogscope.cli.submit_cmd import (
+from cngx.cli.submit_cmd import (
     ALLOWED_SUBMIT_KEYS,
     FORBIDDEN_SUBMIT_KEYS,
     build_submit_payload,
     validate_submit_payload,
 )
-from cogscope.core.models import BehavioralFingerprint
+from cngx.core.models import BehavioralFingerprint
 
 
 def _sample_fingerprint(**kwargs) -> BehavioralFingerprint:

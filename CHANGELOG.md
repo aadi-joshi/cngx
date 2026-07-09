@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Cogscope will be documented in this file.
+All notable changes to cngx will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2026-07-06
 
 ### Changed
-- **Fresh public relaunch** under the name **Cogscope** (renamed from the private `rvc` package).
+- **Fresh public relaunch** under the name **cngx** (renamed from the private `rvc` package).
+- Prior GitHub and PyPI name was **cogscope**; releases now ship as **cngx**.
 - **Version reset to 0.1.0**, new version scheme for the open-source developer tool; supersedes the prior 1.0.0/2.0.0 mismatch in the private tree.
 - Enterprise/SaaS surfaces (`platform/`, `cloud/`, `sdk/`, `rvc-demo/`, `rvc-prod/`) moved to `_archive_pre_oss/`.
 - Phase-2 modules (correctness, robustness, governance, benchmarks, etc.) archived for future releases.
@@ -25,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Batch enforcement API**, validate multiple prompts/fingerprints in a single API call
 - **Structured JSON logging**, production-grade log output with correlation IDs, compatible with ELK/Datadog
 - **Prometheus metrics**, `/metrics` endpoint with enforcement counters, latency histograms, active org gauges
-- **PostgreSQL support**, cloud database can use PostgreSQL for horizontal scaling via `COGSCOPE_DATABASE_URL`
+- **PostgreSQL support**, cloud database can use PostgreSQL for horizontal scaling via `CNGX_DATABASE_URL`
 - **Streaming capture**, capture reasoning traces from streaming LLM responses
 - **GitHub Actions CI/CD**, automated testing, linting, and PyPI publishing on release
 - **MkDocs documentation site**, comprehensive docs with tutorials, API reference, contract authoring guide

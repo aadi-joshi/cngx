@@ -7,7 +7,7 @@ labels: enhancement
 
 ## Problem or use case
 
-What are you trying to do that Cogscope does not support well today?
+What are you trying to do that cngx does not support well today?
 
 ## Proposed solution
 

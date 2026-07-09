@@ -15,7 +15,7 @@ from typing import List, Optional
 
 import pytest
 
-from cogscope.contracts.schema import (
+from cngx.contracts.schema import (
     BehaviorContract,
     DepthConstraint,
     ForbiddenPattern,
@@ -27,10 +27,10 @@ from cogscope.contracts.schema import (
     UncertaintyConstraint,
     VerificationConstraint,
 )
-from cogscope.contracts.validator import ContractValidator
-from cogscope.core.models import BehavioralFingerprint, ReasoningTrace, TokenUsage
-from cogscope.diff.engine import DiffEngine
-from cogscope.fingerprint.extractor import FingerprintExtractor
+from cngx.contracts.validator import ContractValidator
+from cngx.core.models import BehavioralFingerprint, ReasoningTrace, TokenUsage
+from cngx.diff.engine import DiffEngine
+from cngx.fingerprint.extractor import FingerprintExtractor
 
 # ═══════════════════════════════════════════════
 #  Helpers

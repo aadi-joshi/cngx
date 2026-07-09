@@ -14,14 +14,14 @@ from typing import Optional
 
 import pytest
 
-from cogscope.capture.tracer import CogscopeTracer
-from cogscope.contracts.schema import BehaviorContract
-from cogscope.contracts.validator import ContractValidator
-from cogscope.core.models import BehavioralFingerprint, ReasoningTrace, TokenUsage
-from cogscope.diff.engine import DiffEngine
-from cogscope.drift.detector import DriftDetector
-from cogscope.fingerprint.extractor import FingerprintExtractor
-from cogscope.storage.database import Database, reset_database
+from cngx.capture.tracer import CngxTracer
+from cngx.contracts.schema import BehaviorContract
+from cngx.contracts.validator import ContractValidator
+from cngx.core.models import BehavioralFingerprint, ReasoningTrace, TokenUsage
+from cngx.diff.engine import DiffEngine
+from cngx.drift.detector import DriftDetector
+from cngx.fingerprint.extractor import FingerprintExtractor
+from cngx.storage.database import Database, reset_database
 
 
 @pytest.fixture()
@@ -60,7 +60,7 @@ def diff_engine():
 @pytest.fixture()
 def mock_tracer():
     """Tracer using mock adapter, no API keys required."""
-    return CogscopeTracer(adapter="mock", model="mock-model", auto_fingerprint=True)
+    return CngxTracer(adapter="mock", model="mock-model", auto_fingerprint=True)
 
 
 MATH_CONTRACT_YAML = """

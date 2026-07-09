@@ -32,7 +32,7 @@ description: |
 
 domain: research
 intent: "Ensure AI demonstrates thorough analysis with appropriate uncertainty quantification"
-author: "Cogscope Canonical Contracts"
+author: "cngx Canonical Contracts"
 
 # Reasoning depth
 # Research requires deep analysis

@@ -1,4 +1,4 @@
-"""Tests for cogscope wrap zero-code instrumentation."""
+"""Tests for cngx wrap zero-code instrumentation."""
 
 from __future__ import annotations
 
@@ -16,21 +16,21 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 from starlette.routing import Route
 
-from cogscope.cli.wrap import (
+from cngx.cli.wrap import (
     build_wrap_env,
     ensure_proxy_running,
     is_proxy_healthy,
     proxy_root_url,
     run_wrap,
 )
-from cogscope.core.config import get_config, reset_config
-from cogscope.proxy.config import ProxyConfig
-from cogscope.proxy.server import run_proxy
-from cogscope.storage.database import Database, reset_database
+from cngx.core.config import get_config, reset_config
+from cngx.proxy.config import ProxyConfig
+from cngx.proxy.server import run_proxy
+from cngx.storage.database import Database, reset_database
 
 
 @pytest.fixture(autouse=True)
-def _reset_cogscope_globals():
+def _reset_cngx_globals():
     reset_config()
     reset_database()
     yield
@@ -43,7 +43,7 @@ def isolated_project(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     reset_config()
     reset_database()
-    get_config(project_root=tmp_path).ensure_cogscope_dir()
+    get_config(project_root=tmp_path).ensure_cngx_dir()
     return tmp_path
 
 
@@ -107,7 +107,7 @@ def test_build_wrap_env_sets_provider_base_urls():
     assert env["OPENAI_BASE_URL"] == "http://127.0.0.1:8642/v1"
     assert env["OPENAI_API_BASE"] == "http://127.0.0.1:8642/v1"
     assert env["ANTHROPIC_BASE_URL"] == "http://127.0.0.1:8642"
-    assert env["COGSCOPE_PROXY_URL"] == "http://127.0.0.1:8642"
+    assert env["CNGX_PROXY_URL"] == "http://127.0.0.1:8642"
 
 
 def test_ensure_proxy_running_starts_health_endpoint(isolated_project):
@@ -124,7 +124,7 @@ def test_wrap_child_inherits_env_and_routes_through_proxy(
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test-wrap")
     monkeypatch.setenv("OPENAI_BASE_URL", f"http://127.0.0.1:{mock_upstream}")
 
-    import cogscope.proxy.config as proxy_cfg
+    import cngx.proxy.config as proxy_cfg
 
     proxy_cfg._config = ProxyConfig(host="127.0.0.1", port=proxy_port)
     proxy_thread = threading.Thread(
@@ -192,7 +192,7 @@ def test_wrap_cli_invocation(isolated_project):
         [
             sys.executable,
             "-m",
-            "cogscope.cli.main",
+            "cngx.cli.main",
             "wrap",
             "--port",
             str(port),

@@ -1,17 +1,17 @@
 """Example: Running regression tests on model behavior using diff + baselines."""
 
-from cogscope import CogscopeTracer
-from cogscope.diff.engine import DiffEngine
-from cogscope.versioning.baseline import BaselineManager
+from cngx import CngxTracer
+from cngx.diff.engine import DiffEngine
+from cngx.versioning.baseline import BaselineManager
 
 
 def run_regression_tests():
     """Demonstrate regression testing workflow without the archived eval module."""
     print("=" * 60)
-    print("Cogscope - Regression Testing Demo")
+    print("cngx - Regression Testing Demo")
     print("=" * 60)
 
-    tracer = CogscopeTracer(adapter="mock", model="test-model")
+    tracer = CngxTracer(adapter="mock", model="test-model")
     baseline_manager = BaselineManager()
     diff_engine = DiffEngine()
 

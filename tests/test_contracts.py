@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from cogscope.contracts import (
+from cngx.contracts import (
     BehaviorContract,
     ContractValidator,
     DeploymentGate,
@@ -29,7 +29,7 @@ from cogscope.contracts import (
     VerificationConstraint,
     Violation,
 )
-from cogscope.core.models import BehavioralFingerprint, ReasoningTrace
+from cngx.core.models import BehavioralFingerprint, ReasoningTrace
 
 
 @pytest.fixture

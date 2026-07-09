@@ -12,19 +12,19 @@ from pathlib import Path
 import pytest
 import yaml
 
-from cogscope.capture.tracer import CogscopeTracer
-from cogscope.contracts.schema import BehaviorContract
-from cogscope.contracts.validator import ContractValidator
-from cogscope.core.models import (
+from cngx.capture.tracer import CngxTracer
+from cngx.contracts.schema import BehaviorContract
+from cngx.contracts.validator import ContractValidator
+from cngx.core.models import (
     BehavioralFingerprint,
     ReasoningTrace,
     TokenUsage,
     ToolCall,
 )
-from cogscope.diff.engine import DiffEngine
-from cogscope.drift.detector import DriftDetector
-from cogscope.fingerprint.extractor import FingerprintExtractor
-from cogscope.storage.database import Database
+from cngx.diff.engine import DiffEngine
+from cngx.drift.detector import DriftDetector
+from cngx.fingerprint.extractor import FingerprintExtractor
+from cngx.storage.database import Database
 from tests.brutal.fixtures.sample_outputs import (
     EMPTY_RESPONSE,
     GOOD_CODE_REVIEW,
@@ -49,7 +49,7 @@ from tests.brutal.fixtures.sample_outputs import (
 @pytest.fixture
 def fresh_db(tmp_path):
     """Provide a fresh DuckDB database in a temp directory."""
-    db_path = tmp_path / "test_cogscope.db"
+    db_path = tmp_path / "test_cngx.db"
     db = Database(db_path)
     yield db
     db.close()
@@ -210,8 +210,8 @@ def diff_engine():
 
 @pytest.fixture
 def mock_tracer(fresh_db):
-    """CogscopeTracer with mock adapter and fresh database."""
-    return CogscopeTracer(adapter="mock", model="mock-model", db=fresh_db)
+    """CngxTracer with mock adapter and fresh database."""
+    return CngxTracer(adapter="mock", model="mock-model", db=fresh_db)
 
 
 # ============================================================================

@@ -1,6 +1,6 @@
 """Killer Demo: Model Upgrade Breaks Behavior Contract
 
-This demo shows the core value proposition of Cogscope contracts:
+This demo shows the core value proposition of cngx contracts:
 A model upgrade that looks fine can silently violate behavioral contracts.
 
 Scenario:
@@ -27,9 +27,9 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
-from cogscope import CogscopeTracer
-from cogscope.contracts import BehaviorContract, ContractValidator
-from cogscope.contracts.schema import (
+from cngx import CngxTracer
+from cngx.contracts import BehaviorContract, ContractValidator
+from cngx.contracts.schema import (
     DepthConstraint,
     StepsConstraint,
     OutputConstraint,
@@ -68,7 +68,7 @@ def run_demo():
             "  - You encoded your model's expected reasoning in a contract\n"
             "  - A new model version is deployed\n"
             "  - The contract catches the silent regression\n",
-            title="[bold magenta]Cogscope Behavior Contracts[/]",
+            title="[bold magenta]cngx Behavior Contracts[/]",
         )
     )
 
@@ -91,7 +91,7 @@ def run_demo():
     # Test with real model
     console.print("[dim]Capturing trace with gemini-2.5-flash...[/]")
 
-    tracer = CogscopeTracer(adapter="gemini", model="gemini-2.5-flash")
+    tracer = CngxTracer(adapter="gemini", model="gemini-2.5-flash")
 
     try:
         trace = tracer.capture(
@@ -134,7 +134,7 @@ def run_demo():
                     f"[red bold]CONTRACT VIOLATED[/]\n\n"
                     f"The model's behavior violates the contract:\n\n"
                     f"{violations_text}\n"
-                    f"[bold]This is the kind of silent regression that Cogscope catches.[/]",
+                    f"[bold]This is the kind of silent regression that cngx catches.[/]",
                     title="[red]Validation Result[/]",
                 )
             )
@@ -147,7 +147,7 @@ def run_demo():
                 "  - Latency spikes\n"
                 "  - Error rates\n"
                 "  - Cost increases\n\n"
-                "Cogscope Behavior Contracts catch:\n"
+                "cngx Behavior Contracts catch:\n"
                 "  - Shallow reasoning (depth regression)\n"
                 "  - Skipped verification steps\n"
                 "  - Changed reasoning patterns\n"

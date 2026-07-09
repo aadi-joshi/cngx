@@ -1,6 +1,6 @@
-# Contributing to Cogscope
+# Contributing to cngx
 
-Thank you for helping improve Cogscope. This guide covers local development, code style, and how to extend the project.
+Thank you for helping improve cngx. This guide covers local development, code style, and how to extend the project.
 
 ## Development setup
 
@@ -12,8 +12,8 @@ Thank you for helping improve Cogscope. This guide covers local development, cod
 ### Local install
 
 ```bash
-git clone https://github.com/aadi-joshi/cogscope.git
-cd cogscope
+git clone https://github.com/aadi-joshi/cngx.git
+cd cngx
 
 python -m venv .venv
 # Windows: .venv\Scripts\activate
@@ -44,7 +44,7 @@ The repo uses **Ruff** (lint + isort), **Black** (format), and **mypy** (types).
 ```bash
 ruff check .
 black --check .
-mypy cogscope/
+mypy cngx/
 ```
 
 Auto-format before committing:
@@ -59,7 +59,7 @@ Optional: `pre-commit install` if you use pre-commit hooks locally.
 ## Project layout (active OSS tree)
 
 ```
-cogscope/
+cngx/
 ├── capture/        # Tracing and LLM adapters
 ├── proxy/          # Local ASGI reverse proxy
 ├── tui/            # Live terminal dashboard
@@ -78,24 +78,24 @@ Hosted SaaS and marketing-site code from earlier development is **not** in this 
 
 ## Proposing a new behavioral metric
 
-1. Read `cogscope/fingerprint/metrics.py`, `MetricsCalculator` holds regex patterns and counting logic for each signal.
+1. Read `cngx/fingerprint/metrics.py`, `MetricsCalculator` holds regex patterns and counting logic for each signal.
 2. Add your metric computation there (keep it fast and deterministic; prefer explicit patterns over NLP).
-3. Wire the new field through `cogscope/fingerprint/extractor.py` into `BehavioralFingerprint` in `cogscope/core/models.py` if it is a new top-level metric.
-4. If the metric should influence drift alerting, update `cogscope/calibration/profiles.py` (`QUALITY_METRICS` / `LENGTH_METRICS`) and review `cogscope/drift/detector.py`.
+3. Wire the new field through `cngx/fingerprint/extractor.py` into `BehavioralFingerprint` in `cngx/core/models.py` if it is a new top-level metric.
+4. If the metric should influence drift alerting, update `cngx/calibration/profiles.py` (`QUALITY_METRICS` / `LENGTH_METRICS`) and review `cngx/drift/detector.py`.
 5. Add unit tests in `tests/unit/test_metrics.py` or `tests/unit/test_fingerprint.py` with a minimal synthetic trace.
 
 Design note: metrics are heuristics. Document what each pattern captures and what it will miss.
 
 ## Adding a new LLM provider adapter
 
-1. Create `cogscope/capture/adapters/your_provider.py`.
-2. Subclass `BaseAdapter` in `cogscope/capture/adapters/base.py` and implement:
+1. Create `cngx/capture/adapters/your_provider.py`.
+2. Subclass `BaseAdapter` in `cngx/capture/adapters/base.py` and implement:
    - `async def call(...)`, primary async entry point
    - `def call_sync(...)`, synchronous wrapper (often `asyncio.run` or shared core)
    - Streaming via `StreamChunk` if the provider supports it
-3. Register the adapter in `cogscope/capture/adapters/__init__.py` and in `CogscopeTracer`’s adapter map (`cogscope/capture/tracer.py`).
-4. Add routing in `cogscope/proxy/app.py` if the proxy should forward that provider’s API shape.
-5. Add a model profile stub in `cogscope/calibration/profiles.py` if the family has distinct baseline behavior.
+3. Register the adapter in `cngx/capture/adapters/__init__.py` and in `CngxTracer`’s adapter map (`cngx/capture/tracer.py`).
+4. Add routing in `cngx/proxy/app.py` if the proxy should forward that provider’s API shape.
+5. Add a model profile stub in `cngx/calibration/profiles.py` if the family has distinct baseline behavior.
 6. Add optional dependency in `pyproject.toml` under `[project.optional-dependencies]`.
 7. Add tests in `tests/unit/` with mocked HTTP or the `mock` adapter pattern; skip live tests when API keys are absent.
 
@@ -106,7 +106,7 @@ Never log or persist API keys. Read them from environment variables only.
 1. Open an issue or discussion for large changes before investing heavily.
 2. Fork, branch from `main` (or the active launch branch), keep PRs focused.
 3. Include tests for behavior changes.
-4. Run `pytest`, `ruff check .`, `black --check .`, and `mypy cogscope/` before opening the PR.
+4. Run `pytest`, `ruff check .`, `black --check .`, and `mypy cngx/` before opening the PR.
 5. Use clear commit messages (`feat:`, `fix:`, `docs:`, etc.).
 6. Fill out the PR template; link related issues.
 
@@ -119,12 +119,12 @@ Maintainers review for correctness, test coverage, user-facing clarity (plain la
 
 ## CI integration and README badge
 
-**GitHub Action:** add `uses: aadi-joshi/cogscope@v0.1.0` to your workflow. See [docs/guides/github-action.md](docs/guides/github-action.md).
+**GitHub Action:** add `uses: aadi-joshi/cngx@v0.1.0` to your workflow. See [docs/guides/github-action.md](docs/guides/github-action.md).
 
 **README badge** (shields.io):
 
 ```markdown
-[![Monitored by Cogscope](https://img.shields.io/badge/Monitored%20by-Cogscope-22c55e?style=flat-square)](https://github.com/aadi-joshi/cogscope)
+[![Monitored by cngx](https://img.shields.io/badge/Monitored%20by-cngx-22c55e?style=flat-square)](https://github.com/aadi-joshi/cngx)
 ```
 
 More options: [docs/guides/badge.md](docs/guides/badge.md).

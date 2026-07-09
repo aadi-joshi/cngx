@@ -6,8 +6,8 @@ implemented count_revisions().
 
 import pytest
 
-from cogscope.core.models import ReasoningTrace
-from cogscope.fingerprint.metrics import MetricsCalculator
+from cngx.core.models import ReasoningTrace
+from cngx.fingerprint.metrics import MetricsCalculator
 
 
 @pytest.fixture
@@ -192,7 +192,7 @@ class TestHedgingRatio:
 
 class TestToolCallMetrics:
     def test_tool_diversity_all_unique(self, calc):
-        from cogscope.core.models import ToolCall
+        from cngx.core.models import ToolCall
 
         trace = ReasoningTrace(
             id="t",
@@ -210,7 +210,7 @@ class TestToolCallMetrics:
         assert diversity == 1.0
 
     def test_tool_diversity_all_same(self, calc):
-        from cogscope.core.models import ToolCall
+        from cngx.core.models import ToolCall
 
         trace = ReasoningTrace(
             id="t",

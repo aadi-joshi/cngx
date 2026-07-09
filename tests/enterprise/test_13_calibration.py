@@ -13,12 +13,12 @@ from datetime import datetime
 
 import pytest
 
-from cogscope.calibration.confidence import (
+from cngx.calibration.confidence import (
     CalibrationMetrics,
     ConfidenceCalibrator,
     ConfidenceEstimate,
 )
-from cogscope.calibration.profiles import (
+from cngx.calibration.profiles import (
     AdaptiveThresholds,
     CalibrationEngine,
     ModelFamily,
@@ -28,7 +28,7 @@ from cogscope.calibration.profiles import (
     register_profile,
     resolve_model_family,
 )
-from cogscope.core.models import BehavioralFingerprint
+from cngx.core.models import BehavioralFingerprint
 
 
 class TestModelFamilyResolution:

@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Report something broken in Cogscope
+about: Report something broken in cngx
 title: "[bug] "
 labels: bug
 ---
@@ -25,7 +25,7 @@ What happened instead? Include CLI output or logs if relevant.
 
 ## Environment
 
-- Cogscope version (`cogscope version`):
+- cngx version (`cngx version`):
 - Python version:
 - OS:
 - Install method (`pip install -e .`, etc.):

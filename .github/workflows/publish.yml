@@ -57,19 +57,19 @@ jobs:
 
       - name: Smoke test, CLI
         run: |
-          cogscope version
-          cogscope --help
-          cogscope quickstart
+          cngx version
+          cngx --help
+          cngx quickstart
 
       - name: Smoke test, pipx install from wheel
         run: |
           python -m pip install pipx
           python -m pipx install dist/*.whl
-          "$(python -m pipx environment --value PIPX_BIN_DIR)/cogscope" version
-          "$(python -m pipx environment --value PIPX_BIN_DIR)/cogscope" quickstart
+          "$(python -m pipx environment --value PIPX_BIN_DIR)/cngx" version
+          "$(python -m pipx environment --value PIPX_BIN_DIR)/cngx" quickstart
 
       - name: Smoke test, Python import
-        run: python -c "from cogscope import __version__; from cogscope.capture.tracer import CogscopeTracer; print(__version__)"
+        run: python -c "from cngx import __version__; from cngx.capture.tracer import CngxTracer; print(__version__)"
 
   publish-pypi:
     name: Publish to PyPI
@@ -77,7 +77,7 @@ jobs:
     needs: [build, test]
     environment:
       name: pypi
-      url: https://pypi.org/project/cogscope/
+      url: https://pypi.org/project/cngx/
     permissions:
       id-token: write
     steps:
@@ -119,5 +119,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}/cogscope-proxy:latest
-            ghcr.io/${{ github.repository }}/cogscope-proxy:${{ steps.version.outputs.VERSION }}
+            ghcr.io/${{ github.repository }}/cngx-proxy:latest
+            ghcr.io/${{ github.repository }}/cngx-proxy:${{ steps.version.outputs.VERSION }}

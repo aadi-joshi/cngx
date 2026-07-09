@@ -287,7 +287,7 @@ def main() -> int:
     httpd = _start_static_server(port)
     url = f"http://127.0.0.1:{port}/index.html"
 
-    with tempfile.TemporaryDirectory(prefix="cogscope-tracker-demo-") as tmp:
+    with tempfile.TemporaryDirectory(prefix="cngx-tracker-demo-") as tmp:
         raw_webm = Path(tmp) / "tracker-demo.webm"
         try:
             print(f"Recording {url} ...")

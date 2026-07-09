@@ -16,18 +16,18 @@ from datetime import datetime
 
 import pytest
 
-from cogscope.capture.tracer import CogscopeTracer
-from cogscope.contracts.schema import BehaviorContract
-from cogscope.contracts.validator import ContractValidator
-from cogscope.core.models import (
+from cngx.capture.tracer import CngxTracer
+from cngx.contracts.schema import BehaviorContract
+from cngx.contracts.validator import ContractValidator
+from cngx.core.models import (
     BehavioralFingerprint,
     ModelConfig,
     ReasoningTrace,
     TokenUsage,
 )
-from cogscope.diff.engine import DiffEngine
-from cogscope.fingerprint.extractor import FingerprintExtractor
-from cogscope.storage.database import Database
+from cngx.diff.engine import DiffEngine
+from cngx.fingerprint.extractor import FingerprintExtractor
+from cngx.storage.database import Database
 
 
 class TestInvalidInputHandling:
@@ -35,7 +35,7 @@ class TestInvalidInputHandling:
 
     def test_empty_prompt(self):
         """Empty prompt doesn't crash the tracer."""
-        tracer = CogscopeTracer(adapter="mock")
+        tracer = CngxTracer(adapter="mock")
         trace = tracer.capture(prompt="", task_id="empty", save=False)
         assert trace is not None
         # Output may be empty or a default
@@ -142,9 +142,9 @@ class TestAdapterErrorHandling:
         """Gemini adapter reports clear error when google-genai is not installed."""
         from unittest.mock import patch
 
-        from cogscope.capture.adapters import gemini
-        from cogscope.capture.adapters.gemini import GeminiAdapter
-        from cogscope.core.exceptions import AdapterError
+        from cngx.capture.adapters import gemini
+        from cngx.capture.adapters.gemini import GeminiAdapter
+        from cngx.core.exceptions import AdapterError
 
         with patch.object(gemini, "GEMINI_AVAILABLE", False):
             with pytest.raises(AdapterError, match="not installed"):
@@ -152,14 +152,14 @@ class TestAdapterErrorHandling:
 
     def test_mock_adapter_always_works(self):
         """Mock adapter works without any API key."""
-        tracer = CogscopeTracer(adapter="mock")
+        tracer = CngxTracer(adapter="mock")
         trace = tracer.capture(prompt="test", task_id="mock_test", save=False)
         assert trace.output
         assert trace.model
 
     def test_tracer_switch_adapter(self):
         """Switching adapter at runtime works."""
-        tracer = CogscopeTracer(adapter="mock")
+        tracer = CngxTracer(adapter="mock")
         trace1 = tracer.capture(prompt="test", task_id="switch", save=False)
         assert trace1.output
 
@@ -198,7 +198,7 @@ class TestContractErrorCases:
 
     def test_violation_severity_levels(self):
         """All severity levels are valid."""
-        from cogscope.contracts.schema import Severity
+        from cngx.contracts.schema import Severity
 
         assert Severity.WARN.value == "warn"
         assert Severity.FAIL.value == "fail"
@@ -206,7 +206,7 @@ class TestContractErrorCases:
 
     def test_gate_result_report_generation(self):
         """GateResult.report() works for both pass and fail."""
-        from cogscope.contracts.schema import GateResult, Severity, Violation
+        from cngx.contracts.schema import GateResult, Severity, Violation
 
         # Passing result
         passing = GateResult(

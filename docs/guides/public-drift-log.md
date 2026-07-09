@@ -1,14 +1,14 @@
 # The Public Drift Log
 
-The **Cogscope Drift Tracker** is a static site showing behavioral fingerprint trends over time, built from opt-in community submissions.
+The **cngx Drift Tracker** is a static site showing behavioral fingerprint trends over time, built from opt-in community submissions.
 
 - **Source:** `tracker/` in the repository
-- **Live site:** [aadi-joshi.github.io/cogscope](https://aadi-joshi.github.io/cogscope/)
+- **Live site:** [aadi-joshi.github.io/cngx](https://aadi-joshi.github.io/cngx/)
 - **Cost:** $0 (GitHub Actions + Pages on a public repo)
 
 ## Demo
 
-![Cogscope drift tracker walkthrough](../assets/tracker-demo.gif)
+![cngx drift tracker walkthrough](../assets/tracker-demo.gif)
 
 [Full recording (MP4, 1280x720)](../assets/tracker-demo.mp4) · [Static screenshot](../assets/tracker-demo.png)
 
@@ -28,17 +28,17 @@ Sample data ships with `"sample": true` so the pipeline works with zero API spen
 ## How to contribute data
 
 ```bash
-cogscope pin --label my-baseline
-cogscope watch    # or capture traffic locally
-cogscope submit --baseline my-baseline --dry-run   # preview exact JSON
-cogscope submit --baseline my-baseline           # confirm to submit
+cngx pin --label my-baseline
+cngx watch    # or capture traffic locally
+cngx submit --baseline my-baseline --dry-run   # preview exact JSON
+cngx submit --baseline my-baseline           # confirm to submit
 ```
 
 You will see the full payload before anything is sent. It never includes prompt or output text.
 
 Records land in `tracker/data/community/` via pull request (or `pending/` for manual submission).
 
-Schema details: [tracker/README.md](https://github.com/aadi-joshi/cogscope/blob/main/tracker/README.md)
+Schema details: [tracker/README.md](https://github.com/aadi-joshi/cngx/blob/main/tracker/README.md)
 
 ## Optional maintainer probe
 

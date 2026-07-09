@@ -1,7 +1,7 @@
 """
 BRUTAL TEST: Full Pipeline End-to-End
 
-Tests the entire Cogscope pipeline: Capture → Fingerprint → Store → Diff → Drift → Enforce.
+Tests the entire cngx pipeline: Capture → Fingerprint → Store → Diff → Drift → Enforce.
 Uses mock adapter (no API keys needed) to validate the complete data flow works correctly.
 """
 
@@ -10,14 +10,14 @@ import uuid
 
 import pytest
 
-from cogscope.capture.tracer import CogscopeTracer
-from cogscope.contracts.schema import BehaviorContract
-from cogscope.contracts.validator import ContractValidator
-from cogscope.diff.engine import DiffEngine
-from cogscope.drift.detector import DriftDetector
-from cogscope.fingerprint.extractor import FingerprintExtractor
-from cogscope.storage.database import Database
-from cogscope.versioning.baseline import BaselineManager
+from cngx.capture.tracer import CngxTracer
+from cngx.contracts.schema import BehaviorContract
+from cngx.contracts.validator import ContractValidator
+from cngx.diff.engine import DiffEngine
+from cngx.drift.detector import DriftDetector
+from cngx.fingerprint.extractor import FingerprintExtractor
+from cngx.storage.database import Database
+from cngx.versioning.baseline import BaselineManager
 from tests.brutal.conftest import load_contract_from_string, make_trace
 from tests.brutal.fixtures.contract_fixtures import LENIENT_CONTRACT, STRICT_MATH_CONTRACT
 from tests.brutal.fixtures.sample_outputs import (
@@ -32,7 +32,7 @@ class TestCaptureToFingerprint:
 
     def test_mock_capture_produces_trace(self, fresh_db):
         """Mock adapter must produce a valid trace with output."""
-        tracer = CogscopeTracer(adapter="mock", model="mock-model", db=fresh_db)
+        tracer = CngxTracer(adapter="mock", model="mock-model", db=fresh_db)
         trace = tracer.capture(prompt="Solve x^2 = 16", task_id="test_capture")
         assert trace is not None
         assert trace.output is not None
@@ -41,7 +41,7 @@ class TestCaptureToFingerprint:
 
     def test_capture_saves_to_db(self, fresh_db):
         """Captured trace must be retrievable from database."""
-        tracer = CogscopeTracer(adapter="mock", model="mock-model", db=fresh_db)
+        tracer = CngxTracer(adapter="mock", model="mock-model", db=fresh_db)
         trace = tracer.capture(prompt="Test prompt", task_id="test_save", save=True)
         retrieved = tracer.get_trace(trace.id)
         assert retrieved is not None
@@ -50,7 +50,7 @@ class TestCaptureToFingerprint:
 
     def test_capture_produces_fingerprint(self, fresh_db):
         """Capture + save should auto-generate a fingerprint."""
-        tracer = CogscopeTracer(adapter="mock", model="mock-model", db=fresh_db)
+        tracer = CngxTracer(adapter="mock", model="mock-model", db=fresh_db)
         trace = tracer.capture(prompt="Test prompt", task_id="test_fp", save=True)
         fp = tracer.get_fingerprint(trace.id)
         assert fp is not None
@@ -59,7 +59,7 @@ class TestCaptureToFingerprint:
 
     def test_multiple_captures_stored(self, fresh_db):
         """Multiple captures should all be stored and retrievable."""
-        tracer = CogscopeTracer(adapter="mock", model="mock-model", db=fresh_db)
+        tracer = CngxTracer(adapter="mock", model="mock-model", db=fresh_db)
         ids = []
         for i in range(5):
             trace = tracer.capture(prompt=f"Prompt {i}", task_id="multi_test", save=True)
@@ -118,7 +118,7 @@ class TestBaselineManagement:
 
     def test_create_and_retrieve_baseline(self, fresh_db):
         """Create a baseline from a trace, retrieve it by name."""
-        tracer = CogscopeTracer(adapter="mock", model="mock-model", db=fresh_db)
+        tracer = CngxTracer(adapter="mock", model="mock-model", db=fresh_db)
         baseline_mgr = BaselineManager(fresh_db)
 
         trace = tracer.capture(prompt="Baseline prompt", task_id="pin_test", save=True)
@@ -140,7 +140,7 @@ class TestBaselineManagement:
 
     def test_diff_against_baseline(self, fresh_db):
         """Create a baseline, capture a new trace, diff them."""
-        tracer = CogscopeTracer(adapter="mock", model="mock-model", db=fresh_db)
+        tracer = CngxTracer(adapter="mock", model="mock-model", db=fresh_db)
         baseline_mgr = BaselineManager(fresh_db)
         diff_engine = DiffEngine()
 
@@ -168,7 +168,7 @@ class TestDriftDetection:
 
     def test_no_drift_same_behavior(self, fresh_db):
         """Same behavior repeated should show minimal drift."""
-        tracer = CogscopeTracer(adapter="mock", model="mock-model", db=fresh_db)
+        tracer = CngxTracer(adapter="mock", model="mock-model", db=fresh_db)
         detector = DriftDetector(fresh_db)
 
         # Capture several traces with same settings
@@ -185,7 +185,7 @@ class TestFullPipelineIntegration:
 
     def test_capture_validate_pass(self, fresh_db):
         """Full pipeline: capture → fingerprint → validate → PASS."""
-        tracer = CogscopeTracer(adapter="mock", model="mock-model", db=fresh_db)
+        tracer = CngxTracer(adapter="mock", model="mock-model", db=fresh_db)
         validator = ContractValidator()
         contract = load_contract_from_string(LENIENT_CONTRACT)
 
@@ -201,7 +201,7 @@ class TestFullPipelineIntegration:
 
     def test_capture_create_baseline_diff_validate(self, fresh_db):
         """Full lifecycle: capture → create baseline → capture again → diff → validate."""
-        tracer = CogscopeTracer(adapter="mock", model="mock-model", db=fresh_db)
+        tracer = CngxTracer(adapter="mock", model="mock-model", db=fresh_db)
         baseline_mgr = BaselineManager(fresh_db)
         diff_engine = DiffEngine()
         validator = ContractValidator()

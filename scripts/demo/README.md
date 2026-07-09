@@ -1,6 +1,6 @@
 # Demo asset regeneration
 
-Scripts in this folder produce README and docs media. They are **not** runtime dependencies of the `cogscope` package. Install with `pip install -e ".[dev]"`.
+Scripts in this folder produce README and docs media. They are **not** runtime dependencies of the `cngx` package. Install with `pip install -e ".[dev]"`.
 
 ## Terminal quickstart (VHS)
 
@@ -69,7 +69,7 @@ Writes `docs/assets/quickstart.svg`. The README and docs use the **GIF** as the 
 
 ### Watch dashboard
 
-`cogscope watch` was **not** recorded. The live TUI reads events from an in-process bus fed only by the proxy, and the proxy forwards to real provider APIs (no mock upstream). A honest recording would need live API keys and timing-dependent traffic.
+`cngx watch` was **not** recorded. The live TUI reads events from an in-process bus fed only by the proxy, and the proxy forwards to real provider APIs (no mock upstream). A honest recording would need live API keys and timing-dependent traffic.
 
 ## Public drift tracker (Playwright)
 

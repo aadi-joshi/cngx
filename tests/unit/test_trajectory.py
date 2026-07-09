@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from cogscope.drift.trajectory import (
+from cngx.drift.trajectory import (
     DEFAULT_MIN_TURNS,
     TrajectoryCollapseConfig,
     detect_verification_collapse,

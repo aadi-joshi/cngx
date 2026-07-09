@@ -4,13 +4,13 @@ BRUTAL TEST: Fingerprint Extraction Truthfulness
 Tests whether the fingerprint extractor actually captures meaningful behavioral
 differences between objectively different types of LLM outputs.
 
-If these tests fail, the core claim of Cogscope is broken.
+If these tests fail, the core claim of cngx is broken.
 """
 
 import pytest
 
-from cogscope.core.models import ReasoningTrace, TokenUsage
-from cogscope.fingerprint.extractor import FingerprintExtractor
+from cngx.core.models import ReasoningTrace, TokenUsage
+from cngx.fingerprint.extractor import FingerprintExtractor
 from tests.brutal.conftest import make_trace
 from tests.brutal.fixtures.sample_outputs import (
     EMPTY_RESPONSE,
@@ -34,7 +34,7 @@ from tests.brutal.fixtures.sample_outputs import (
 
 
 class TestDepthDetection:
-    """The core claim: Cogscope can detect how deeply an LLM reasons."""
+    """The core claim: cngx can detect how deeply an LLM reasons."""
 
     def setup_method(self):
         self.extractor = FingerprintExtractor()
@@ -90,7 +90,7 @@ class TestDepthDetection:
 
 
 class TestVerificationDetection:
-    """Tests whether Cogscope detects self-verification in reasoning."""
+    """Tests whether cngx detects self-verification in reasoning."""
 
     def setup_method(self):
         self.extractor = FingerprintExtractor()
@@ -125,7 +125,7 @@ class TestVerificationDetection:
 
 
 class TestHedgingDetection:
-    """Tests whether Cogscope reliably detects hedging vs confidence."""
+    """Tests whether cngx reliably detects hedging vs confidence."""
 
     def setup_method(self):
         self.extractor = FingerprintExtractor()
@@ -169,7 +169,7 @@ class TestHedgingDetection:
 
 
 class TestSelfCorrectionDetection:
-    """Tests whether Cogscope detects when an LLM corrects itself."""
+    """Tests whether cngx detects when an LLM corrects itself."""
 
     def setup_method(self):
         self.extractor = FingerprintExtractor()
@@ -201,7 +201,7 @@ class TestSelfCorrectionDetection:
 
 
 class TestStructuredOutputDetection:
-    """Tests whether Cogscope detects structured output (code, JSON, lists)."""
+    """Tests whether cngx detects structured output (code, JSON, lists)."""
 
     def setup_method(self):
         self.extractor = FingerprintExtractor()

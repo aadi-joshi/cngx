@@ -1,21 +1,21 @@
 # CLI Reference
 
-All commands verified against `cogscope v0.1.0`. Run `cogscope --help` for the live list.
+All commands verified against `cngx v0.1.0`. Run `cngx --help` for the live list.
 
 ## Global
 
 ```bash
-cogscope --help
-cogscope version
+cngx --help
+cngx version
 ```
 
 ## init
 
-Initialize `.cogscope/` and local DuckDB storage.
+Initialize `.cngx/` and local DuckDB storage.
 
 ```bash
-cogscope init --yes
-cogscope init --force    # overwrite existing
+cngx init --yes
+cngx init --force    # overwrite existing
 ```
 
 ## quickstart
@@ -23,7 +23,7 @@ cogscope init --force    # overwrite existing
 Zero-key demo of silent reasoning regression caught by policy check.
 
 ```bash
-cogscope quickstart
+cngx quickstart
 ```
 
 Completes in ~0.5 to 1s. Shows BLOCKED policy result.
@@ -33,10 +33,10 @@ Completes in ~0.5 to 1s. Shows BLOCKED policy result.
 Zero-code instrumentation for an existing agent CLI. Starts the proxy if needed and injects provider base URL env vars into the child process.
 
 ```bash
-cogscope wrap -- aider
-cogscope wrap -- python my_agent.py
-cogscope wrap --port 8642 --session-id long-run -- claude
-cogscope wrap --no-start-proxy -- aider   # fail if proxy not already up
+cngx wrap -- aider
+cngx wrap -- python my_agent.py
+cngx wrap --port 8642 --session-id long-run -- claude
+cngx wrap --no-start-proxy -- aider   # fail if proxy not already up
 ```
 
 Sets `OPENAI_BASE_URL`, `OPENAI_API_BASE`, and `ANTHROPIC_BASE_URL` to the local proxy. See [Wrap your agent](../guides/wrap-agent.md).
@@ -46,8 +46,8 @@ Sets `OPENAI_BASE_URL`, `OPENAI_API_BASE`, and `ANTHROPIC_BASE_URL` to the local
 Start local proxy + live terminal dashboard.
 
 ```bash
-cogscope watch
-cogscope watch --port 8642 --host 127.0.0.1
+cngx watch
+cngx watch --port 8642 --host 127.0.0.1
 ```
 
 Prints proxy URL (default `http://127.0.0.1:8642`). Use when you want the TUI alongside `wrap`, or when configuring a client manually. Set `OPENAI_API_KEY` or `ANTHROPIC_API_KEY` in the environment.
@@ -57,8 +57,8 @@ Prints proxy URL (default `http://127.0.0.1:8642`). Use when you want the TUI al
 Pin the latest capture as a named baseline.
 
 ```bash
-cogscope pin --label baseline
-cogscope pin --label baseline --trace TRACE_ID
+cngx pin --label baseline
+cngx pin --label baseline --trace TRACE_ID
 ```
 
 ## diff
@@ -66,8 +66,8 @@ cogscope pin --label baseline --trace TRACE_ID
 Compare recent captures against a pinned baseline.
 
 ```bash
-cogscope diff
-cogscope diff --baseline baseline --limit 5
+cngx diff
+cngx diff --baseline baseline --limit 5
 ```
 
 Without a pinned baseline, exits with a message to run `pin` first.
@@ -77,7 +77,7 @@ Without a pinned baseline, exits with a message to run `pin` first.
 Check a prompt against a YAML policy. CI-friendly exit codes.
 
 ```bash
-cogscope check -c examples/contracts/basic_reasoning.yaml \
+cngx check -c examples/contracts/basic_reasoning.yaml \
   "What is 2+2? Show your work." \
   --adapter mock --model mock-model
 ```
@@ -97,9 +97,9 @@ Exit codes: **0** pass, **1** blocked, **2** failed.
 Drift summary over a time window.
 
 ```bash
-cogscope report
-cogscope report --hours 48 --baseline baseline
-cogscope report --output drift.html
+cngx report
+cngx report --hours 48 --baseline baseline
+cngx report --output drift.html
 ```
 
 ## submit
@@ -107,8 +107,8 @@ cogscope report --output drift.html
 Submit anonymized drift metrics to the public tracker (opt-in).
 
 ```bash
-cogscope submit --baseline my-baseline --dry-run
-cogscope submit --baseline my-baseline
+cngx submit --baseline my-baseline --dry-run
+cngx submit --baseline my-baseline
 ```
 
 Shows exact JSON preview; requires confirmation unless `--yes`. Never includes prompt or output text. See [Public Drift Log](../guides/public-drift-log.md).
@@ -118,7 +118,7 @@ Shows exact JSON preview; requires confirmation unless `--yes`. Never includes p
 Local database statistics.
 
 ```bash
-cogscope status
+cngx status
 ```
 
 ## Legacy / advanced groups
@@ -127,18 +127,18 @@ Still available for power users:
 
 | Group | Purpose |
 |-------|---------|
-| `cogscope gate` | Legacy policy commands |
-| `cogscope capture` | Direct trace capture |
-| `cogscope drift` | Advanced drift analysis |
-| `cogscope demo` | System pipeline scenarios |
-| `cogscope history` | Trace history |
+| `cngx gate` | Legacy policy commands |
+| `cngx capture` | Direct trace capture |
+| `cngx drift` | Advanced drift analysis |
+| `cngx demo` | System pipeline scenarios |
+| `cngx history` | Trace history |
 
 ## Environment variables
 
 | Variable | Purpose |
 |----------|---------|
-| `COGSCOPE_PROXY_HOST` | Proxy bind host (default `127.0.0.1`) |
-| `COGSCOPE_PROXY_PORT` | Proxy port (default `8642`) |
+| `CNGX_PROXY_HOST` | Proxy bind host (default `127.0.0.1`) |
+| `CNGX_PROXY_PORT` | Proxy port (default `8642`) |
 | `OPENAI_API_KEY` | Forward OpenAI traffic |
 | `ANTHROPIC_API_KEY` | Forward Anthropic traffic |
 | `GOOGLE_API_KEY` | Gemini adapter / proxy |

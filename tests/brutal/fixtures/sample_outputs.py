@@ -1,7 +1,7 @@
 """
 Sample LLM outputs that represent real-world reasoning patterns.
 These are handcrafted to exercise every fingerprinting metric, contract constraint,
-and edge case in the Cogscope pipeline.
+and edge case in the cngx pipeline.
 """
 
 # ============================================================================

@@ -17,8 +17,8 @@ from datetime import datetime
 import httpx
 import pytest
 
-from cogscope.core.models import ModelConfig, ReasoningTrace, TokenUsage
-from cogscope.server.app import app
+from cngx.core.models import ModelConfig, ReasoningTrace, TokenUsage
+from cngx.server.app import app
 
 
 def _run(coro):

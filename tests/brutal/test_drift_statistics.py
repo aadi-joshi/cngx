@@ -8,10 +8,10 @@ and produces meaningful results on known distributions.
 import numpy as np
 import pytest
 
-from cogscope.drift.detector import DriftDetector
-from cogscope.drift.scoring import DriftScorer
-from cogscope.fingerprint.extractor import FingerprintExtractor
-from cogscope.storage.database import Database
+from cngx.drift.detector import DriftDetector
+from cngx.drift.scoring import DriftScorer
+from cngx.fingerprint.extractor import FingerprintExtractor
+from cngx.storage.database import Database
 from tests.brutal.conftest import make_trace
 from tests.brutal.fixtures.sample_outputs import (
     GOOD_MATH_REASONING,
@@ -126,7 +126,7 @@ class TestDriftDetectorWithRealData:
 
     def test_drift_low_for_consistent_behavior(self, fresh_db):
         """Consistent outputs should show low drift against a pinned baseline."""
-        from cogscope.versioning.pinning import PinningManager
+        from cngx.versioning.pinning import PinningManager
 
         extractor = FingerprintExtractor()
         baseline_trace = make_trace(

@@ -44,7 +44,7 @@ def test_build_writes_docs_and_split_data_js(tmp_path, monkeypatch):
 
     docs_html = docs.read_text(encoding="utf-8")
     assert "docs-sidebar" in docs_html
-    assert "cogscope wrap" in docs_html
+    assert "cngx wrap" in docs_html
 
     payload = data_js.read_text(encoding="utf-8")
     assert "TRACKER_SAMPLE_DATA" in payload

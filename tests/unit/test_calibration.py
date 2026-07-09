@@ -1,8 +1,8 @@
-"""Tests for cogscope.calibration module."""
+"""Tests for cngx.calibration module."""
 
 import pytest
 
-from cogscope.calibration.confidence import ConfidenceCalibrator, ConfidenceEstimate
+from cngx.calibration.confidence import ConfidenceCalibrator, ConfidenceEstimate
 
 
 class TestConfidenceCalibrator:

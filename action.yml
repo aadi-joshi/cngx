@@ -1,5 +1,5 @@
-name: Cogscope Policy Check
-description: Run cogscope check against a YAML behavior policy in CI
+name: cngx Policy Check
+description: Run cngx check against a YAML behavior policy in CI
 branding:
   icon: check-circle
   color: green
@@ -20,8 +20,8 @@ inputs:
     description: Python version for setup-python
     required: false
     default: "3.11"
-  cogscope-version:
-    description: Pin a cogscope PyPI release (for example 0.1.0). Leave empty for latest.
+  cngx-version:
+    description: Pin a cngx PyPI release (for example 0.1.0). Leave empty for latest.
     required: false
     default: ""
   install-mode:
@@ -29,7 +29,7 @@ inputs:
     required: false
     default: pypi
   model:
-    description: Model name passed to cogscope check
+    description: Model name passed to cngx check
     required: false
     default: mock-model
   adapter:
@@ -45,7 +45,7 @@ inputs:
     required: false
     default: "false"
   init:
-    description: Run cogscope init --yes before check
+    description: Run cngx init --yes before check
     required: false
     default: "true"
 
@@ -57,26 +57,26 @@ runs:
       with:
         python-version: ${{ inputs.python-version }}
 
-    - name: Install Cogscope
+    - name: Install cngx
       shell: bash
       run: |
         set -euo pipefail
         python -m pip install --upgrade pip
         if [ "${{ inputs.install-mode }}" = "editable" ]; then
           pip install -e .
-        elif [ -n "${{ inputs.cogscope-version }}" ]; then
-          pip install "cogscope==${{ inputs.cogscope-version }}"
+        elif [ -n "${{ inputs.cngx-version }}" ]; then
+          pip install "cngx==${{ inputs.cngx-version }}"
         else
-          pip install cogscope
+          pip install cngx
         fi
-        cogscope version
+        cngx version
 
-    - name: Initialize Cogscope
+    - name: Initialize cngx
       if: inputs.init == 'true'
       shell: bash
-      run: cogscope init --yes
+      run: cngx init --yes
 
-    - name: Run cogscope check
+    - name: Run cngx check
       shell: bash
       run: |
         set -euo pipefail
@@ -111,4 +111,4 @@ runs:
         fi
         ARGS+=("$PROMPT")
 
-        cogscope "${ARGS[@]}"
+        cngx "${ARGS[@]}"

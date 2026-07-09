@@ -1,10 +1,10 @@
 # Quickstart
 
-The fastest way to understand Cogscope is to install and run it:
+The fastest way to understand cngx is to install and run it:
 
 ```bash
-pipx install cogscope
-cogscope quickstart
+pipx install cngx
+cngx quickstart
 ```
 
 **Requirements:** Python 3.10+ (for pipx/pip), **no API keys**, **no configuration**, **no Docker**.
@@ -13,12 +13,12 @@ cogscope quickstart
 
 Terminal demo (recorded with [VHS](https://github.com/charmbracelet/vhs), mock adapter, no API keys):
 
-![Cogscope quickstart demo](../assets/quickstart.gif)
+![cngx quickstart demo](../assets/quickstart.gif)
 
 The command runs a mock scenario in under 30 seconds:
 
-1. **Without Cogscope**: a pipeline completes and downstream systems would run, but reasoning assumptions were violated (verification skipped, confidence too low).
-2. **With Cogscope**: the same shallow behavior is **blocked** against a policy (reasoning depth too low, no verification steps detected).
+1. **Without cngx**: a pipeline completes and downstream systems would run, but reasoning assumptions were violated (verification skipped, confidence too low).
+2. **With cngx**: the same shallow behavior is **blocked** against a policy (reasoning depth too low, no verification steps detected).
 
 The demo uses the mock adapter and a deterministic fingerprint so the BLOCKED result is reliable every run, not random LLM variance.
 
@@ -35,7 +35,7 @@ See `scripts/demo/README.md` for Windows ttyd notes and full instructions.
 After install, run a one-shot check with the bundled lenient policy:
 
 ```bash
-cogscope check -c examples/contracts/basic_reasoning.yaml \
+cngx check -c examples/contracts/basic_reasoning.yaml \
   "What is 2+2? Show your work." \
   --adapter mock --model mock-model
 ```
@@ -43,7 +43,7 @@ cogscope check -c examples/contracts/basic_reasoning.yaml \
 Expected result (verified):
 
 ```
-Cogscope policy check
+cngx policy check
 Policy: basic_reasoning v1.0.0
 STATUS: PASSED
 EXIT CODE: 0
@@ -60,21 +60,21 @@ Exit codes for CI:
 ## Initialize for local capture
 
 ```bash
-cogscope init --yes
-cogscope status
+cngx init --yes
+cngx status
 ```
 
-Shows trace/fingerprint counts in your local `.cogscope/cogscope.db`.
+Shows trace/fingerprint counts in your local `.cngx/cngx.db`.
 
 ## What to do next
 
 | Goal | Command |
 |------|---------|
-| Run an agent through Cogscope (recommended) | `cogscope wrap -- aider` |
-| Live dashboard while capturing | `cogscope watch` |
-| Pin normal behavior | `cogscope pin --label baseline` |
-| Session trajectory report | `cogscope report --session SESSION_ID` |
-| Compare recent calls | `cogscope diff --baseline baseline` |
-| Share anonymous metrics (opt-in) | `cogscope submit --baseline baseline --dry-run` |
+| Run an agent through cngx (recommended) | `cngx wrap -- aider` |
+| Live dashboard while capturing | `cngx watch` |
+| Pin normal behavior | `cngx pin --label baseline` |
+| Session trajectory report | `cngx report --session SESSION_ID` |
+| Compare recent calls | `cngx diff --baseline baseline` |
+| Share anonymous metrics (opt-in) | `cngx submit --baseline baseline --dry-run` |
 
 See [Wrap your agent](../guides/wrap-agent.md) and the [CLI Reference](../cli/reference.md).

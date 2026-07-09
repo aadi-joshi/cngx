@@ -1,4 +1,4 @@
-# Cogscope quickstart terminal demo
+# cngx quickstart terminal demo
 # Generate: vhs scripts/demo/quickstart.tape
 # Windows: scripts/demo/record_quickstart.ps1 (installs MSVC ttyd if needed)
 
@@ -22,6 +22,6 @@ Type "pip install -e . -q"
 Enter
 Sleep 4s
 
-Type "cogscope quickstart"
+Type "cngx quickstart"
 Enter
 Sleep 7s

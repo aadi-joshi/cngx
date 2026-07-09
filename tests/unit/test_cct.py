@@ -1,6 +1,6 @@
 """Unit tests for Cauchy Combination Test batch omnibus."""
 
-from cogscope.drift.batch import cct_combine
+from cngx.drift.batch import cct_combine
 
 
 class TestCCT:

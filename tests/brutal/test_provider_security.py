@@ -9,10 +9,10 @@ import time
 
 import pytest
 
-from cogscope.core.models import TokenUsage
-from cogscope.providers.base import TokenAccountant
-from cogscope.providers.rate_limiter import RateLimiter, TokenBucket
-from cogscope.providers.retry import (
+from cngx.core.models import TokenUsage
+from cngx.providers.base import TokenAccountant
+from cngx.providers.rate_limiter import RateLimiter, TokenBucket
+from cngx.providers.retry import (
     CircuitBreaker,
     CircuitBreakerConfig,
     CircuitState,
@@ -20,7 +20,7 @@ from cogscope.providers.retry import (
     compute_delay,
     retry_with_backoff,
 )
-from cogscope.security.regex_sandbox import (
+from cngx.security.regex_sandbox import (
     RegexComplexityError,
     RegexTimeoutError,
     safe_regex_compile,

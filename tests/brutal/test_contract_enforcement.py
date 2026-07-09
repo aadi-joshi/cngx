@@ -4,15 +4,15 @@ BRUTAL TEST: Contract Enforcement Truthfulness
 Tests whether contracts actually block what they claim to block,
 and pass what they claim to pass. This is the enforcement layer.
 
-If a BLOCK-severity violation doesn't result in exit_code=1, Cogscope is broken.
+If a BLOCK-severity violation doesn't result in exit_code=1, cngx is broken.
 """
 
 import pytest
 import yaml
 
-from cogscope.contracts.schema import BehaviorContract, Severity
-from cogscope.contracts.validator import ContractValidator
-from cogscope.fingerprint.extractor import FingerprintExtractor
+from cngx.contracts.schema import BehaviorContract, Severity
+from cngx.contracts.validator import ContractValidator
+from cngx.fingerprint.extractor import FingerprintExtractor
 from tests.brutal.conftest import load_contract_from_string, make_trace
 from tests.brutal.fixtures.contract_fixtures import (
     ALL_CONSTRAINTS_CONTRACT,

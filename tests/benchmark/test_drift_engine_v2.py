@@ -8,17 +8,17 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from cogscope.calibration.profiles import QUALITY_METRICS
-from cogscope.core.models import BehavioralFingerprint
-from cogscope.drift.batch import batch_drift_test
-from cogscope.drift.legacy import (
+from cngx.calibration.profiles import QUALITY_METRICS
+from cngx.core.models import BehavioralFingerprint
+from cngx.drift.batch import batch_drift_test
+from cngx.drift.legacy import (
     legacy_batch_population_alert,
     legacy_fisher_batch_alert,
     legacy_multimetric_outlier,
 )
-from cogscope.drift.legacy_streaming import LegacyStreamingDriftMonitor
-from cogscope.drift.paired import mcnemar_test, paired_continuous_test
-from cogscope.drift.streaming import StreamingDriftMonitor, get_streaming_registry
+from cngx.drift.legacy_streaming import LegacyStreamingDriftMonitor
+from cngx.drift.paired import mcnemar_test, paired_continuous_test
+from cngx.drift.streaming import StreamingDriftMonitor, get_streaming_registry
 
 
 def _synthetic_fp(
@@ -270,7 +270,7 @@ class TestSemanticDriftSynthetic:
         pytest.importorskip("sentence_transformers")
 
     def test_semantic_catches_topic_shift(self, semantic_available):
-        from cogscope.drift.semantic import SemanticDriftAnalyzer
+        from cngx.drift.semantic import SemanticDriftAnalyzer
 
         analyzer = SemanticDriftAnalyzer(distance_threshold=0.15)
         baseline_texts = [

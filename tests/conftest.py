@@ -1,19 +1,19 @@
-"""Pytest configuration for Cogscope tests."""
+"""Pytest configuration for cngx tests."""
 
 import tempfile
 from pathlib import Path
 
 import pytest
 
-from cogscope.core.config import CogscopeConfig, reset_config
-from cogscope.storage.database import Database, reset_database
+from cngx.core.config import CngxConfig, reset_config
+from cngx.storage.database import Database, reset_database
 
 
 @pytest.fixture
 def temp_db():
     """Create a temporary database for testing."""
     with tempfile.TemporaryDirectory() as tmpdir:
-        db_path = Path(tmpdir) / ".cogscope" / "test.db"
+        db_path = Path(tmpdir) / ".cngx" / "test.db"
         db_path.parent.mkdir(parents=True, exist_ok=True)
         db = Database(db_path)
         yield db
@@ -25,7 +25,7 @@ def temp_config(temp_db):
     """Create a temporary config for testing."""
     reset_config()
     with tempfile.TemporaryDirectory() as tmpdir:
-        config = CogscopeConfig(project_root=Path(tmpdir))
+        config = CngxConfig(project_root=Path(tmpdir))
         yield config
     reset_config()
 
@@ -35,7 +35,7 @@ def mock_trace():
     """Create a sample trace for testing."""
     from datetime import datetime
 
-    from cogscope.core.models import ModelConfig, ReasoningTrace, TokenUsage, ToolCall
+    from cngx.core.models import ModelConfig, ReasoningTrace, TokenUsage, ToolCall
 
     return ReasoningTrace(
         id="trace_test_123",
@@ -67,7 +67,7 @@ def mock_fingerprint():
     """Create a sample fingerprint for testing."""
     from datetime import datetime
 
-    from cogscope.core.models import BehavioralFingerprint
+    from cngx.core.models import BehavioralFingerprint
 
     return BehavioralFingerprint(
         trace_id="trace_test_123",

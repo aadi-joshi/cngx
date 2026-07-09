@@ -8,7 +8,7 @@ Every captured LLM response becomes a **behavioral fingerprint**: a set of numer
 Prompt + response  →  ReasoningTrace  →  MetricsCalculator  →  BehavioralFingerprint
 ```
 
-Implementation: `cogscope/fingerprint/metrics.py` (pattern counting) and `cogscope/fingerprint/extractor.py` (assembly into a fingerprint object).
+Implementation: `cngx/fingerprint/metrics.py` (pattern counting) and `cngx/fingerprint/extractor.py` (assembly into a fingerprint object).
 
 ## Metrics (honest description)
 
@@ -28,7 +28,7 @@ These are **heuristic and regex-based**, not semantic understanding. They count 
 | `reasoning_length` | Reasoning text size | Character count |
 | `tool_call_count` | Tool invocations | From trace metadata when tools are used |
 
-Full field list: `BehavioralFingerprint` in `cogscope/core/models.py`.
+Full field list: `BehavioralFingerprint` in `cngx/core/models.py`.
 
 !!! warning "What fingerprints are not"
     - Not a measure of factual correctness
@@ -38,11 +38,11 @@ Full field list: `BehavioralFingerprint` in `cogscope/core/models.py`.
 
 ## Why regex?
 
-Regex is fast, deterministic, and runs locally on every response without extra API calls. The tradeoff is obvious: a model can write "let me verify" without actually verifying. Cogscope treats metrics as **signals**, not verdicts, especially for drift detection, which looks at *change* from your baseline, not absolute scores.
+Regex is fast, deterministic, and runs locally on every response without extra API calls. The tradeoff is obvious: a model can write "let me verify" without actually verifying. cngx treats metrics as **signals**, not verdicts, especially for drift detection, which looks at *change* from your baseline, not absolute scores.
 
 ## Fingerprints are stored locally
 
-Each fingerprint links to a trace ID in `.cogscope/cogscope.db` (DuckDB). Prompt and output text stay in the trace table locally; they are **never** included in `cogscope submit` payloads.
+Each fingerprint links to a trace ID in `.cngx/cngx.db` (DuckDB). Prompt and output text stay in the trace table locally; they are **never** included in `cngx submit` payloads.
 
 ## Related
 

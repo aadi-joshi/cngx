@@ -13,27 +13,27 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
-from cogscope.cli.main import app
+from cngx.cli.main import app
 
 runner = CliRunner()
 
 
 class TestInitCommand:
-    """Test `cogscope init` command."""
+    """Test `cngx init` command."""
 
-    def test_init_creates_cogscope_dir(self, tmp_path):
-        """cogscope init should create .cogscope directory structure."""
+    def test_init_creates_cngx_dir(self, tmp_path):
+        """cngx init should create .cngx directory structure."""
         result = runner.invoke(app, ["init", str(tmp_path)])
-        assert result.exit_code == 0, f"cogscope init failed: {result.output}"
-        cogscope_dir = tmp_path / ".cogscope"
-        assert cogscope_dir.exists(), f".cogscope directory not created in {tmp_path}"
+        assert result.exit_code == 0, f"cngx init failed: {result.output}"
+        cngx_dir = tmp_path / ".cngx"
+        assert cngx_dir.exists(), f".cngx directory not created in {tmp_path}"
 
     def test_init_creates_db(self, tmp_path):
-        """cogscope init should create the database file."""
+        """cngx init should create the database file."""
         result = runner.invoke(app, ["init", str(tmp_path)])
         assert result.exit_code == 0
-        cogscope_dir = tmp_path / ".cogscope"
-        assert cogscope_dir.exists()
+        cngx_dir = tmp_path / ".cngx"
+        assert cngx_dir.exists()
 
     def test_init_idempotent(self, tmp_path):
         """Running init twice should work (or give clear error)."""
@@ -43,27 +43,27 @@ class TestInitCommand:
         assert result2.exit_code in [0, 1], f"Second init crashed: {result2.output}"
 
     def test_init_force_overwrites(self, tmp_path):
-        """cogscope init --force should overwrite existing .cogscope directory."""
+        """cngx init --force should overwrite existing .cngx directory."""
         runner.invoke(app, ["init", str(tmp_path)])
         result = runner.invoke(app, ["init", str(tmp_path), "--force"])
         assert result.exit_code == 0, f"Force init failed: {result.output}"
 
 
 class TestVersionCommand:
-    """Test `cogscope version` command."""
+    """Test `cngx version` command."""
 
     def test_version_output(self):
-        """cogscope version should output the version string."""
+        """cngx version should output the version string."""
         result = runner.invoke(app, ["version"])
         assert result.exit_code == 0
-        assert "0.1.0" in result.output or "cogscope" in result.output.lower()
+        assert "0.1.0" in result.output or "cngx" in result.output.lower()
 
 
 class TestStatusCommand:
-    """Test `cogscope status` command."""
+    """Test `cngx status` command."""
 
     def test_status_in_uninitialized_dir(self, tmp_path):
-        """Status in non-Cogscope dir should give clear message."""
+        """Status in non-cngx dir should give clear message."""
         os.chdir(str(tmp_path))
         result = runner.invoke(app, ["status"])
         # Should either succeed with empty status or fail gracefully
@@ -71,7 +71,7 @@ class TestStatusCommand:
 
 
 class TestGateCommand:
-    """Test `cogscope gate` commands with mock adapter."""
+    """Test `cngx gate` commands with mock adapter."""
 
     def test_gate_check_mock_pass(self, tmp_path):
         """Gate check with mock adapter and lenient contract should pass."""
@@ -198,7 +198,7 @@ depth:
 
 
 class TestCaptureCommand:
-    """Test `cogscope capture` commands."""
+    """Test `cngx capture` commands."""
 
     def test_capture_run_mock(self, tmp_path):
         """Capture with mock adapter should work."""
@@ -223,7 +223,7 @@ class TestCaptureCommand:
 
 
 class TestDemoCommand:
-    """Test `cogscope demo` command."""
+    """Test `cngx demo` command."""
 
     def test_demo_help(self):
         """Demo help should show available options."""

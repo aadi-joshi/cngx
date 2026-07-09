@@ -4,9 +4,9 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from cogscope.core.models import BehavioralFingerprint, SignificanceLevel
-from cogscope.drift.detector import DriftDetector
-from cogscope.drift.scoring import DriftScorer
+from cngx.core.models import BehavioralFingerprint, SignificanceLevel
+from cngx.drift.detector import DriftDetector
+from cngx.drift.scoring import DriftScorer
 
 
 @pytest.fixture

@@ -1,6 +1,6 @@
-"""Streaming Capture Example, Cogscope
+"""Streaming Capture Example, cngx
 
-Demonstrates how to use Cogscope's streaming capture to get
+Demonstrates how to use cngx's streaming capture to get
 real-time token output while still capturing the full
 reasoning trace and behavioral fingerprint.
 
@@ -8,7 +8,7 @@ Works with any adapter: openai, gemini, claude, mock.
 """
 
 import asyncio
-from cogscope import CogscopeTracer, StreamChunk
+from cngx import CngxTracer, StreamChunk
 
 
 def sync_streaming_example():
@@ -18,7 +18,7 @@ def sync_streaming_example():
     print("=" * 60)
 
     # Use mock adapter for demo (no API key needed)
-    tracer = CogscopeTracer(adapter="mock", model="mock-model")
+    tracer = CngxTracer(adapter="mock", model="mock-model")
 
     full_text = ""
     for chunk in tracer.capture_stream(
@@ -46,7 +46,7 @@ async def async_streaming_example():
     print("Async Streaming Capture")
     print("=" * 60)
 
-    tracer = CogscopeTracer(adapter="mock", model="mock-model")
+    tracer = CngxTracer(adapter="mock", model="mock-model")
 
     async for chunk in tracer.capture_stream_async(
         task_id="async_stream_demo",
@@ -65,15 +65,15 @@ async def async_streaming_example():
 
 def streaming_with_contract():
     """Stream first, then validate the trace against a contract."""
-    from cogscope.contracts.schema import BehaviorContract
-    from cogscope.contracts.validator import ContractValidator
-    from cogscope.fingerprint.extractor import FingerprintExtractor
+    from cngx.contracts.schema import BehaviorContract
+    from cngx.contracts.validator import ContractValidator
+    from cngx.fingerprint.extractor import FingerprintExtractor
 
     print("\n" + "=" * 60)
     print("Streaming + Contract Validation")
     print("=" * 60)
 
-    tracer = CogscopeTracer(adapter="mock", model="mock-model")
+    tracer = CngxTracer(adapter="mock", model="mock-model")
 
     # Collect the trace from stream
     final_trace = None

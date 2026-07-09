@@ -1,17 +1,17 @@
 """Example: Detecting behavioral drift over time."""
 
 from datetime import datetime
-from cogscope import CogscopeTracer, DriftDetector, BaselineManager
-from cogscope.diff.formatter import DiffFormatter
+from cngx import CngxTracer, DriftDetector, BaselineManager
+from cngx.diff.formatter import DiffFormatter
 
 
 def simulate_drift():
     """Simulate behavioral drift and demonstrate detection."""
     print("=" * 60)
-    print("Cogscope, Drift Detection Demo")
+    print("cngx, Drift Detection Demo")
     print("=" * 60)
 
-    tracer = CogscopeTracer(adapter="mock", model="test-model")
+    tracer = CngxTracer(adapter="mock", model="test-model")
     drift_detector = DriftDetector()
     baseline_manager = BaselineManager()
 
@@ -59,7 +59,7 @@ def simulate_drift():
 
     # 4. Show detailed diff
     print("\n4. Detailed behavior diff:")
-    from cogscope.diff.engine import DiffEngine
+    from cngx.diff.engine import DiffEngine
 
     diff_engine = DiffEngine()
     formatter = DiffFormatter()

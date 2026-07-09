@@ -32,7 +32,7 @@ description: |
 
 domain: code
 intent: "Ensure AI demonstrates proper software engineering reasoning when generating or reviewing code"
-author: "Cogscope Canonical Contracts"
+author: "cngx Canonical Contracts"
 
 # Reasoning depth
 # Code generation requires understanding before implementation

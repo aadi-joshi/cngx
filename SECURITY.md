@@ -12,18 +12,18 @@ Report vulnerabilities privately:
 
 We aim to acknowledge reports within **48 hours** and will coordinate disclosure before any public fix.
 
-## What Cogscope does with secrets and data
+## What cngx does with secrets and data
 
-Cogscope is **local-first**:
+cngx is **local-first**:
 
 | Data | Behavior |
 |------|----------|
 | Provider API keys (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, etc.) | Read from the environment for request forwarding only. Held **in memory** for the duration of a single proxied request. **Never logged, never persisted, never written to DuckDB.** |
-| Captured traces and fingerprints | Stored locally under `.cogscope/` (DuckDB). Stays on your machine unless you copy it elsewhere. |
+| Captured traces and fingerprints | Stored locally under `.cngx/` (DuckDB). Stays on your machine unless you copy it elsewhere. |
 | Telemetry | **None.** No phone-home, no usage analytics, no crash reporting to a vendor backend. |
 | Outbound network (proxy) | Only traffic you initiate: forwarded requests to the LLM provider you configured. |
 
-The only exception is **`cogscope submit`**: optional sharing of anonymized drift summaries to a public tracker, with an **explicit preview-and-confirm** step before anything is sent. Nothing is uploaded by default.
+The only exception is **`cngx submit`**: optional sharing of anonymized drift summaries to a public tracker, with an **explicit preview-and-confirm** step before anything is sent. Nothing is uploaded by default.
 
 ## Scope
 
@@ -31,13 +31,13 @@ The only exception is **`cogscope submit`**: optional sharing of anonymized drif
 
 - Local proxy mishandling API keys (logging, persistence, leakage to third parties)
 - Path traversal or arbitrary file write via CLI/storage
-- ReDoS or injection via user-supplied policy YAML regex patterns (`cogscope/security/`)
+- ReDoS or injection via user-supplied policy YAML regex patterns (`cngx/security/`)
 - Sandbox escapes in any code-execution paths still present in the OSS tree
 
 **Out of scope**
 
 - Vulnerabilities in upstream LLM provider APIs
-- Issues that require the reporter to already have full shell access on the machine running Cogscope
+- Issues that require the reporter to already have full shell access on the machine running cngx
 - Denial of service from intentionally flooding the local proxy on localhost
 
 ## Supported versions

@@ -1,24 +1,24 @@
 # README Badge
 
-Add a small badge to show your project runs Cogscope policy checks. It links to the Cogscope repository.
+Add a small badge to show your project runs cngx policy checks. It links to the cngx repository.
 
 ## Shields.io (simplest)
 
 ```markdown
-[![Monitored by Cogscope](https://img.shields.io/badge/Monitored%20by-Cogscope-22c55e?style=flat-square)](https://github.com/aadi-joshi/cogscope)
+[![Monitored by cngx](https://img.shields.io/badge/Monitored%20by-cngx-22c55e?style=flat-square)](https://github.com/aadi-joshi/cngx)
 ```
 
-[![Monitored by Cogscope](https://img.shields.io/badge/Monitored%20by-Cogscope-22c55e?style=flat-square)](https://github.com/aadi-joshi/cogscope)
+[![Monitored by cngx](https://img.shields.io/badge/Monitored%20by-cngx-22c55e?style=flat-square)](https://github.com/aadi-joshi/cngx)
 
 ## Hosted SVG (monospace style)
 
 ```markdown
-[![Monitored by Cogscope](https://raw.githubusercontent.com/aadi-joshi/cogscope/main/docs/assets/monitored-by-cogscope.svg)](https://github.com/aadi-joshi/cogscope)
+[![Monitored by cngx](https://raw.githubusercontent.com/aadi-joshi/cngx/main/docs/assets/monitored-by-cngx.svg)](https://github.com/aadi-joshi/cngx)
 ```
 
-[![Monitored by Cogscope](https://raw.githubusercontent.com/aadi-joshi/cogscope/main/docs/assets/monitored-by-cogscope.svg)](https://github.com/aadi-joshi/cogscope)
+[![Monitored by cngx](https://raw.githubusercontent.com/aadi-joshi/cngx/main/docs/assets/monitored-by-cngx.svg)](https://github.com/aadi-joshi/cngx)
 
-Source file: `docs/assets/monitored-by-cogscope.svg`
+Source file: `docs/assets/monitored-by-cngx.svg`
 
 ## Suggested placement
 

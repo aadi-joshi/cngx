@@ -4,9 +4,9 @@ from datetime import datetime
 
 import pytest
 
-from cogscope.calibration.profiles import get_adaptive_thresholds
-from cogscope.core.models import BehavioralFingerprint
-from cogscope.drift.detector import DriftDetector
+from cngx.calibration.profiles import get_adaptive_thresholds
+from cngx.core.models import BehavioralFingerprint
+from cngx.drift.detector import DriftDetector
 
 
 def _fp(**overrides) -> BehavioralFingerprint:
@@ -47,7 +47,7 @@ class TestStatisticalDriftAlerting:
     """Prove shorter-but-normal responses do not false-alarm."""
 
     def setup_method(self):
-        from cogscope.drift.streaming import get_streaming_registry
+        from cngx.drift.streaming import get_streaming_registry
 
         get_streaming_registry().reset()
 

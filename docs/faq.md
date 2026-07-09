@@ -4,9 +4,9 @@
 
 Partially, if you expect fingerprints to measure "true reasoning quality."
 
-Cogscope does **not** claim to know what the model is thinking. It counts observable surface patterns: step structure, verification phrases, hedging language. Those are imperfect proxies. A model can perform genuine reasoning without trigger phrases, or paste "let me verify" without checking anything.
+cngx does **not** claim to know what the model is thinking. It counts observable surface patterns: step structure, verification phrases, hedging language. Those are imperfect proxies. A model can perform genuine reasoning without trigger phrases, or paste "let me verify" without checking anything.
 
-What Cogscope *does* claim:
+What cngx *does* claim:
 
 1. **Consistency tracking**, when *your* model, on *your* tasks, suddenly shifts multiple behavioral metrics away from a baseline *you* pinned, that is worth investigating.
 2. **Policy enforcement**, you can require minimum depth or verification counts for *your* deployment, knowing the check is heuristic.
@@ -18,7 +18,7 @@ It is closer to "behavioral linting" than "cognitive assessment." Useful for cat
 
 Yes. If someone controls the prompt, they can add "let me verify" and bump `verification_steps` without real verification.
 
-Cogscope is a **statistical signal against your own baseline**, not cheat-proof attestation:
+cngx is a **statistical signal against your own baseline**, not cheat-proof attestation:
 
 - **Drift alerts** require multiple quality metrics to move together relative to *your* history, gaming one phrase is insufficient.
 - **Policies** can combine verification counts with depth, step count, and pattern rules, raising the cost of trivial gaming.
@@ -47,50 +47,50 @@ A model that becomes more concise while keeping verification depth and other fin
 
 Provider system-prompt tweaks toward conciseness often trigger structural drift without any capability loss. Treat alerts as "go look," not "regression confirmed."
 
-## What statistical methods does Cogscope use?
+## What statistical methods does cngx use?
 
 | Situation | Methods |
 |-----------|---------|
-| Live `cogscope watch` traffic | KSWIN + MDDM, multi-metric corroboration |
-| `cogscope diff` / population compare | Mann-Whitney U, Benjamini-Hochberg (1995), Cauchy Combination Test (Liu & Xie, 2020) |
+| Live `cngx watch` traffic | KSWIN + MDDM, multi-metric corroboration |
+| `cngx diff` / population compare | Mann-Whitney U, Benjamini-Hochberg (1995), Cauchy Combination Test (Liu & Xie, 2020) |
 | CI fixed benchmark regression (binary) | McNemar exact (holdout) |
 | CI fixed benchmark regression (continuous) | Paired permutation test (holdout) |
 | Optional `--semantic` | Local MiniLM embeddings + Jensen-Shannon distance |
-| Optional `--otel` | OpenTelemetry GenAI spans + `cogscope.fingerprint.*` attributes |
+| Optional `--otel` | OpenTelemetry GenAI spans + `cngx.fingerprint.*` attributes |
 
 See [Drift detection](concepts/drift.md) for per-turn methods and [Session trajectories](concepts/sessions.md) for multi-turn collapse detection.
 
 ## How is this different from output benchmarks or observability tools?
 
-| | Output-quality eval tools | Enterprise observability | Local agent firewalls | Cogscope |
+| | Output-quality eval tools | Enterprise observability | Local agent firewalls | cngx |
 |---|---------------------------|--------------------------|----------------------|----------|
 | **Measures** | Final text, rubric scores, pass rates on fixed prompts | Latency, tokens, traces, spans, costs | Spend, secrets, policy blocks | Reasoning shape + session trajectories |
 | **Baseline** | Global or hand-written test sets | Fleet dashboards | Static rules | *Your* pinned fingerprint |
 | **Misses** | Mid-session collapse when each turn looks fine | Local long-run agent health | Reasoning drift | Universal intelligence scoring |
 
-They are complementary. Cogscope catches the case where a long autonomous run still produces plausible output but verification quietly flattened across the session.
+They are complementary. cngx catches the case where a long autonomous run still produces plausible output but verification quietly flattened across the session.
 
 See [Positioning](concepts/positioning.md) for how this relates to Guardian Runtime (cost/security local proxy) and platforms like Langfuse or LangSmith.
 
 ## Does anything leave my machine?
 
-Not unless you run `cogscope submit` and confirm. See [Proxy and Privacy](guides/proxy-and-privacy.md).
+Not unless you run `cngx submit` and confirm. See [Proxy and Privacy](guides/proxy-and-privacy.md).
 
 ## What models are supported?
 
 Mock (no keys), OpenAI, Anthropic, and Google Gemini (optional extras). The proxy forwards OpenAI and Anthropic API shapes today.
 
-Install extras with pipx: `pipx inject cogscope "google-genai>=1.0.0"`. Or with pip: `pip install "cogscope[gemini]"`.
+Install extras with pipx: `pipx inject cngx "google-genai>=1.0.0"`. Or with pip: `pip install "cngx[gemini]"`.
 
 ## Where is the code?
 
 | Component | Path |
 |-----------|------|
-| Fingerprinting | `cogscope/fingerprint/` |
-| Policies | `cogscope/contracts/` |
-| Drift | `cogscope/drift/`, `cogscope/calibration/` |
-| Proxy | `cogscope/proxy/` |
-| CLI | `cogscope/cli/` |
+| Fingerprinting | `cngx/fingerprint/` |
+| Policies | `cngx/contracts/` |
+| Drift | `cngx/drift/`, `cngx/calibration/` |
+| Proxy | `cngx/proxy/` |
+| CLI | `cngx/cli/` |
 
 ## What's planned next?
 

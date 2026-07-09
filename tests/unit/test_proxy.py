@@ -2,14 +2,14 @@
 
 from starlette.testclient import TestClient
 
-from cogscope.proxy.app import create_app
+from cngx.proxy.app import create_app
 
 
 def test_proxy_health():
     client = TestClient(create_app())
     resp = client.get("/health")
     assert resp.status_code == 200
-    assert resp.json()["service"] == "cogscope-proxy"
+    assert resp.json()["service"] == "cngx-proxy"
 
 
 def test_proxy_missing_key_returns_502():

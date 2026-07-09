@@ -1,13 +1,13 @@
 # Writing a Policy
 
-A **policy** is a YAML file that defines behavioral requirements for an LLM response. Cogscope loads policies from disk and checks fingerprints against them.
+A **policy** is a YAML file that defines behavioral requirements for an LLM response. cngx loads policies from disk and checks fingerprints against them.
 
 !!! note "Internal name"
     The Python module is still called `contracts/` for historical reasons. In all user-facing commands and docs, we say **policy**.
 
 ## Minimal example
 
-From `examples/contracts/basic_reasoning.yaml` (verified with `cogscope check`):
+From `examples/contracts/basic_reasoning.yaml` (verified with `cngx check`):
 
 ```yaml
 name: basic_reasoning
@@ -32,13 +32,13 @@ fail_on_violation: true
 Run it:
 
 ```bash
-cogscope check -c examples/contracts/basic_reasoning.yaml \
+cngx check -c examples/contracts/basic_reasoning.yaml \
   "What is 2+2?" --adapter mock
 ```
 
 ## Policy schema
 
-Top-level fields on `BehaviorContract` (`cogscope/contracts/schema.py`):
+Top-level fields on `BehaviorContract` (`cngx/contracts/schema.py`):
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -96,16 +96,16 @@ required_patterns:
     severity: fail
 ```
 
-Patterns run through a ReDoS-safe sandbox (`cogscope/security/`).
+Patterns run through a ReDoS-safe sandbox (`cngx/security/`).
 
 ## CI usage
 
 ```bash
-cogscope check -c policies/my_policy.yaml "Your prompt here" --adapter mock
+cngx check -c policies/my_policy.yaml "Your prompt here" --adapter mock
 echo $?   # 0 pass, 1 blocked, 2 failed
 ```
 
-GitHub Actions example: `.github/workflows/cogscope-check.yml` in the repository.
+GitHub Actions example: `.github/workflows/cngx-check.yml` in the repository.
 
 ## Bundled examples
 

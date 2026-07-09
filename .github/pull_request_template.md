@@ -17,7 +17,7 @@
 - [ ] `pytest`
 - [ ] `ruff check .`
 - [ ] `black --check .`
-- [ ] `mypy cogscope/` (if types touched)
+- [ ] `mypy cngx/` (if types touched)
 
 ## Checklist
 

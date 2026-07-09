@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the Cogscope public drift tracker static site.
+"""Build the cngx public drift tracker static site.
 
 Outputs tracker/site/ with index.html, docs/index.html, data.js, and static assets.
 Community submissions are shown by default. Sample data is opt-in in the browser only.
@@ -19,7 +19,7 @@ STATIC_DIR = TRACKER_ROOT / "static"
 ASSETS_DIR = REPO_ROOT / "docs" / "assets"
 SITE_DIR = TRACKER_ROOT / "site"
 ANNOTATIONS_FILE = DATA_DIR / "annotations.json"
-GITHUB_REPO = "https://github.com/aadi-joshi/cogscope"
+GITHUB_REPO = "https://github.com/aadi-joshi/cngx"
 
 # Option (b): default to empty community view; samples behind explicit toggle.
 # Reason: the project has no real community submissions yet. Showing unlabeled or
@@ -107,7 +107,7 @@ def _topbar(*, docs: bool = False) -> str:
     return f"""<header class="topbar">
   <a class="topbar-brand" href="{home}">
     <img class="topbar-logo" src="{logo}" alt="" width="36" height="22">
-    <span>cogscope</span>
+    <span>cngx</span>
   </a>
   <nav class="topbar-nav" aria-label="Site">
     <a href="{home}"{tracker_current}>tracker</a>
@@ -120,14 +120,14 @@ def _topbar(*, docs: bool = False) -> str:
 def render_index(community_count: int, sample_count: int) -> str:
     return (
         _head(
-            "Cogscope Drift Tracker",
+            "cngx Drift Tracker",
             "Opt-in community drift metrics for long autonomous agent sessions.",
         )
         + f"""
 <body>
 {_topbar()}
   <main class="page">
-    <p class="lede">Public, anonymous reasoning fingerprints from opt-in <code>cogscope submit</code> runs. No prompts. No outputs. No vendor dashboards.</p>
+    <p class="lede">Public, anonymous reasoning fingerprints from opt-in <code>cngx submit</code> runs. No prompts. No outputs. No vendor dashboards.</p>
 
     <p class="status-line">community records: <strong>{community_count}</strong> · illustrative samples available: <strong>{sample_count}</strong></p>
 
@@ -139,12 +139,12 @@ def render_index(community_count: int, sample_count: int) -> str:
         <p>Be the first contributor, or preview what charts look like with the sample toggle below.</p>
         <div class="cmd-block">
           <span class="cmd-label">first submission</span>
-          <pre>pipx install cogscope
-cogscope init --yes
-cogscope wrap -- aider
-cogscope pin --label my-baseline
-cogscope submit --baseline my-baseline --dry-run
-cogscope submit --baseline my-baseline</pre>
+          <pre>pipx install cngx
+cngx init --yes
+cngx wrap -- aider
+cngx pin --label my-baseline
+cngx submit --baseline my-baseline --dry-run
+cngx submit --baseline my-baseline</pre>
         </div>
         <p><a class="btn" href="docs/#submit">how submit works</a></p>
       </div>
@@ -196,8 +196,8 @@ cogscope submit --baseline my-baseline</pre>
       <h2 id="start-heading">run it locally</h2>
       <div class="cmd-block">
         <span class="cmd-label">install + quickstart</span>
-        <pre>pipx install cogscope
-cogscope quickstart</pre>
+        <pre>pipx install cngx
+cngx quickstart</pre>
       </div>
       <p style="color: var(--muted); font-size: 0.85rem;">Full docs on this site: <a href="docs/">installation, wrap, drift detection, submit</a>.</p>
     </section>
@@ -224,22 +224,22 @@ def _copy_block(label: str, code: str) -> str:
 
 def render_docs() -> str:
     blocks = {
-        "pipx": _copy_block("pipx", "pipx install cogscope\ncogscope version"),
-        "quickstart": _copy_block("quickstart", "cogscope quickstart"),
+        "pipx": _copy_block("pipx", "pipx install cngx\ncngx version"),
+        "quickstart": _copy_block("quickstart", "cngx quickstart"),
         "wrap": _copy_block(
             "wrap",
-            "cogscope wrap -- aider\ncogscope wrap --session-id long-run -- python my_agent.py",
+            "cngx wrap -- aider\ncngx wrap --session-id long-run -- python my_agent.py",
         ),
-        "session": _copy_block("session report", "cogscope report --session my-long-run"),
+        "session": _copy_block("session report", "cngx report --session my-long-run"),
         "submit": _copy_block(
             "submit",
-            "cogscope submit --baseline my-baseline --dry-run\ncogscope submit --baseline my-baseline",
+            "cngx submit --baseline my-baseline --dry-run\ncngx submit --baseline my-baseline",
         ),
     }
     return (
         _head(
-            "Cogscope Docs",
-            "Installation, CLI, drift detection, wrap, and submit for Cogscope.",
+            "cngx Docs",
+            "Installation, CLI, drift detection, wrap, and submit for cngx.",
             docs=True,
         )
         + f"""
@@ -261,17 +261,17 @@ def render_docs() -> str:
       </ul>
     </aside>
     <main class="docs-content">
-      <h1>Cogscope documentation</h1>
+      <h1>cngx documentation</h1>
       <p>Local proxy for long autonomous agent sessions. Fingerprints reasoning shape, tracks session trajectories, flags drift against your pinned baseline. No cloud account required.</p>
 
       <h2 id="overview">overview</h2>
-      <p>Cogscope watches for silent mid-session reasoning collapse: an agent that still looks fine turn by turn but stops varying how it verifies work over a long unattended run. Per-turn structural drift is a supporting signal.</p>
-      <p>Install with pipx, run agents through <code>cogscope wrap</code>, pin a baseline, optionally submit anonymized metrics to this public tracker.</p>
+      <p>cngx watches for silent mid-session reasoning collapse: an agent that still looks fine turn by turn but stops varying how it verifies work over a long unattended run. Per-turn structural drift is a supporting signal.</p>
+      <p>Install with pipx, run agents through <code>cngx wrap</code>, pin a baseline, optionally submit anonymized metrics to this public tracker.</p>
 
       <h2 id="install">install</h2>
-      <p><strong>Recommended:</strong> pipx puts <code>cogscope</code> on your PATH in an isolated environment. No virtualenv to manage.</p>
+      <p><strong>Recommended:</strong> pipx puts <code>cngx</code> on your PATH in an isolated environment. No virtualenv to manage.</p>
       {blocks["pipx"]}
-      <p><strong>Alternative:</strong> <code>pip install cogscope</code> inside a project virtualenv.</p>
+      <p><strong>Alternative:</strong> <code>pip install cngx</code> inside a project virtualenv.</p>
       <p><strong>No Python:</strong> standalone binaries on <a href="{GITHUB_REPO}/releases">GitHub Releases</a> (PyInstaller builds per platform).</p>
       <p>Docker is optional for containerizing the proxy on a server. It is not required for normal CLI use.</p>
 
@@ -293,8 +293,8 @@ def render_docs() -> str:
       <p>Manual base URL configuration remains for tools that ignore environment overrides.</p>
 
       <h2 id="watch">watch and sessions</h2>
-      <p><code>cogscope watch</code> runs the proxy with a live terminal dashboard. Each turn gets a session id and turn number.</p>
-      <p>After 20+ turns, Cogscope can raise a <strong>session stability warning</strong> when verification-step variance collapses (distinct from per-turn structural drift). See session thresholds in the repository docs under <code>docs/concepts/sessions.md</code>.</p>
+      <p><code>cngx watch</code> runs the proxy with a live terminal dashboard. Each turn gets a session id and turn number.</p>
+      <p>After 20+ turns, cngx can raise a <strong>session stability warning</strong> when verification-step variance collapses (distinct from per-turn structural drift). See session thresholds in the repository docs under <code>docs/concepts/sessions.md</code>.</p>
       {blocks["session"]}
 
       <h2 id="drift">drift detection</h2>
@@ -306,20 +306,20 @@ def render_docs() -> str:
       <table class="docs-table">
         <thead><tr><th>Command</th><th>Purpose</th></tr></thead>
         <tbody>
-          <tr><td><code>cogscope init --yes</code></td><td>Create <code>.cogscope/</code> local database</td></tr>
-          <tr><td><code>cogscope quickstart</code></td><td>Mock demo, no API keys</td></tr>
-          <tr><td><code>cogscope wrap -- &lt;cmd&gt;</code></td><td>Run agent through proxy (recommended)</td></tr>
-          <tr><td><code>cogscope watch</code></td><td>Proxy + live TUI dashboard</td></tr>
-          <tr><td><code>cogscope pin --label NAME</code></td><td>Pin baseline fingerprint</td></tr>
-          <tr><td><code>cogscope diff --baseline NAME</code></td><td>Compare recent traffic to baseline</td></tr>
-          <tr><td><code>cogscope check -c POLICY.yaml "prompt"</code></td><td>CI policy check (exit 0/1/2)</td></tr>
-          <tr><td><code>cogscope report --session ID</code></td><td>Session trajectory summary</td></tr>
-          <tr><td><code>cogscope submit --baseline NAME</code></td><td>Opt-in public tracker submission</td></tr>
+          <tr><td><code>cngx init --yes</code></td><td>Create <code>.cngx/</code> local database</td></tr>
+          <tr><td><code>cngx quickstart</code></td><td>Mock demo, no API keys</td></tr>
+          <tr><td><code>cngx wrap -- &lt;cmd&gt;</code></td><td>Run agent through proxy (recommended)</td></tr>
+          <tr><td><code>cngx watch</code></td><td>Proxy + live TUI dashboard</td></tr>
+          <tr><td><code>cngx pin --label NAME</code></td><td>Pin baseline fingerprint</td></tr>
+          <tr><td><code>cngx diff --baseline NAME</code></td><td>Compare recent traffic to baseline</td></tr>
+          <tr><td><code>cngx check -c POLICY.yaml "prompt"</code></td><td>CI policy check (exit 0/1/2)</td></tr>
+          <tr><td><code>cngx report --session ID</code></td><td>Session trajectory summary</td></tr>
+          <tr><td><code>cngx submit --baseline NAME</code></td><td>Opt-in public tracker submission</td></tr>
         </tbody>
       </table>
 
       <h2 id="submit">submit and privacy</h2>
-      <p>By default nothing leaves your machine. <code>cogscope submit</code> is opt-in and shows the exact JSON before sending.</p>
+      <p>By default nothing leaves your machine. <code>cngx submit</code> is opt-in and shows the exact JSON before sending.</p>
       <p>Submitted payloads contain only: model name, timestamp, numeric metrics, drift score, and your baseline label. No prompts, outputs, trace IDs, or task names.</p>
       {blocks["submit"]}
 
@@ -341,7 +341,7 @@ def render_docs() -> str:
       </table>
 
       <footer class="site-footer">
-        <p>Full mkdocs source: <a href="{GITHUB_REPO}/tree/main/docs">github.com/aadi-joshi/cogscope/docs</a></p>
+        <p>Full mkdocs source: <a href="{GITHUB_REPO}/tree/main/docs">github.com/aadi-joshi/cngx/docs</a></p>
       </footer>
     </main>
   </div>

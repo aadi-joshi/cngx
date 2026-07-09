@@ -4,8 +4,8 @@ from datetime import datetime
 
 import pytest
 
-from cogscope.core.models import BehavioralFingerprint, ReasoningTrace, TokenUsage
-from cogscope.storage.database import Database
+from cngx.core.models import BehavioralFingerprint, ReasoningTrace, TokenUsage
+from cngx.storage.database import Database
 
 
 def _fp(

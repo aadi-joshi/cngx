@@ -21,7 +21,7 @@ from pathlib import Path
 
 import pytest
 
-from cogscope.core.models import (
+from cngx.core.models import (
     Baseline,
     BehavioralFingerprint,
     BehaviorDiff,
@@ -40,20 +40,20 @@ class TestModuleImports:
     """All public modules import without error."""
 
     MODULES = [
-        "cogscope",
-        "cogscope.core.models",
-        "cogscope.capture.tracer",
-        "cogscope.capture.adapters.gemini",
-        "cogscope.fingerprint.extractor",
-        "cogscope.contracts.schema",
-        "cogscope.contracts.validator",
-        "cogscope.diff.engine",
-        "cogscope.drift.detector",
-        "cogscope.storage.database",
-        "cogscope.calibration.confidence",
-        "cogscope.calibration.profiles",
-        "cogscope.enforcement.gate",
-        "cogscope.server.app",
+        "cngx",
+        "cngx.core.models",
+        "cngx.capture.tracer",
+        "cngx.capture.adapters.gemini",
+        "cngx.fingerprint.extractor",
+        "cngx.contracts.schema",
+        "cngx.contracts.validator",
+        "cngx.diff.engine",
+        "cngx.drift.detector",
+        "cngx.storage.database",
+        "cngx.calibration.confidence",
+        "cngx.calibration.profiles",
+        "cngx.enforcement.gate",
+        "cngx.server.app",
     ]
 
     @pytest.mark.parametrize("module_name", MODULES)
@@ -128,8 +128,8 @@ class TestCoreModels:
         )
         assert not diff.has_regression
 
-        from cogscope.core.models import BehaviorChange, ChangeType
-        from cogscope.core.models import SignificanceLevel as SigLevel
+        from cngx.core.models import BehaviorChange, ChangeType
+        from cngx.core.models import SignificanceLevel as SigLevel
 
         diff2 = BehaviorDiff(
             baseline_id="b2",
@@ -170,7 +170,7 @@ class TestContractLoadingFromFile:
         contracts_dir = repo_root() / "contracts"
         assert contracts_dir.is_dir(), f"contracts directory missing: {contracts_dir}"
 
-        from cogscope.contracts.schema import BehaviorContract
+        from cngx.contracts.schema import BehaviorContract
 
         yaml_files = list(contracts_dir.glob("*.yaml"))
         assert len(yaml_files) > 0, "Expected at least one contract file"
@@ -187,7 +187,7 @@ class TestContractLoadingFromFile:
         examples_dir = repo_root() / "examples" / "contracts"
         assert examples_dir.is_dir(), f"examples/contracts missing: {examples_dir}"
 
-        from cogscope.contracts.schema import BehaviorContract
+        from cngx.contracts.schema import BehaviorContract
 
         for yaml_file in examples_dir.glob("*.yaml"):
             contract = BehaviorContract.from_yaml(yaml_file)
@@ -199,7 +199,7 @@ class TestDatabaseLifecycle:
 
     def test_create_and_close(self, tmp_path):
         """Database creates and closes cleanly."""
-        from cogscope.storage.database import Database
+        from cngx.storage.database import Database
 
         db = Database(tmp_path / "test.duckdb")
         stats = db.get_stats()
@@ -208,7 +208,7 @@ class TestDatabaseLifecycle:
 
     def test_multiple_databases(self, tmp_path):
         """Multiple database instances can coexist."""
-        from cogscope.storage.database import Database
+        from cngx.storage.database import Database
 
         db1 = Database(tmp_path / "db1.duckdb")
         db2 = Database(tmp_path / "db2.duckdb")
@@ -242,7 +242,7 @@ class TestCalibrationSystem:
 
     def test_confidence_estimation(self):
         """Confidence estimator produces valid scores."""
-        from cogscope.calibration.confidence import ConfidenceCalibrator
+        from cngx.calibration.confidence import ConfidenceCalibrator
 
         cal = ConfidenceCalibrator()
         fp_dict = {
@@ -258,7 +258,7 @@ class TestCalibrationSystem:
 
     def test_model_profiles(self):
         """Known model profiles are available."""
-        from cogscope.calibration.profiles import (
+        from cngx.calibration.profiles import (
             ModelFamily,
             get_profile,
             resolve_model_family,
@@ -273,7 +273,7 @@ class TestCalibrationSystem:
 
     def test_adaptive_thresholds(self):
         """Adaptive thresholds adjust contract parameters by model."""
-        from cogscope.calibration.profiles import get_adaptive_thresholds
+        from cngx.calibration.profiles import get_adaptive_thresholds
 
         thresholds = get_adaptive_thresholds("gemini-2.5-flash")
         # Should adjust depth/step constraints
@@ -283,7 +283,7 @@ class TestCalibrationSystem:
 
     def test_calibration_engine(self):
         """Calibration engine records observations and calibrates."""
-        from cogscope.calibration.profiles import CalibrationEngine
+        from cngx.calibration.profiles import CalibrationEngine
 
         engine = CalibrationEngine()
         for i in range(15):
@@ -314,7 +314,7 @@ class TestServerAppCreation:
 
     def test_app_is_fastapi(self):
         """Server app is a valid FastAPI instance."""
-        from cogscope.server.app import app
+        from cngx.server.app import app
 
         assert app is not None
         # Check it has routes
@@ -323,14 +323,14 @@ class TestServerAppCreation:
 
     def test_health_endpoint_exists(self):
         """Health endpoint is registered."""
-        from cogscope.server.app import app
+        from cngx.server.app import app
 
         routes = [r.path for r in app.routes if hasattr(r, "path")]
         assert "/health" in routes
 
     def test_api_endpoints_exist(self):
         """Core API endpoints are registered."""
-        from cogscope.server.app import app
+        from cngx.server.app import app
 
         routes = [r.path for r in app.routes if hasattr(r, "path")]
         expected = ["/api/traces", "/api/baselines", "/api/diff"]
@@ -364,5 +364,5 @@ class TestDockerConfiguration:
         with open(pyproject_path, "rb") as f:
             data = tomllib.load(f)
         assert "project" in data
-        assert data["project"]["name"] == "cogscope"
+        assert data["project"]["name"] == "cngx"
         assert data["project"]["version"] == "0.1.0"

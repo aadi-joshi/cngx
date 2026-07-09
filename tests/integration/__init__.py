@@ -1,1 +1,1 @@
-"""Integration tests package for Cogscope."""
+"""Integration tests package for cngx."""

@@ -1,5 +1,5 @@
 /**
- * Cogscope drift tracker charts.
+ * cngx drift tracker charts.
  * Community data is default. Sample data is opt-in via toggle only.
  */
 (function () {

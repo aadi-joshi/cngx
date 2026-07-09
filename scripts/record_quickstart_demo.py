@@ -1,4 +1,4 @@
-"""Record real cogscope quickstart output via Rich Console(record=True).
+"""Record real cngx quickstart output via Rich Console(record=True).
 
 Run from repo root after pip install -e .:
     python scripts/record_quickstart_demo.py
@@ -26,13 +26,13 @@ def main() -> int:
         color_system="truecolor",
     )
 
-    from cogscope.cli import quickstart_cmd
+    from cngx.cli import quickstart_cmd
 
     quickstart_cmd.console = record_console
     quickstart_cmd.run_quickstart()
 
     svg_path = ASSETS / "quickstart.svg"
-    record_console.save_svg(str(svg_path), title="cogscope quickstart")
+    record_console.save_svg(str(svg_path), title="cngx quickstart")
 
     print(f"Wrote {svg_path} ({svg_path.stat().st_size} bytes)")
     return 0

@@ -1,16 +1,16 @@
-"""Integration tests for full Cogscope pipeline."""
+"""Integration tests for full cngx pipeline."""
 
 import tempfile
 from pathlib import Path
 
 import pytest
 
-from cogscope.capture.tracer import CogscopeTracer
-from cogscope.diff.engine import DiffEngine
-from cogscope.drift.detector import DriftDetector
-from cogscope.fingerprint.extractor import FingerprintExtractor
-from cogscope.storage.database import Database
-from cogscope.versioning.baseline import BaselineManager
+from cngx.capture.tracer import CngxTracer
+from cngx.diff.engine import DiffEngine
+from cngx.drift.detector import DriftDetector
+from cngx.fingerprint.extractor import FingerprintExtractor
+from cngx.storage.database import Database
+from cngx.versioning.baseline import BaselineManager
 
 
 class TestCaptureIntegration:
@@ -20,10 +20,10 @@ class TestCaptureIntegration:
     def tracer_with_db(self):
         """Create tracer with temp database."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            db_path = Path(tmpdir) / ".cogscope" / "test.db"
+            db_path = Path(tmpdir) / ".cngx" / "test.db"
             db_path.parent.mkdir(parents=True, exist_ok=True)
             db = Database(db_path)
-            tracer = CogscopeTracer(adapter="mock", model="mock-model", db=db)
+            tracer = CngxTracer(adapter="mock", model="mock-model", db=db)
             yield tracer, db
             db.close()
 
@@ -83,17 +83,17 @@ class TestCaptureIntegration:
 
 
 class TestFullPipeline:
-    """Integration tests for full Cogscope pipeline."""
+    """Integration tests for full cngx pipeline."""
 
     @pytest.fixture
     def setup_pipeline(self):
         """Set up complete pipeline with temp database."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            db_path = Path(tmpdir) / ".cogscope" / "test.db"
+            db_path = Path(tmpdir) / ".cngx" / "test.db"
             db_path.parent.mkdir(parents=True, exist_ok=True)
             db = Database(db_path)
 
-            tracer = CogscopeTracer(adapter="mock", model="mock-model", db=db)
+            tracer = CngxTracer(adapter="mock", model="mock-model", db=db)
             diff_engine = DiffEngine()
             drift_detector = DriftDetector(db=db)
             baseline_manager = BaselineManager(db=db)
@@ -226,10 +226,10 @@ class TestMockAdapterPresets:
     def tracer(self):
         """Create tracer with mock adapter."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            db_path = Path(tmpdir) / ".cogscope" / "test.db"
+            db_path = Path(tmpdir) / ".cngx" / "test.db"
             db_path.parent.mkdir(parents=True, exist_ok=True)
             db = Database(db_path)
-            tracer = CogscopeTracer(adapter="mock", model="mock-model", db=db)
+            tracer = CngxTracer(adapter="mock", model="mock-model", db=db)
             yield tracer, db
             db.close()
 
@@ -237,7 +237,7 @@ class TestMockAdapterPresets:
         """Test that verbose and terse presets differ deterministically."""
         import random
 
-        from cogscope.capture.adapters.mock import MockAdapter
+        from cngx.capture.adapters.mock import MockAdapter
 
         assert (
             MockAdapter.PRESETS["verbose"]["verbosity"] > MockAdapter.PRESETS["terse"]["verbosity"]
