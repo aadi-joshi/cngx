@@ -5,6 +5,18 @@ All notable changes to cngx will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.6] - 2026-07-10
+
+### Fixed
+- Windows PyInstaller binaries: collect `pydantic_core` explicitly, fail the build if required packages are missing, exclude optional ML stacks.
+- Package `__init__` is lazy so `--help` / `version` do not import the full dependency graph at startup.
+
+### Changed
+- Anthropic `/v1/messages` traffic is fingerprinted (stream and non-stream) like OpenAI.
+- `cngx wrap` warns when Gemini is the only configured path (proxy does not route Gemini).
+
+### Added
+- SECURITY.md notes Chart.js CDN on the tracker and edge access-log caveats for submit.
 ## [0.1.5] - 2026-07-10
 
 ### Fixed

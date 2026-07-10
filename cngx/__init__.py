@@ -5,29 +5,16 @@ Capture reasoning traces, extract behavioral fingerprints, validate YAML
 policies, detect drift, and gate agent output in CI.
 """
 
-__version__ = "0.1.5"
+from __future__ import annotations
+
+from typing import Any
+
+__version__ = "0.1.6"
 __author__ = "cngx Contributors"
 
-from cngx.calibration.confidence import ConfidenceCalibrator
-from cngx.capture.adapters.base import StreamChunk
-from cngx.capture.tracer import CngxTracer
-from cngx.core.models import (
-    Baseline,
-    BehavioralFingerprint,
-    BehaviorChange,
-    BehaviorDiff,
-    DriftReport,
-    EvalResult,
-    ReasoningTrace,
-)
-from cngx.diff.engine import DiffEngine
-from cngx.drift.detector import DriftDetector
-from cngx.enforcement import EnforcementGate, GitHubActionGenerator
-from cngx.fingerprint.extractor import FingerprintExtractor
-from cngx.providers import ProviderConfig, RateLimiter, RetryConfig, retry_with_backoff
-from cngx.versioning.baseline import BaselineManager
-from cngx.versioning.pinning import PinningManager
-
+# Keep the public surface, but import heavy modules lazily so CLI entrypoints
+# (and PyInstaller binaries) can resolve --help / version without pulling the
+# full dependency graph at module import time.
 __all__ = [
     "__version__",
     "ReasoningTrace",
@@ -52,3 +39,40 @@ __all__ = [
     "EnforcementGate",
     "GitHubActionGenerator",
 ]
+
+_LAZY_IMPORTS: dict[str, tuple[str, str]] = {
+    "ConfidenceCalibrator": ("cngx.calibration.confidence", "ConfidenceCalibrator"),
+    "StreamChunk": ("cngx.capture.adapters.base", "StreamChunk"),
+    "CngxTracer": ("cngx.capture.tracer", "CngxTracer"),
+    "Baseline": ("cngx.core.models", "Baseline"),
+    "BehavioralFingerprint": ("cngx.core.models", "BehavioralFingerprint"),
+    "BehaviorChange": ("cngx.core.models", "BehaviorChange"),
+    "BehaviorDiff": ("cngx.core.models", "BehaviorDiff"),
+    "DriftReport": ("cngx.core.models", "DriftReport"),
+    "EvalResult": ("cngx.core.models", "EvalResult"),
+    "ReasoningTrace": ("cngx.core.models", "ReasoningTrace"),
+    "DiffEngine": ("cngx.diff.engine", "DiffEngine"),
+    "DriftDetector": ("cngx.drift.detector", "DriftDetector"),
+    "EnforcementGate": ("cngx.enforcement", "EnforcementGate"),
+    "GitHubActionGenerator": ("cngx.enforcement", "GitHubActionGenerator"),
+    "FingerprintExtractor": ("cngx.fingerprint.extractor", "FingerprintExtractor"),
+    "ProviderConfig": ("cngx.providers", "ProviderConfig"),
+    "RateLimiter": ("cngx.providers", "RateLimiter"),
+    "RetryConfig": ("cngx.providers", "RetryConfig"),
+    "retry_with_backoff": ("cngx.providers", "retry_with_backoff"),
+    "BaselineManager": ("cngx.versioning.baseline", "BaselineManager"),
+    "PinningManager": ("cngx.versioning.pinning", "PinningManager"),
+}
+
+
+def __getattr__(name: str) -> Any:
+    target = _LAZY_IMPORTS.get(name)
+    if target is None:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    module_name, attr = target
+    import importlib
+
+    module = importlib.import_module(module_name)
+    value = getattr(module, attr)
+    globals()[name] = value
+    return value
