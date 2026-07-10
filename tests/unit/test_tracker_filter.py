@@ -20,7 +20,9 @@ def test_blocks_harness_model_names() -> None:
 def test_blocks_probe_baselines() -> None:
     assert is_blocked_tracker_baseline("e2e-baseline")
     assert is_blocked_tracker_baseline("cli-e2e-baseline")
+    assert is_blocked_tracker_baseline("launch-live-baseline")
     assert not is_blocked_tracker_baseline("my-baseline")
+    assert not is_blocked_tracker_baseline("community-openai")
 
 
 def test_submit_payload_rejects_harness_model() -> None:

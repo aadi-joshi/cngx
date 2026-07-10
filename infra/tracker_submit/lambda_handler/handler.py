@@ -73,7 +73,9 @@ UUID_RE = re.compile(
 _BLOCKED_MODEL_RE = re.compile(
     r"(?i)^(cngx-.*|mock-model|agent-output|unknown|test|e2e.*)$"
 )
-_BLOCKED_BASELINE_RE = re.compile(r"(?i)(e2e|cli-e2e|probe-baseline)")
+_BLOCKED_BASELINE_RE = re.compile(
+    r"(?i)(e2e|cli-e2e|probe-baseline|launch-live-baseline)"
+)
 
 s3 = boto3.client("s3")
 BUCKET = os.environ["BUCKET_NAME"]

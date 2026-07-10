@@ -6,19 +6,10 @@ import re
 
 # Synthetic / harness names that must never become public tabs.
 _BLOCKED_MODEL_RE = re.compile(
-    r"(?i)^("
-    r"cngx-.*"
-    r"|mock-model"
-    r"|agent-output"
-    r"|unknown"
-    r"|test"
-    r"|e2e.*"
-    r")$"
+    r"(?i)^(" r"cngx-.*" r"|mock-model" r"|agent-output" r"|unknown" r"|test" r"|e2e.*" r")$"
 )
 
-_BLOCKED_BASELINE_RE = re.compile(
-    r"(?i)(e2e|cli-e2e|probe-baseline|launch-live-baseline)"
-)
+_BLOCKED_BASELINE_RE = re.compile(r"(?i)(e2e|cli-e2e|probe-baseline|launch-live-baseline)")
 
 
 def is_blocked_tracker_model(model: str) -> bool:

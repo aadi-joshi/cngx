@@ -10,6 +10,7 @@
   const LIVE_CACHE_MS = 2 * 60 * 1000;
   // Keep in sync with cngx/tracker_filter.py
   const BLOCKED_MODEL_RE = /^(cngx-.*|mock-model|agent-output|unknown|test|e2e.*)$/i;
+  const BLOCKED_BASELINE_RE = /(e2e|cli-e2e|probe-baseline|launch-live-baseline)/i;
 
   const embeddedCommunity = window.TRACKER_DATA || {};
   const meta = window.TRACKER_META || {};
@@ -25,11 +26,17 @@
     return !name || BLOCKED_MODEL_RE.test(String(name).trim());
   }
 
+  function isBlockedBaseline(label) {
+    return BLOCKED_BASELINE_RE.test(String(label || ""));
+  }
+
   function filterCommunity(byModel) {
     const out = {};
     Object.keys(byModel || {}).forEach((model) => {
       if (isBlockedModel(model)) return;
-      const rows = Array.isArray(byModel[model]) ? byModel[model] : [];
+      const rows = (Array.isArray(byModel[model]) ? byModel[model] : []).filter(
+        (r) => !isBlockedBaseline(r && r.baseline_label)
+      );
       if (rows.length) out[model] = rows;
     });
     return out;
