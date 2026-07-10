@@ -11,11 +11,7 @@ pipx install cngx
 cngx quickstart          # mock demo, no API keys, under 30s
 ```
 
-```bash
-cngx check -c examples/contracts/basic_reasoning.yaml "Fix the bug and run the test suite"
-```
-
-Gate existing agent output with no provider calls:
+Gate existing agent output in CI (no provider calls, no API keys):
 
 ```bash
 cngx check -c examples/contracts/coding_agent_verification.yaml \
@@ -23,11 +19,19 @@ cngx check -c examples/contracts/coding_agent_verification.yaml \
   --output-file agent_output.txt
 ```
 
+Live one-shot check against a provider:
+
+```bash
+cngx check -c examples/contracts/basic_reasoning.yaml "Fix the bug and run the test suite"
+```
+
 Python 3.10+. Requires [pipx](https://pipx.pypa.io/) or `pip install cngx`. See [installation](docs/getting-started/installation.md).
 
 ## What it does
 
-**Message one (no baseline):** `cngx check` fingerprints a single response and enforces a behavior policy. Did the model verify its work (tests, repro steps, explicit checks) or only sound confident?
+**Message one (offline CI):** `cngx check --output-file` fingerprints agent text you already have and enforces a behavior policy. Did the agent run tests and show verification, or only sound merge-ready?
+
+**Message one (live):** `cngx check` with a provider adapter fingerprints a single response the same way.
 
 **Long sessions:** `cngx wrap` and `cngx watch` proxy your agent, fingerprint every call, and compare live traffic to a baseline you pin. Alerts use corroborated statistical tests, not length alone.
 

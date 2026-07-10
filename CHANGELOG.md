@@ -5,6 +5,17 @@ All notable changes to cngx will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.3] - 2026-07-10
+
+### Added
+- **Offline policy gate**: `cngx check --output-file`, `--stdin`, and `--response-file` fingerprint existing agent output with no LLM adapter call.
+- **Coding-agent policies**: `examples/contracts/coding_agent_verification.yaml` (strict) and `coding_agent_verification_lenient.yaml`.
+- **GitHub Action** `output-file` input and `example-agent-gate.yml` workflow.
+- **Guide**: [Gate a coding agent in CI](docs/guides/gate-coding-agent.md).
+
+### Fixed
+- Semantic drift PC1 projection used the wrong SVD axis (`u[:, 0]` instead of `vt[0]`), breaking `compare_current_text` on 384-dim embeddings.
+
 ## [0.1.2] - 2026-07-09
 
 ### Changed
