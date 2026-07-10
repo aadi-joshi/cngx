@@ -55,3 +55,26 @@ def test_submit_payload_rejects_harness_model() -> None:
 def test_block_reason_helper() -> None:
     assert tracker_model_block_reason("gpt-4o-mini") is None
     assert tracker_model_block_reason("cngx-cli-live") is not None
+
+
+def test_dedupe_submit_payloads_keeps_one_per_shape() -> None:
+    from cngx.tracker_filter import dedupe_submit_payloads
+
+    a = {
+        "depth": 6,
+        "verification_steps": 0,
+        "hedging_ratio": 0.5,
+        "output_length": 751,
+        "total_steps": 6,
+        "correction_count": 0,
+        "uncertainty_markers": 0,
+        "reasoning_length": 0,
+        "baseline_label": "community-openai",
+        "drift_score": 0.68,
+    }
+    b = {**a, "baseline_label": "community-claude", "drift_score": 1.0}
+    c = {**a, "depth": 28, "output_length": 8876, "total_steps": 28}
+    out = dedupe_submit_payloads([a, b, c])
+    assert len(out) == 2
+    assert out[0]["baseline_label"] == "community-openai"
+    assert out[1]["depth"] == 28

@@ -30,12 +30,54 @@
     return BLOCKED_BASELINE_RE.test(String(label || ""));
   }
 
+  function shapeKey(r) {
+    return [
+      r.depth,
+      r.verification_steps,
+      Math.round(Number(r.hedging_ratio || 0) * 1000) / 1000,
+      r.output_length,
+      r.total_steps,
+      r.correction_count,
+      r.uncertainty_markers,
+      r.reasoning_length,
+    ].join("|");
+  }
+
+  function dedupeRows(rows) {
+    const byShape = new Map();
+    rows.forEach((r) => {
+      const key = shapeKey(r);
+      const prev = byShape.get(key);
+      if (!prev) {
+        byShape.set(key, r);
+        return;
+      }
+      // Prefer earlier timestamp so charts do not spike on re-submits.
+      if (String(r.timestamp || "") < String(prev.timestamp || "")) {
+        byShape.set(key, r);
+      }
+    });
+    // Also collapse same-second collisions that somehow differ in shape noise.
+    const bySecond = new Map();
+    Array.from(byShape.values())
+      .sort((a, b) => String(a.timestamp).localeCompare(String(b.timestamp)))
+      .forEach((r) => {
+        const sec = String(r.timestamp || "").slice(0, 19);
+        if (!bySecond.has(sec)) bySecond.set(sec, r);
+      });
+    return Array.from(bySecond.values()).sort((a, b) =>
+      String(a.timestamp).localeCompare(String(b.timestamp))
+    );
+  }
+
   function filterCommunity(byModel) {
     const out = {};
     Object.keys(byModel || {}).forEach((model) => {
       if (isBlockedModel(model)) return;
-      const rows = (Array.isArray(byModel[model]) ? byModel[model] : []).filter(
-        (r) => !isBlockedBaseline(r && r.baseline_label)
+      const rows = dedupeRows(
+        (Array.isArray(byModel[model]) ? byModel[model] : []).filter(
+          (r) => !isBlockedBaseline(r && r.baseline_label)
+        )
       );
       if (rows.length) out[model] = rows;
     });

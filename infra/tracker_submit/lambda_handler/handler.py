@@ -70,12 +70,22 @@ UUID_RE = re.compile(
 )
 
 # Keep in sync with cngx/tracker_filter.py
-_BLOCKED_MODEL_RE = re.compile(
-    r"(?i)^(cngx-.*|mock-model|agent-output|unknown|test|e2e.*)$"
-)
-_BLOCKED_BASELINE_RE = re.compile(
-    r"(?i)(e2e|cli-e2e|probe-baseline|launch-live-baseline)"
-)
+_BLOCKED_MODEL_RE = re.compile(r"(?i)^(cngx-.*|mock-model|agent-output|unknown|test|e2e.*)$")
+_BLOCKED_BASELINE_RE = re.compile(r"(?i)(e2e|cli-e2e|probe-baseline|launch-live-baseline)")
+
+
+def _shape_key(record: dict[str, Any]) -> tuple:
+    return (
+        int(record.get("depth") or 0),
+        int(record.get("verification_steps") or 0),
+        round(float(record.get("hedging_ratio") or 0.0), 3),
+        int(record.get("output_length") or 0),
+        int(record.get("total_steps") or 0),
+        int(record.get("correction_count") or 0),
+        int(record.get("uncertainty_markers") or 0),
+        int(record.get("reasoning_length") or 0),
+    )
+
 
 s3 = boto3.client("s3")
 BUCKET = os.environ["BUCKET_NAME"]
@@ -154,9 +164,7 @@ def _validate_payload(payload: dict[str, Any]) -> dict[str, Any]:
             "submit only real provider model ids"
         )
     if _BLOCKED_BASELINE_RE.search(baseline_name):
-        raise ValueError(
-            f"baseline {baseline_name!r} looks like an internal probe label"
-        )
+        raise ValueError(f"baseline {baseline_name!r} looks like an internal probe label")
 
     _validate_timestamp(payload["timestamp"])
 
@@ -247,17 +255,22 @@ def _save_index(index: dict[str, Any]) -> None:
     )
 
 
-def _append_to_index(record: dict[str, Any]) -> None:
+def _append_to_index(record: dict[str, Any]) -> bool:
+    """Append record. Returns False if an identical fingerprint shape already exists."""
     index = _load_index()
     by_model: dict[str, list] = index.setdefault("by_model", {})
     model = record["model"]
     records = by_model.setdefault(model, [])
     records = [r for r in records if r.get("record_id") != record["record_id"]]
+    shape = _shape_key(record)
+    if any(_shape_key(r) == shape for r in records):
+        return False
     records.append(record)
     records.sort(key=lambda r: r.get("timestamp", ""))
     by_model[model] = records
     index["record_count"] = sum(len(v) for v in by_model.values())
     _save_index(index)
+    return True
 
 
 def handler(event: dict[str, Any], _context: Any) -> dict[str, Any]:
@@ -280,6 +293,17 @@ def handler(event: dict[str, Any], _context: Any) -> dict[str, Any]:
     record_body = json.dumps(record, indent=2) + "\n"
 
     try:
+        if not _append_to_index(record):
+            return _response(
+                409,
+                {
+                    "error": (
+                        "duplicate fingerprint shape for this model already in the "
+                        "public index (same depth/verification/length); skipped"
+                    ),
+                    "record_id": record["record_id"],
+                },
+            )
         s3.put_object(
             Bucket=BUCKET,
             Key=record_key,
@@ -287,7 +311,6 @@ def handler(event: dict[str, Any], _context: Any) -> dict[str, Any]:
             ContentType="application/json",
             CacheControl="public, max-age=300",
         )
-        _append_to_index(record)
     except Exception:
         return _response(500, {"error": "storage failed"})
 

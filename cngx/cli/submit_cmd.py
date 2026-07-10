@@ -170,7 +170,9 @@ def collect_payloads(
             continue
         drift = engine.diff(baseline_fp, fp).drift_score
         payloads.append(build_submit_payload(fp, baseline, drift))
-    return payloads
+    from cngx.tracker_filter import dedupe_submit_payloads
+
+    return dedupe_submit_payloads(payloads)
 
 
 def post_submit_payload(
@@ -198,6 +200,10 @@ def post_submit_payload(
     if response.status_code == 201:
         data = response.json()
         return str(data.get("record_id", payload["record_id"]))
+
+    if response.status_code == 409:
+        # Identical fingerprint shape already public; treat as success.
+        return str(payload["record_id"])
 
     detail = response.text[:500]
     try:

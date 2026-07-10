@@ -4,7 +4,9 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](https://pypi.org/project/cngx/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-cngx checks whether a coding agent actually ran the verification your policy requires before you trust its output.
+**CI gate for coding agents that sound merge-ready but never showed the tests.**
+
+cngx fingerprints agent output and fails the job when your policy requires verification evidence and the text (or log) does not have it.
 
 ```bash
 pipx install cngx
@@ -25,7 +27,7 @@ Live one-shot check against a provider:
 cngx check -c examples/contracts/basic_reasoning.yaml "Fix the bug and run the test suite"
 ```
 
-Python 3.10+. Requires [pipx](https://pipx.pypa.io/) or `pip install cngx`. See [installation](https://github.com/aadi-joshi/cngx/blob/main/docs/getting-started/installation.md).
+Python 3.10+. Requires [pipx](https://pypa.io/) or `pip install cngx`. See [installation](https://github.com/aadi-joshi/cngx/blob/main/docs/getting-started/installation.md).
 
 ## What it does
 
@@ -43,7 +45,11 @@ Python 3.10+. Requires [pipx](https://pipx.pypa.io/) or `pip install cngx`. See 
               └── diff vs pinned baseline (session drift)
 ```
 
-Honest limit: offline policies score the *text* of agent output. An agent that fabricates "12 passed" without running tests can still pass text-only checks. Pass `--evidence-file pytest.log` (or wire it in the GitHub Action) so cngx also requires a real tool log with a concrete result line. Pair with CI exit codes when you need proof of execution.
+Honest limits (read these):
+
+- Offline policies score the *text* of agent output. An agent that fabricates "12 passed" without running tests can still pass text-only checks. Pass `--evidence-file pytest.log` (or wire it in the GitHub Action) so cngx also requires a real tool log with a concrete result line.
+- There is **no** measured "saves X% tokens" claim. `wrap`/`watch` observe and alert; they do not cut the upstream connection yet. Do not market this as a cost saver until that exists.
+- The [community tracker](https://aadi-joshi.github.io/cngx/) is opt-in numeric metrics only. Early charts are sparse. Duplicate fingerprint shapes are rejected so the public index cannot be padded with the same response under two baselines.
 
 ## Measured (synthetic benchmarks, alpha=0.05)
 

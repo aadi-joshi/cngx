@@ -20,9 +20,9 @@ Per-model timeline charts of:
 - Hedging ratio
 - Drift score (vs each submitter's own baseline)
 
-Tabs are real provider model ids from opt-in submits (for example `gpt-4o-mini`). Harness names like `cngx-e2e-test` are rejected and never shown.
+Tabs are real provider model ids from opt-in submits (for example `gpt-4o-mini`). Harness names like `cngx-e2e-test` are rejected and never shown. Duplicate fingerprint shapes (same response under two baselines) are rejected so charts do not draw vertical spikes.
 
-Sample data ships with `"sample": true` so the pipeline works with zero API spend. Community records are real opt-in submissions. Early charts can look sparse until more days of submits land.
+Sample data ships with `"sample": true` so the pipeline works with zero API spend. Community records are real opt-in submissions. Early charts can look sparse until more days of submits land. The public index is rate-limited but not cryptographically attested: treat it as a signal board, not a scientific dataset.
 
 ## How to contribute data
 

@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "cngx"
-version = "0.1.9"
-description = "Local CLI that fingerprints coding-agent output and gates merges when verification is missing."
+version = "0.1.10"
+description = "CI gate for coding agents that sound merge-ready but never showed the tests."
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"

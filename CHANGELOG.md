@@ -5,6 +5,15 @@ All notable changes to cngx will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.10] - 2026-07-10
+
+### Fixed
+- Public tracker no longer plots the same fingerprint twice (vertical chart spikes from dual-baseline submits).
+- Submit CLI and Lambda reject duplicate fingerprint shapes.
+
+### Changed
+- Sharper honest tagline: CI gate for merge-ready agents that never showed tests.
+- README explicitly refuses fake token-savings claims until a circuit breaker exists.
 ## [0.1.9] - 2026-07-10
 
 ### Fixed

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from typing import Any
 
 # Synthetic / harness names that must never become public tabs.
 _BLOCKED_MODEL_RE = re.compile(
@@ -35,3 +36,34 @@ def tracker_model_block_reason(model: str, baseline_label: str = "") -> str | No
             "use a normal baseline name"
         )
     return None
+
+
+def fingerprint_shape_key(payload: dict[str, Any]) -> tuple[Any, ...]:
+    """Identity of a public point ignoring baseline label and drift score.
+
+    Same response submitted against two baselines must not become two chart
+    points (that draws a vertical spike at one timestamp).
+    """
+    return (
+        int(payload.get("depth") or 0),
+        int(payload.get("verification_steps") or 0),
+        round(float(payload.get("hedging_ratio") or 0.0), 3),
+        int(payload.get("output_length") or 0),
+        int(payload.get("total_steps") or 0),
+        int(payload.get("correction_count") or 0),
+        int(payload.get("uncertainty_markers") or 0),
+        int(payload.get("reasoning_length") or 0),
+    )
+
+
+def dedupe_submit_payloads(payloads: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Keep one payload per fingerprint shape (first wins)."""
+    seen: set[tuple[Any, ...]] = set()
+    out: list[dict[str, Any]] = []
+    for payload in payloads:
+        key = fingerprint_shape_key(payload)
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(payload)
+    return out
