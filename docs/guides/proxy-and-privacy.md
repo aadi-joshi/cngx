@@ -23,6 +23,14 @@ Manual base URL configuration remains for tools that ignore env overrides.
 3. Streams the response back through one local hop (proxy on loopback)
 4. Fingerprints a **copy** of the completed response in the background after the response completes
 
+Provider coverage today (honest limits):
+
+| Route | Forwarded | Fingerprinted |
+|-------|-----------|---------------|
+| OpenAI `/v1/chat/completions` | Yes | Yes (including streaming) |
+| Anthropic `/v1/messages` | Yes | No (forward-only; analysis skips non-OpenAI) |
+| Gemini | No proxy route | Use `cngx check` / capture adapters instead |
+
 Implementation: `cngx/proxy/`
 
 ### API keys
