@@ -5,6 +5,14 @@ All notable changes to cngx will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.9] - 2026-07-10
+
+### Fixed
+- Public tracker no longer shows harness tabs like `cngx-e2e-test` / `cngx-cli-live` (client filter + submit/Lambda denylist).
+- `cngx submit` only includes fingerprints that match the baseline model (no cross-model pollution).
+
+### Changed
+- Tracker UI: record counts on tabs, clearer status line, less infra jargon in loading copy.
 ## [0.1.8] - 2026-07-10
 
 ### Fixed

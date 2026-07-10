@@ -8,23 +8,55 @@
   const LINE = "#333333";
   const GRID = "#1a1a1a";
   const LIVE_CACHE_MS = 2 * 60 * 1000;
+  // Keep in sync with cngx/tracker_filter.py
+  const BLOCKED_MODEL_RE = /^(cngx-.*|mock-model|agent-output|unknown|test|e2e.*)$/i;
+  const BLOCKED_BASELINE_RE = /(e2e|cli-e2e|probe-baseline|launch-live-baseline)/i;
 
   const embeddedCommunity = window.TRACKER_DATA || {};
   const meta = window.TRACKER_META || {};
   const liveUrl = window.TRACKER_LIVE_URL || "";
 
-  let communityData = { ...embeddedCommunity };
+  let communityData = filterCommunity({ ...embeddedCommunity });
   let active = null;
   const charts = [];
   let liveFetchedAt = 0;
   let liveFetchDone = !liveUrl;
 
+  function isBlockedModel(name) {
+    return !name || BLOCKED_MODEL_RE.test(String(name).trim());
+  }
+
+  function isBlockedBaseline(label) {
+    return BLOCKED_BASELINE_RE.test(String(label || ""));
+  }
+
+  function filterCommunity(byModel) {
+    const out = {};
+    Object.keys(byModel || {}).forEach((model) => {
+      if (isBlockedModel(model)) return;
+      const rows = (Array.isArray(byModel[model]) ? byModel[model] : []).filter(
+        (r) => !isBlockedBaseline(r && r.baseline_label)
+      );
+      if (rows.length) out[model] = rows;
+    });
+    return out;
+  }
+
   function currentModels() {
-    return Object.keys(communityData);
+    return Object.keys(communityData).sort((a, b) => {
+      const ca = (communityData[a] || []).length;
+      const cb = (communityData[b] || []).length;
+      if (cb !== ca) return cb - ca;
+      return a.localeCompare(b);
+    });
   }
 
   function liveRecordCount() {
     return Object.values(communityData).reduce((sum, rows) => sum + rows.length, 0);
+  }
+
+  function liveModelCount() {
+    return currentModels().length;
   }
 
   const chartDefaults = {
@@ -118,7 +150,12 @@
       if (loading) {
         status.textContent = "...";
       } else {
-        status.textContent = String(liveRecordCount());
+        const records = liveRecordCount();
+        const models = liveModelCount();
+        status.textContent =
+          records === 0
+            ? "0"
+            : `${records} record${records === 1 ? "" : "s"} across ${models} model${models === 1 ? "" : "s"}`;
       }
     }
 
@@ -142,7 +179,12 @@
     const title = document.getElementById("active-model-label");
     const recs = active ? communityData[active] || [] : [];
 
-    if (title) title.textContent = active || "none";
+    if (title) {
+      const n = recs.length;
+      title.textContent = active
+        ? `${active} (${n} point${n === 1 ? "" : "s"})`
+        : "none";
+    }
 
     if (!recs.length) return;
 
@@ -171,10 +213,10 @@
     if (!tabs) return;
     const models = currentModels();
     tabs.innerHTML = models
-      .map(
-        (m) =>
-          `<button type="button" class="tab${m === active ? " active" : ""}" data-model="${m}" aria-pressed="${m === active}">${m}</button>`
-      )
+      .map((m) => {
+        const n = (communityData[m] || []).length;
+        return `<button type="button" class="tab${m === active ? " active" : ""}" data-model="${m}" aria-pressed="${m === active}">${m} <span class="tab-count">${n}</span></button>`;
+      })
       .join("");
     tabs.querySelectorAll(".tab").forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -218,7 +260,7 @@
       if (!response.ok) return;
       const payload = await response.json();
       if (payload && payload.by_model && typeof payload.by_model === "object") {
-        communityData = payload.by_model;
+        communityData = filterCommunity(payload.by_model);
         liveFetchedAt = now;
         if (payload.updated_at) {
           meta.index_updated_at = payload.updated_at;

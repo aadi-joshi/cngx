@@ -98,6 +98,8 @@ def build_submit_payload(
 
 def validate_submit_payload(payload: dict[str, Any]) -> None:
     """Raise ValueError if payload violates the privacy schema."""
+    from cngx.tracker_filter import tracker_model_block_reason
+
     keys = set(payload.keys())
     extra = keys - ALLOWED_SUBMIT_KEYS
     if extra:
@@ -105,6 +107,13 @@ def validate_submit_payload(payload: dict[str, Any]) -> None:
     forbidden = keys & FORBIDDEN_SUBMIT_KEYS
     if forbidden:
         raise ValueError(f"Forbidden keys in payload: {sorted(forbidden)}")
+
+    blocked = tracker_model_block_reason(
+        str(payload.get("model", "")),
+        str(payload.get("baseline_label", "")),
+    )
+    if blocked:
+        raise ValueError(blocked)
 
     for key, value in payload.items():
         if isinstance(value, bool):
@@ -152,8 +161,12 @@ def collect_payloads(
 
     engine = DiffEngine()
     payloads: list[dict[str, Any]] = []
+    baseline_model = getattr(baseline_fp, "model", None)
     for fp in fingerprints:
         if fp.trace_id == baseline_row.trace_id:
+            continue
+        # Keep each public tab coherent: only compare like-for-like models.
+        if baseline_model and fp.model and fp.model != baseline_model:
             continue
         drift = engine.diff(baseline_fp, fp).drift_score
         payloads.append(build_submit_payload(fp, baseline, drift))

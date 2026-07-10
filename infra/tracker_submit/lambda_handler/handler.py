@@ -69,6 +69,14 @@ UUID_RE = re.compile(
     re.I,
 )
 
+# Keep in sync with cngx/tracker_filter.py
+_BLOCKED_MODEL_RE = re.compile(
+    r"(?i)^(cngx-.*|mock-model|agent-output|unknown|test|e2e.*)$"
+)
+_BLOCKED_BASELINE_RE = re.compile(
+    r"(?i)(e2e|cli-e2e|probe-baseline|launch-live-baseline)"
+)
+
 s3 = boto3.client("s3")
 BUCKET = os.environ["BUCKET_NAME"]
 PREFIX = os.environ.get("OBJECT_PREFIX", "community")
@@ -137,6 +145,18 @@ def _validate_payload(payload: dict[str, Any]) -> dict[str, Any]:
         val = payload[field]
         if not isinstance(val, str) or not val.strip() or len(val) > MAX_STRING_LEN:
             raise ValueError(f"invalid {field}")
+
+    model_name = payload["model"].strip()
+    baseline_name = payload["baseline_label"].strip()
+    if _BLOCKED_MODEL_RE.match(model_name):
+        raise ValueError(
+            f"model {model_name!r} looks like a test/harness name; "
+            "submit only real provider model ids"
+        )
+    if _BLOCKED_BASELINE_RE.search(baseline_name):
+        raise ValueError(
+            f"baseline {baseline_name!r} looks like an internal probe label"
+        )
 
     _validate_timestamp(payload["timestamp"])
 

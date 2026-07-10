@@ -171,7 +171,7 @@ cngx quickstart</pre>
       </div>
 
       <div id="loading-state" class="loading-panel" role="status">
-        <p>Loading live index from S3...</p>
+        <p>Loading community metrics...</p>
       </div>
 
       <div id="empty-state" class="empty-panel hidden">
@@ -191,7 +191,7 @@ cngx submit --baseline my-baseline</pre>
       <div id="chart-section" class="chart-panel hidden">
         <div class="chart-meta">
           <span>model: <strong id="active-model-label">none</strong></span>
-          <span>source: <strong>live S3 index</strong></span>
+          <span>source: <strong>community index</strong></span>
         </div>
         <div id="model-tabs" class="chart-controls" role="tablist" aria-label="Model filter"></div>
         <div class="chart-grid">
