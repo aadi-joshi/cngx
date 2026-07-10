@@ -76,6 +76,7 @@ def run_policy_check(
     prompt_file: Optional[Path] = None,
     output_file: Optional[Path] = None,
     stdin: bool = False,
+    evidence_file: Optional[Path] = None,
     model: str = "mock-model",
     adapter: str = "mock",
     task_id: str = "policy_check",
@@ -99,7 +100,12 @@ def run_policy_check(
             model=offline_model,
             task_id=task_id,
             json_output=json_output,
+            evidence_file=evidence_file,
         )
+
+    if evidence_file is not None:
+        console.print("[red]--evidence-file is only valid with --output-file or --stdin[/]")
+        return 2
 
     return run_check(
         prompt_text,
@@ -118,16 +124,49 @@ def run_offline_check(
     model: str = "agent-output",
     task_id: str = "policy_check",
     json_output: bool = False,
+    evidence_file: Optional[Path] = None,
 ) -> int:
     """Fingerprint and gate existing agent output. No LLM calls."""
     from cngx.capture.tracer import CngxTracer
     from cngx.contracts import DeploymentGate
+    from cngx.enforcement.evidence import check_evidence_text
 
     try:
         behavior_policy = _load_policy(policy)
     except Exception as e:
         console.print(f"[red]Could not load policy: {e}[/]")
         return 2
+
+    evidence_payload = None
+    if evidence_file is not None:
+        if not evidence_file.is_file():
+            console.print(f"[red]evidence-file not found: {evidence_file}[/]")
+            return 2
+        evidence_text = _load_text_file(evidence_file)
+        evidence_check = check_evidence_text(evidence_text)
+        evidence_payload = {
+            "path": str(evidence_file),
+            "ok": evidence_check.ok,
+            "reasons": list(evidence_check.reasons),
+        }
+        if not evidence_check.ok:
+            if json_output:
+                print(
+                    json.dumps(
+                        {
+                            "status": "blocked",
+                            "exit_code": 1,
+                            "evidence": evidence_payload,
+                            "policy": behavior_policy.name,
+                        },
+                        indent=2,
+                    )
+                )
+            else:
+                console.print("[red]STATUS: BLOCKED[/] (evidence check failed)")
+                for reason in evidence_check.reasons:
+                    console.print(f"  - {reason}")
+            return 1
 
     trace, fp = CngxTracer.ingest_output(
         output,
@@ -142,9 +181,13 @@ def run_offline_check(
     if json_output:
         out = result.to_ci_output()
         out["policy"] = out.pop("contract", behavior_policy.name)
+        if evidence_payload is not None:
+            out["evidence"] = evidence_payload
         print(json.dumps(out, indent=2, default=str))
     else:
         console.print(_format_policy_report(result))
+        if evidence_payload is not None and evidence_payload["ok"]:
+            console.print("[green]Evidence check: OK[/] " f"({evidence_payload['path']})")
 
     return result.exit_code
 
@@ -269,6 +312,11 @@ def check(
         "--stdin",
         help="Read agent output from stdin for offline gating",
     ),
+    evidence_file: Optional[Path] = typer.Option(
+        None,
+        "--evidence-file",
+        help="CI/test log to cross-check (must contain e.g. 'N passed'); offline only",
+    ),
     model: str = typer.Option("mock-model", "--model", "-m"),
     adapter: str = typer.Option("mock", "--adapter", "-a", help="mock, openai, gemini, claude"),
     task_id: str = typer.Option("policy_check", "--task", "-t"),
@@ -289,6 +337,7 @@ def check(
             prompt_file=prompt_file,
             output_file=output_file,
             stdin=stdin,
+            evidence_file=evidence_file,
             model=model,
             adapter=adapter,
             task_id=task_id,

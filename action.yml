@@ -20,12 +20,16 @@ inputs:
     description: Path to agent output file for offline gating (no LLM call, no API keys)
     required: false
     default: ""
+  evidence-file:
+    description: Path to CI/test log for offline cross-check (must contain e.g. N passed)
+    required: false
+    default: ""
   python-version:
     description: Python version for setup-python
     required: false
     default: "3.11"
   cngx-version:
-    description: Pin a cngx PyPI release (for example 0.1.0). Leave empty for latest.
+    description: Pin a cngx PyPI release (for example 0.1.4). Leave empty for latest.
     required: false
     default: ""
   install-mode:
@@ -122,6 +126,13 @@ runs:
             exit 2
           fi
           ARGS+=(--output-file "${{ inputs.output-file }}")
+          if [ -n "${{ inputs.evidence-file }}" ]; then
+            if [ ! -f "${{ inputs.evidence-file }}" ]; then
+              echo "evidence-file not found: ${{ inputs.evidence-file }}" >&2
+              exit 2
+            fi
+            ARGS+=(--evidence-file "${{ inputs.evidence-file }}")
+          fi
         else
           ARGS+=(--adapter "${{ inputs.adapter }}")
           if [ -n "${{ inputs.prompt }}" ]; then

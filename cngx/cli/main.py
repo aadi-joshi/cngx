@@ -74,7 +74,7 @@ def init(
         if default_adapter == "openai":
             default_model = "gpt-4o-mini"
         elif default_adapter == "gemini":
-            default_model = "gemini-2.5-flash"
+            default_model = "gemini-flash-latest"
         elif default_adapter == "claude":
             default_model = "claude-sonnet-4-20250514"
 
@@ -150,13 +150,40 @@ def wrap(
 
 @app.command()
 def watch(
-    port: int = typer.Option(8642, "--port", "-p"),
-    host: str = typer.Option("127.0.0.1", "--host"),
+    port: int = typer.Option(8642, "--port", "-p", help="Local proxy port"),
+    host: str = typer.Option("127.0.0.1", "--host", help="Bind address (localhost only)"),
+    session_id: Optional[str] = typer.Option(
+        None,
+        "--session-id",
+        help="Explicit session id for multi-turn trajectory tracking",
+    ),
+    semantic: bool = typer.Option(
+        False,
+        "--semantic",
+        help="Enable optional local embedding drift signal (requires cngx[semantic])",
+    ),
+    otel: bool = typer.Option(
+        False,
+        "--otel",
+        help="Forward OTel GenAI spans with fingerprint attributes (requires cngx[otel])",
+    ),
+    otel_endpoint: str = typer.Option(
+        "http://localhost:4318",
+        "--otel-endpoint",
+        help="OTLP HTTP endpoint when --otel is set",
+    ),
 ) -> None:
     """Start local proxy + live terminal dashboard."""
     from cngx.cli.watch import run_watch
 
-    run_watch(port=port, host=host)
+    run_watch(
+        port=port,
+        host=host,
+        session_id=session_id,
+        semantic=semantic,
+        otel=otel,
+        otel_endpoint=otel_endpoint,
+    )
 
 
 @app.command()
@@ -253,6 +280,11 @@ def check(
         "--stdin",
         help="Read agent output from stdin for offline gating",
     ),
+    evidence_file: Optional[Path] = typer.Option(
+        None,
+        "--evidence-file",
+        help="CI/test log to cross-check (must contain e.g. 'N passed'); offline only",
+    ),
     model: str = typer.Option("mock-model", "--model", "-m"),
     adapter: str = typer.Option("mock", "--adapter", "-a"),
     task_id: str = typer.Option("policy_check", "--task", "-t"),
@@ -264,6 +296,7 @@ def check(
     requires (tests, repro steps, explicit checks)? CI-friendly exit codes.
 
     Pass --output-file or --stdin to gate existing agent output without calling a provider.
+    Pass --evidence-file with a real pytest/CI log to raise the bar above narrative claims.
 
     For continued agent runs, use watch, pin, and diff to detect session-level drift.
     """
@@ -277,6 +310,7 @@ def check(
             prompt_file=prompt_file,
             output_file=output_file,
             stdin=stdin,
+            evidence_file=evidence_file,
             model=model,
             adapter=adapter,
             task_id=task_id,
