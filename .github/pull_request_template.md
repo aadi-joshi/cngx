@@ -21,8 +21,9 @@
 
 ## Checklist
 
-- [ ] User-facing strings use plain language (e.g. "policy" not legacy enterprise framing)
-- [ ] New metrics respect baseline-relative, multi-metric alerting design (if applicable)
+- [ ] User-facing strings are plain and have no em dashes
+- [ ] `verify` verdicts stay bound to real command output, not agent prose (if verify touched)
+- [ ] New result parsers have a real-output test fixture (if parsers touched)
 - [ ] API keys are not logged or persisted (if proxy/adapter code changed)
 - [ ] Docs updated if CLI behavior changed
 
