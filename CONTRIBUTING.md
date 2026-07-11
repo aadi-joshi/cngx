@@ -1,133 +1,98 @@
 # Contributing to cngx
 
-Thank you for helping improve cngx. This guide covers local development, code style, and how to extend the project.
+Thanks for helping improve cngx. This guide covers what the project is, how it is laid out, and how to develop against it.
+
+## What cngx is (read this first)
+
+The core of cngx is one command: **`cngx verify`**. It runs the checks an AI coding agent claimed it ran, parses the real result, and blocks the merge when the claim and reality disagree. The verdict is bound to real command output, never to the prose of the agent's message.
+
+Everything else in the tree is an **advanced / experimental** layer that is not the headline: the heuristic policy lint (`cngx check`), the local proxy and session drift (`wrap`, `watch`, `pin`, `diff`), and the community tracker. Contributions to the core carry the most weight.
 
 ## Development setup
 
-### Prerequisites
-
-- Python 3.10+
-- Git
-
-### Local install
+Requirements: Python 3.10+ and Git.
 
 ```bash
 git clone https://github.com/aadi-joshi/cngx.git
 cd cngx
-
 python -m venv .venv
 # Windows: .venv\Scripts\activate
 # macOS/Linux: source .venv/bin/activate
-
 pip install -e ".[dev]"
 ```
 
-Optional provider extras (only if you are working on or testing that adapter):
+Run the demo to confirm your setup:
 
 ```bash
-pip install -e ".[dev,gemini]"   # Google Gemini
-pip install -e ".[dev,claude]"   # Anthropic Claude
+cngx quickstart
 ```
 
-### Run tests
+### Tests, lint, format
 
 ```bash
-pytest                    # full suite
-pytest tests/unit/ -q     # unit tests only
-pytest tests/unit/test_drift_alerting.py -v   # statistical alerting tests
-```
-
-### Lint and format
-
-The repo uses **Ruff** (lint + isort), **Black** (format), and **mypy** (types). Config lives in `pyproject.toml`.
-
-```bash
+pytest                      # full suite
+pytest tests/unit/test_verify_parsers.py -q   # the parsers you are most likely to touch
 ruff check .
-black --check .
-mypy cngx/
+black --check .             # CI formats with target py311; run: black --fast . if you are on 3.10
+mypy cngx/                  # advisory, not a hard gate
 ```
 
-Auto-format before committing:
+Please add tests for behavior changes and keep the suite green before opening a PR.
 
-```bash
-ruff check --fix .
-black .
-```
-
-Optional: `pre-commit install` if you use pre-commit hooks locally.
-
-## Project layout (active OSS tree)
+## Project layout
 
 ```
 cngx/
-├── capture/        # Tracing and LLM adapters
-├── proxy/          # Local ASGI reverse proxy
-├── tui/            # Live terminal dashboard
-├── fingerprint/    # Metric extraction (see metrics.py)
-├── diff/           # Trace/fingerprint comparison
-├── drift/          # Baseline-relative drift detection
-├── calibration/    # Model profiles and adaptive thresholds
-├── contracts/      # Behavior policies (YAML) and validation
-├── versioning/     # Baseline pinning
-├── storage/        # Local DuckDB
-├── cli/            # Typer CLI entry points
-└── system_demo/    # Reference pipeline scenarios
+├── verify/         # CORE. runner, result parsers, claim extractor, verdict
+├── cli/            # Typer entry points (verify_cmd.py, check_cmd.py, main.py)
+├── capture/        # tracing and LLM adapters (advanced: used by check/proxy)
+├── fingerprint/    # heuristic metric extraction (advanced)
+├── drift/          # baseline-relative drift detection (advanced)
+├── proxy/          # local ASGI reverse proxy for wrap/watch (advanced)
+├── contracts/      # YAML behavior policies for check (advanced)
+├── enforcement/    # evidence-file cross-check and the GitHub Action generator
+├── storage/        # local DuckDB
+└── tui/            # live terminal dashboard (advanced)
 ```
 
-Hosted SaaS and marketing-site code from earlier development is **not** in this repository and is out of scope for new contributions.
+Hosted SaaS and marketing-site code from earlier development is not in this repository and is out of scope.
 
-## Proposing a new behavioral metric
+## The most useful place to contribute: result parsers
 
-1. Read `cngx/fingerprint/metrics.py`, `MetricsCalculator` holds regex patterns and counting logic for each signal.
-2. Add your metric computation there (keep it fast and deterministic; prefer explicit patterns over NLP).
-3. Wire the new field through `cngx/fingerprint/extractor.py` into `BehavioralFingerprint` in `cngx/core/models.py` if it is a new top-level metric.
-4. If the metric should influence drift alerting, update `cngx/calibration/profiles.py` (`QUALITY_METRICS` / `LENGTH_METRICS`) and review `cngx/drift/detector.py`.
-5. Add unit tests in `tests/unit/test_metrics.py` or `tests/unit/test_fingerprint.py` with a minimal synthetic trace.
+`cngx verify` is only as good as its ability to read real test-runner output. Parsers live in `cngx/verify/parsers.py`.
 
-Design note: metrics are heuristics. Document what each pattern captures and what it will miss.
+To add support for a new runner (for example rspec, phpunit, dotnet test):
 
-## Adding a new LLM provider adapter
+1. Add a `_parse_<runner>(text) -> TestResult | None` function. Return `None` when the text is clearly not that runner so the next parser can try.
+2. Register it in the `_PARSERS` tuple. Order matters: more specific formats go before the generic pytest count parser.
+3. Set `ok` from the real result, and fill `passed` / `failed` / `errors` / `total` and a human `summary_line` when you can. The overall pass/fail from an actual process run always defers to the exit code (see `parse_output`).
+4. Add a test with a real captured output snippet in `tests/unit/test_verify_parsers.py`.
 
-1. Create `cngx/capture/adapters/your_provider.py`.
-2. Subclass `BaseAdapter` in `cngx/capture/adapters/base.py` and implement:
-   - `async def call(...)`, primary async entry point
-   - `def call_sync(...)`, synchronous wrapper (often `asyncio.run` or shared core)
-   - Streaming via `StreamChunk` if the provider supports it
-3. Register the adapter in `cngx/capture/adapters/__init__.py` and in `CngxTracer`’s adapter map (`cngx/capture/tracer.py`).
-4. Add routing in `cngx/proxy/app.py` if the proxy should forward that provider’s API shape.
-5. Add a model profile stub in `cngx/calibration/profiles.py` if the family has distinct baseline behavior.
-6. Add optional dependency in `pyproject.toml` under `[project.optional-dependencies]`.
-7. Add tests in `tests/unit/` with mocked HTTP or the `mock` adapter pattern; skip live tests when API keys are absent.
+Claim extraction (what the agent asserted) lives in `cngx/verify/claims.py`. Precision matters more than recall there: a false "the agent claimed success" produces a wrong verdict, so only add strong, specific assertions.
 
-Never log or persist API keys. Read them from environment variables only.
+## Advanced contributions
+
+- **New behavioral metric (fingerprint):** see `cngx/fingerprint/metrics.py`, wire through `extractor.py` and `core/models.py`, and add tests. Metrics are heuristics; document what each captures and misses. If it affects drift alerting, review `cngx/calibration/profiles.py` (`QUALITY_METRICS` / `LENGTH_METRICS`) and `cngx/drift/detector.py`.
+- **New LLM provider adapter:** subclass `BaseAdapter` in `cngx/capture/adapters/base.py`, register it in the adapter map in `cngx/capture/tracer.py`, add proxy routing in `cngx/proxy/app.py` if needed, and add an optional dependency in `pyproject.toml`. Never log or persist API keys; read them from environment variables only.
 
 ## Pull requests
 
-1. Open an issue or discussion for large changes before investing heavily.
-2. Fork, branch from `main` (or the active launch branch), keep PRs focused.
-3. Include tests for behavior changes.
-4. Run `pytest`, `ruff check .`, `black --check .`, and `mypy cngx/` before opening the PR.
-5. Use clear commit messages (`feat:`, `fix:`, `docs:`, etc.).
-6. Fill out the PR template; link related issues.
+1. Open an issue for large changes before investing heavily.
+2. Branch from `main`, keep PRs focused, include tests.
+3. Run `pytest`, `ruff check .`, and `black --check .` before opening.
+4. Use clear, lowercase commit messages (`feat:`, `fix:`, `docs:`) with no em dashes.
+5. Fill out the PR template and link related issues.
 
-Maintainers review for correctness, test coverage, user-facing clarity (plain language in CLI/docs), and whether new metrics respect the statistical alerting design (no single-metric or length-only false alarms).
+## CI integration and badge
 
-## Reporting bugs and suggesting features
+Use the action in your workflow:
 
-- **Bugs:** use the [bug report template](.github/ISSUE_TEMPLATE/bug_report.md).
-- **Features:** use the [feature request template](.github/ISSUE_TEMPLATE/feature_request.md).
-
-## CI integration and README badge
-
-**GitHub Action:** add `uses: aadi-joshi/cngx@v0.1.7` to your workflow. See [docs/guides/github-action.md](docs/guides/github-action.md).
-
-**README badge** (shields.io):
-
-```markdown
-[![Monitored by cngx](https://img.shields.io/badge/Monitored%20by-cngx-22c55e?style=flat-square)](https://github.com/aadi-joshi/cngx)
+```yaml
+- uses: aadi-joshi/cngx@v0.2.0
+  with:
+    output-file: agent_message.md
+    command: pytest -q
 ```
-
-More options: [docs/guides/badge.md](docs/guides/badge.md).
 
 Local smoke test for the action logic:
 
@@ -135,26 +100,10 @@ Local smoke test for the action logic:
 python scripts/test_github_action_local.py
 ```
 
-## Demo assets (dev tooling only)
+## Reporting bugs and suggesting features
 
-Regenerate README/docs media with scripts under `scripts/demo/`. See `scripts/demo/README.md`.
-
-Terminal quickstart GIF:
-
-```bash
-vhs scripts/demo/quickstart.tape
-```
-
-Tracker site recording:
-
-```bash
-pip install -e ".[dev]"
-playwright install chromium
-python scripts/demo/record_tracker.py
-```
-
-Playwright is listed under `[project.optional-dependencies] dev` only, not in runtime dependencies.
-
+- Bugs: [bug report template](.github/ISSUE_TEMPLATE/bug_report.md).
+- Features: [feature request template](.github/ISSUE_TEMPLATE/feature_request.md).
 
 ## Code of conduct
 
