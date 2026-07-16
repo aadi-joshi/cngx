@@ -86,6 +86,12 @@ def test_vitest_with_failures():
     assert r.ok is False
 
 
+def test_vitest_does_not_match_prose():
+    text = "Tests 3 passed cars on the road (3)"
+    r = parse_output(text, exit_code=0)
+    assert r.framework != "vitest"
+
+
 def test_cargo_ok():
     text = "test result: ok. 12 passed; 0 failed; 0 ignored"
     r = parse_output(text, exit_code=0)

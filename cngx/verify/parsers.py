@@ -127,7 +127,13 @@ def _parse_vitest(text: str) -> Optional[TestResult]:
     # Vitest prints separate "Test Files" and "Tests" lines. Match only the latter so
     # file counts are not mistaken for test counts, and tolerate colored terminal output.
     clean = re.sub(r"\x1b\[[0-?]*[ -/]*[@-~]", "", text)
-    line = re.search(r"(?m)^\s*Tests\s+(.*(?:\d+\s+(?:passed|failed|skipped|todo)).*)$", clean)
+    line = re.search(
+        r"(?m)^\s*Tests\s+"
+        r"((?:\d+\s+(?:passed|failed|skipped|todo))"
+        r"(?:\s*\|\s*\d+\s+(?:passed|failed|skipped|todo))*)"
+        r"\s*(?:\((\d+)\))?\s*$",
+        clean,
+    )
     if not line:
         return None
 
@@ -135,7 +141,7 @@ def _parse_vitest(text: str) -> Optional[TestResult]:
     passed = _first_int(re.search(r"(\d+)\s+passed", summary))
     failed = _first_int(re.search(r"(\d+)\s+failed", summary))
     skipped = _first_int(re.search(r"(\d+)\s+(?:skipped|todo)", summary))
-    total = _first_int(re.search(r"\((\d+)\)\s*$", summary))
+    total = int(line.group(2)) if line.group(2) is not None else None
     if total is None:
         total = sum(count for count in (passed, failed, skipped) if count is not None)
 
