@@ -27,7 +27,11 @@ cngx runs the command after `--`, reads what the agent claimed, and BLOCKS (exit
 cngx verify --output-file agent_message.md -- pytest   # read claim from a file
 cngx verify --stdin -- pytest                          # read claim from stdin
 cngx verify --claim "all tests pass, ready to merge" -- pytest
+cngx verify --from-commit HEAD -- pytest               # read claim from a commit message
+cngx verify --from-pr -- pytest                         # read claim from the PR body (GitHub Actions)
 ```
+
+Claim sources are mutually exclusive; passing more than one is a usage error (exit 2).
 
 **Reality source** (what actually happened), pick one:
 
@@ -52,6 +56,8 @@ exit code: 1
 | `-o`, `--output-file` | File with the agent's message; the claim is read from it |
 | `--stdin` | Read the agent claim from stdin |
 | `-C`, `--claim` | Inline agent claim text |
+| `--from-commit REF` | Read the claim from a git commit message (for example `HEAD`) |
+| `--from-pr` | Read the claim from the GitHub Actions PR event body |
 | `-e`, `--evidence-file` | Parse an existing test/CI log instead of running a command |
 | `--require-claim` | Also block if checks pass but the agent made no verification claim |
 | `--timeout` | Seconds before the command is killed (default `600`) |

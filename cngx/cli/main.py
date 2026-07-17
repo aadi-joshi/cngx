@@ -128,12 +128,36 @@ def quickstart() -> None:
 def verify(
     ctx: typer.Context,
     claim: Optional[str] = typer.Option(
-        None, "--claim", "-C", help="Agent claim text (what it said it did)"
+        None,
+        "--claim",
+        "-C",
+        help="Agent claim text (what it said it did). Claim sources are mutually exclusive.",
     ),
     output_file: Optional[Path] = typer.Option(
-        None, "--output-file", "-o", help="File with the agent message to read the claim from"
+        None,
+        "--output-file",
+        "-o",
+        help="File with the agent message to read the claim from. "
+        "Claim sources are mutually exclusive.",
     ),
-    stdin: bool = typer.Option(False, "--stdin", help="Read the agent claim from stdin"),
+    stdin: bool = typer.Option(
+        False,
+        "--stdin",
+        help="Read the agent claim from stdin. Claim sources are mutually exclusive.",
+    ),
+    from_commit: Optional[str] = typer.Option(
+        None,
+        "--from-commit",
+        metavar="REF",
+        help="Read the claim from a git commit message, e.g. --from-commit HEAD. "
+        "Claim sources are mutually exclusive.",
+    ),
+    from_pr: bool = typer.Option(
+        False,
+        "--from-pr",
+        help="Read the claim from the GitHub Actions PR event payload. "
+        "Claim sources are mutually exclusive.",
+    ),
     evidence_file: Optional[Path] = typer.Option(
         None, "--evidence-file", "-e", help="Use an existing test log instead of running a command"
     ),
@@ -164,6 +188,8 @@ def verify(
             claim=claim,
             output_file=output_file,
             stdin=stdin,
+            from_commit=from_commit,
+            from_pr=from_pr,
             evidence_file=evidence_file,
             require_claim=require_claim,
             timeout=timeout,
