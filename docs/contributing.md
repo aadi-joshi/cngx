@@ -19,6 +19,16 @@ black --check .
 
 ## Where to add things
 
+The most impactful place to contribute is to the core verification logic.
+
+| Contribution | Start here |
+|--------------|------------|
+| Result parsers | `cngx/verify/parsers.py` and `tests/unit/test_verify_parsers.py` |
+| Claim extractors | `cngx/verify/claims.py` |
+| CLI / Action | `cngx/cli/verify_cmd.py`, `action.yml` |
+
+### Advanced
+
 | Contribution | Start here |
 |--------------|------------|
 | New metric | `cngx/fingerprint/metrics.py` |
