@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- `cngx verify`: `--cwd` option to execute the verification command in a different directory.
 - `cngx verify`: `--record` and `--stats` for tracking the fabricated-claim rate per model or
   agent label. `--record` (or `CNGX_VERIFY_RECORD=1` in CI) persists one row per run to the
   local DuckDB store, and `--label NAME` (or `CNGX_VERIFY_LABEL`) tags it; the model is never

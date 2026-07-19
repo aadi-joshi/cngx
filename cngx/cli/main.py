@@ -184,6 +184,9 @@ def verify(
     ),
     timeout: float = typer.Option(600.0, "--timeout", help="Seconds before the command is killed"),
     json_output: bool = typer.Option(False, "--json", "-j", help="Machine-readable output"),
+    cwd: Optional[Path] = typer.Option(
+        None, "--cwd", help="Run the verification command in this directory"
+    ),
 ) -> None:
     """Run what the agent claimed it ran, then compare claim to reality.
 
@@ -215,6 +218,7 @@ def verify(
             stats=stats,
             timeout=timeout,
             json_output=json_output,
+            cwd=cwd,
         )
     )
 
